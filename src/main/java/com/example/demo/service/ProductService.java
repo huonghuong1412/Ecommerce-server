@@ -15,11 +15,12 @@ public interface ProductService {
 	public Page<ProductListDto> productList(SearchDto dto);
 
 	public ProductDtoNew getProductById(Long id);
-
-	public ProductDto saveOrUpdateBook(ProductDto dto);
-	public ProductDto saveOrUpdateFood(ProductDto dto);
-	public ProductDto saveOrUpdatePhone(ProductDto dto);
-	public ProductDto saveOrUpdateLaptop(ProductDto dto);
+	
+	// Them san pham chung
+	public ProductDto saveOrUpdate(ProductDto dto);
+	
+	// Them san pham co loai sp khong co trong danh sach category
+	
 	
 	public ProductDto importBook(ProductDto dto);
 	public ProductDto importFood(ProductDto dto);

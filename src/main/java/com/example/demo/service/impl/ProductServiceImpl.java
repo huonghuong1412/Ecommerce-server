@@ -20,13 +20,7 @@ import org.springframework.util.StringUtils;
 
 import com.example.demo.common.Slug;
 import com.example.demo.dto.SearchDto;
-import com.example.demo.dto.to_entity.AuthorDto;
-import com.example.demo.dto.to_entity.BrandDto;
-import com.example.demo.dto.to_entity.CategoryDto;
-import com.example.demo.dto.to_entity.ProductDetailDto;
 import com.example.demo.dto.to_entity.ProductDto;
-import com.example.demo.dto.to_entity.PublisherDto;
-import com.example.demo.dto.to_entity.SubCategoryDto;
 import com.example.demo.dto.to_show.ProductDtoNew;
 import com.example.demo.dto.to_show.ProductListDto;
 import com.example.demo.entity.Category;
@@ -141,100 +135,6 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public ProductDto saveOrUpdateBook(ProductDto dto) {
-		if (dto != null) {
-
-			Product entity = null;
-			Author author = null;
-			Image image = null;
-			Publisher publisher = null;
-			Category category = null;
-			SubCategory subcategory = null;
-
-			CategoryDto categoryDto = dto.getCategory();
-			SubCategoryDto subCategoryDto = dto.getSubcategory();
-
-			PublisherDto publisherDto = dto.getPublisher();
-			Set<AuthorDto> authorDtos = dto.getAuthors();
-			Set<Author> authors = new HashSet<>();
-
-			// 1 - n product - image
-			List<String> imageUrls = dto.getImages();
-			List<Image> images = new ArrayList<>();
-
-			if (dto.getId() != null) {
-				entity = productRepos.getOne(dto.getId());
-				images = imageRepos.findAllByProductId(entity.getId());
-				authors = authorRepos.findAllByProducts(entity);
-				publisher = publisherRepos.findOneByName(entity.getPublisher().getName());
-
-				for (Author authorTmp : authors) {
-					author = authorTmp;
-				}
-			}
-			if (entity == null) {
-				entity = new Product();
-
-				for (String imageUrl : imageUrls) {
-					image = new Image(imageUrl);
-					images.add(image);
-				}
-
-				if (dto.getType() == 1) {
-					for (AuthorDto authorDto : authorDtos) {
-						author = authorRepos.findOneByName(authorDto.getName());
-						if (author != null) {
-							authors.add(author);
-						}
-					}
-
-					publisher = publisherRepos.findOneByName(publisherDto.getName());
-				}
-			}
-
-			if (categoryDto != null) {
-				category = categoryRepos.findOneByCode(categoryDto.getCode());
-			}
-
-			if (subCategoryDto != null) {
-				subcategory = subcategoryRepos.findOneByCode(subCategoryDto.getCode());
-			}
-
-			entity.setType(dto.getType());
-			entity.setName(dto.getName());
-			entity.setSlug(Slug.makeSlug(dto.getName()));
-			entity.setDescription(dto.getDescription());
-			entity.setPrice(dto.getPrice());
-			entity.setCategory(category);
-			entity.setSubcategory(subcategory);
-
-			// book
-			entity.setPublishingYear(dto.getPublishingYear());
-			entity.setNumberOfPages(dto.getNumberOfPages());
-			entity.setAuthors(authors);
-			entity.setPublisher(publisher);
-
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-
-			entity.setImages(images);
-			for (Image item : images) {
-				item.setProduct(entity);
-			}
-
-			entity = productRepos.save(entity);
-
-			if (image != null) {
-				image = imageRepos.save(image);
-			}
-
-			if (entity != null) {
-				return new ProductDto(entity);
-			}
-		}
-		return null;
-	}
-
-	@Override
 	public Boolean delete(Long id) {
 		if (id != null) {
 			productRepos.deleteById(id);
@@ -248,308 +148,6 @@ public class ProductServiceImpl implements ProductService {
 		Product product = productRepos.getOne(id);
 		ProductDtoNew dto = new ProductDtoNew(product);
 		return dto;
-	}
-
-	@Override
-	public ProductDto saveOrUpdateFood(ProductDto dto) {
-		if (dto != null) {
-
-			Product entity = null;
-			Image image = null;
-			Brand brand = null;
-			Category category = null;
-			SubCategory subcategory = null;
-
-			CategoryDto categoryDto = dto.getCategory();
-			SubCategoryDto subCategoryDto = dto.getSubcategory();
-
-			BrandDto brandFoodDto = dto.getBrand();
-
-			// 1 - n product - image
-			List<String> imageUrls = dto.getImages();
-			List<Image> images = new ArrayList<>();
-
-			if (dto.getId() != null) {
-				entity = productRepos.getOne(dto.getId());
-				images = imageRepos.findAllByProductId(entity.getId());
-			}
-			if (entity == null) {
-				entity = new Product();
-
-				for (String imageUrl : imageUrls) {
-					image = new Image(imageUrl);
-					images.add(image);
-				}
-			}
-
-			if (categoryDto != null) {
-				category = categoryRepos.findOneByCode(categoryDto.getCode());
-			}
-
-			if (subCategoryDto != null) {
-				subcategory = subcategoryRepos.findOneByCode(subCategoryDto.getCode());
-			}
-
-			entity.setType(dto.getType());
-			entity.setName(dto.getName());
-			entity.setSlug(Slug.makeSlug(dto.getName()));
-			entity.setDescription(dto.getDescription());
-			entity.setPrice(dto.getPrice());
-			entity.setCategory(category);
-			entity.setSubcategory(subcategory);
-
-			if (brandFoodDto != null) {
-				brand = brandRepos.findOneByName(brandFoodDto.getName());
-			}
-			// food
-			entity.setWeight(dto.getWeight());
-			entity.setPreserve(dto.getPreserve());
-			entity.setManual(dto.getManual());
-			entity.setIngredients(dto.getIngredients());
-			entity.setExpiredDate(dto.getExpiredDate());
-			entity.setBrand(brand);
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-			entity.setImages(images);
-			for (Image item : images) {
-				item.setProduct(entity);
-			}
-
-			entity = productRepos.save(entity);
-
-			if (image != null) {
-				image = imageRepos.save(image);
-			}
-
-			if (entity != null) {
-				return new ProductDto(entity);
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public ProductDto saveOrUpdatePhone(ProductDto dto) {
-		if (dto != null) {
-			Product entity = null;
-			Image image = null;
-			Brand brand = null;
-			Category category = null;
-			SubCategory subcategory = null;
-			Color color = null;
-			ProductDetail productDetail = null;
-
-			CategoryDto categoryDto = dto.getCategory();
-			SubCategoryDto subCategoryDto = dto.getSubcategory();
-
-			BrandDto brandElectricDto = dto.getBrand();
-
-			// 1 - n product - image
-			List<String> imageUrls = dto.getImages();
-			List<Image> images = new ArrayList<>();
-
-			List<ProductDetailDto> listProductColorDtos = dto.getProduct_specs();
-			List<ProductDetail> listProductColors = new ArrayList<>();
-
-			if (dto.getId() != null) {
-				entity = productRepos.getOne(dto.getId());
-				images = imageRepos.findAllByProductId(entity.getId());
-
-				listProductColors = productDetailRepos.findAllByProductId(entity.getId());
-				for (ProductDetail detail : listProductColors) {
-					productDetailRepos.deleteByProductId(detail.getProduct().getId());
-				}
-			}
-			if (entity == null) {
-				entity = new Product();
-				for (String imageUrl : imageUrls) {
-					image = new Image(imageUrl);
-					images.add(image);
-				}
-			}
-
-			if (categoryDto != null) {
-				category = categoryRepos.findOneByCode(categoryDto.getCode());
-			}
-
-			if (subCategoryDto != null) {
-				subcategory = subcategoryRepos.findOneByCode(subCategoryDto.getCode());
-			}
-
-			for (ProductDetailDto item : listProductColorDtos) {
-				color = colorRepos.findOneByColor(item.getColor().getColor());
-				productDetail = new ProductDetail(entity, color, 0);
-				listProductColors.add(productDetail);
-			}
-
-			entity.setType(dto.getType());
-			entity.setName(dto.getName());
-			entity.setSlug(Slug.makeSlug(dto.getName()));
-			entity.setDescription(dto.getDescription());
-			entity.setPrice(dto.getPrice());
-			entity.setCategory(category);
-			entity.setSubcategory(subcategory);
-
-			if (brandElectricDto != null) {
-				brand = brandRepos.findOneByName(brandElectricDto.getName());
-			}
-			// electric
-			entity.setBrand(brand);
-			entity.setType(dto.getType());
-			entity.setScreen(dto.getScreen());
-			entity.setOperatorSystem(dto.getOperatorSystem());
-			entity.setRam(dto.getRam());
-			entity.setPin(dto.getPin());
-			entity.setDesign(dto.getDesign());
-			entity.setSizeWeight(dto.getSizeWeight());
-			entity.setMaterial(dto.getMaterial());
-			entity.setReleaseTime(dto.getReleaseTime());
-
-			// phone
-			entity.setBehindCamera(dto.getBehindCamera());
-			entity.setChip(dto.getChip());
-			entity.setFrontCamera(dto.getFrontCamera());
-			entity.setInternalMemory(dto.getInternalMemory());
-			entity.setSim(dto.getSim());
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-			entity.setImages(images);
-			for (Image item : images) {
-				item.setProduct(entity);
-			}
-
-			for (ProductDetailDto item : listProductColorDtos) {
-				color = colorRepos.findOneByColor(item.getColor().getColor());
-				productDetail.setProduct(entity);
-				productDetail.setColor(color);
-			}
-
-			entity = productRepos.save(entity);
-
-			for (ProductDetail item : listProductColors) {
-				productDetail = productDetailRepos.save(item);
-			}
-
-			if (image != null) {
-				image = imageRepos.save(image);
-			}
-
-			if (entity != null) {
-				return new ProductDto(entity);
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public ProductDto saveOrUpdateLaptop(ProductDto dto) {
-		if (dto != null) {
-			Product entity = null;
-			Image image = null;
-			Brand brand = null;
-			Category category = null;
-			SubCategory subcategory = null;
-			Color color = null;
-			ProductDetail productDetail = null;
-
-			CategoryDto categoryDto = dto.getCategory();
-			SubCategoryDto subCategoryDto = dto.getSubcategory();
-
-			BrandDto brandElectricDto = dto.getBrand();
-
-			// 1 - n product - image
-			List<String> imageUrls = dto.getImages();
-			List<Image> images = new ArrayList<>();
-
-			List<ProductDetailDto> listProductColorDtos = dto.getProduct_specs();
-			List<ProductDetail> listProductColors = new ArrayList<>();
-
-			if (dto.getId() != null) {
-				entity = productRepos.getOne(dto.getId());
-				images = imageRepos.findAllByProductId(entity.getId());
-				listProductColors = productDetailRepos.findAllByProductId(entity.getId());
-
-				for (ProductDetail detail : listProductColors) {
-					productDetailRepos.deleteByProductId(detail.getProduct().getId());
-				}
-
-			}
-			if (entity == null) {
-				entity = new Product();
-
-				for (String imageUrl : imageUrls) {
-					image = new Image(imageUrl);
-					images.add(image);
-				}
-			}
-
-			if (categoryDto != null) {
-				category = categoryRepos.findOneByCode(categoryDto.getCode());
-			}
-
-			if (subCategoryDto != null) {
-				subcategory = subcategoryRepos.findOneByCode(subCategoryDto.getCode());
-			}
-
-			for (ProductDetailDto item : listProductColorDtos) {
-				color = colorRepos.findOneByColor(item.getColor().getColor());
-				productDetail = new ProductDetail(entity, color, 0);
-				listProductColors.add(productDetail);
-			}
-
-			entity.setType(dto.getType());
-			entity.setName(dto.getName());
-			entity.setSlug(Slug.makeSlug(dto.getName()));
-			entity.setDescription(dto.getDescription());
-			entity.setPrice(dto.getPrice());
-			entity.setCategory(category);
-			entity.setSubcategory(subcategory);
-
-			if (brandElectricDto != null) {
-				brand = brandRepos.findOneByName(brandElectricDto.getName());
-			}
-			// electric
-			entity.setBrand(brand);
-			entity.setType(dto.getType());
-			entity.setScreen(dto.getScreen());
-			entity.setOperatorSystem(dto.getOperatorSystem());
-			entity.setRam(dto.getRam());
-			entity.setPin(dto.getPin());
-			entity.setDesign(dto.getDesign());
-			entity.setSizeWeight(dto.getSizeWeight());
-			entity.setMaterial(dto.getMaterial());
-			entity.setReleaseTime(dto.getReleaseTime());
-
-			// laptop
-			entity.setCard(dto.getCard());
-			entity.setCpu(dto.getCpu());
-			entity.setHardWare(dto.getHardWare());
-			entity.setSpecial(dto.getSpecial());
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-			entity.setImages(images);
-			for (Image item : images) {
-				item.setProduct(entity);
-			}
-
-			for (ProductDetailDto item : listProductColorDtos) {
-				color = colorRepos.findOneByColor(item.getColor().getColor());
-				productDetail.setProduct(entity);
-				productDetail.setColor(color);
-			}
-
-			entity = productRepos.save(entity);
-
-			for (ProductDetail item : listProductColors) {
-				productDetail = productDetailRepos.save(item);
-			}
-
-			if (image != null) {
-				image = imageRepos.save(image);
-			}
-
-			if (entity != null) {
-				return new ProductDto(entity);
-			}
-		}
-		return null;
 	}
 
 	@Override
@@ -633,22 +231,18 @@ public class ProductServiceImpl implements ProductService {
 		if (dto != null) {
 			Product entity = null;
 			Image image = null;
-			Brand brand = null;
-			Category category = null;
-			SubCategory subcategory = null;
+			Category category = categoryRepos.findOneByCode(dto.getCategory());
+			SubCategory subcategory = subcategoryRepos.findOneByCode(dto.getSubcategory());
+			Publisher publisher = publisherRepos.findOneByCode(dto.getPublisher());
+			Brand brand = brandRepos.findOneByCode(dto.getBrand());
 			Color color = null;
 			ProductDetail productDetail = null;
-
-			CategoryDto categoryDto = dto.getCategory();
-			SubCategoryDto subCategoryDto = dto.getSubcategory();
-
-			BrandDto brandElectricDto = dto.getBrand();
 
 			// 1 - n product - image
 			List<String> imageUrls = dto.getImages();
 			List<Image> images = new ArrayList<>();
 
-			List<ProductDetailDto> listProductColorDtos = dto.getProduct_specs();
+//			List<ProductDetailDto> listProductColorDtos = dto.getProduct_specs();
 			List<ProductDetail> listProductColors = new ArrayList<>();
 
 			if (dto.getId() != null) {
@@ -670,21 +264,12 @@ public class ProductServiceImpl implements ProductService {
 				}
 			}
 
-			if (categoryDto != null) {
-				category = categoryRepos.findOneByCode(categoryDto.getCode());
-			}
-
-			if (subCategoryDto != null) {
-				subcategory = subcategoryRepos.findOneByCode(subCategoryDto.getCode());
-			}
-
-			for (ProductDetailDto item : listProductColorDtos) {
-				Integer quantityInStock = productDetailRepos.getQuantityByProductIdAndColorId(30L, 1L);
-				System.out.println("TTTTTTTTTT " + quantityInStock);
-				color = colorRepos.findOneByColor(item.getColor().getColor());
-				productDetail = new ProductDetail(entity, color, item.getQuantity());
-				listProductColors.add(productDetail);
-			}
+//			for (ProductDetailDto item : listProductColorDtos) {
+//				Integer quantityInStock = productDetailRepos.getQuantityByProductIdAndColorId(30L, 1L);
+//				color = colorRepos.findOneByColor(item.getColor().getColor());
+//				productDetail = new ProductDetail(entity, color, item.getQuantity());
+//				listProductColors.add(productDetail);
+//			}
 
 			entity.setType(dto.getType());
 			entity.setName(dto.getName());
@@ -694,9 +279,6 @@ public class ProductServiceImpl implements ProductService {
 			entity.setCategory(category);
 			entity.setSubcategory(subcategory);
 
-			if (brandElectricDto != null) {
-				brand = brandRepos.findOneByName(brandElectricDto.getName());
-			}
 			// electric
 			entity.setBrand(brand);
 			entity.setType(dto.getType());
@@ -720,17 +302,151 @@ public class ProductServiceImpl implements ProductService {
 				item.setProduct(entity);
 			}
 
-			for (ProductDetailDto item : listProductColorDtos) {
-				color = colorRepos.findOneByColor(item.getColor().getColor());
-				productDetail.setProduct(entity);
-				productDetail.setColor(color);
-			}
+//			for (ProductDetailDto item : listProductColorDtos) {
+//				color = colorRepos.findOneByColor(item.getColor().getColor());
+//				productDetail.setProduct(entity);
+//				productDetail.setColor(color);
+//			}
 
 			entity = productRepos.save(entity);
 
 			for (ProductDetail item : listProductColors) {
 				productDetail = productDetailRepos.save(item);
 			}
+
+			if (image != null) {
+				image = imageRepos.save(image);
+			}
+
+			if (entity != null) {
+				return new ProductDto(entity);
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public ProductDto saveOrUpdate(ProductDto dto) {
+		if (dto != null) {
+
+			Product entity = null;
+			Author author = null;
+			Image image = null;
+			Publisher publisher = null;
+
+			Category category = categoryRepos.findOneByCode(dto.getCategory());
+			SubCategory subcategory = subcategoryRepos.findOneByCode(dto.getSubcategory());
+			Brand brand = brandRepos.findOneByCode(dto.getBrand());
+
+			Set<String> authorCodes = new HashSet<String>();
+			if (dto.getType() == 1 && dto.getAuthorCodes() != null) {
+				authorCodes = dto.getAuthorCodes();
+			}
+			Set<Author> authors = new HashSet<>();
+
+			// 1 - n product - image
+			List<String> imageUrls = dto.getImages();
+			List<Image> images = new ArrayList<>();
+
+			if (dto.getId() != null) {
+				entity = productRepos.getOne(dto.getId());
+//				images = imageRepos.findAllByProductId(entity.getId());
+//				if (entity.getType() == 1) {
+//					publisher = publisherRepos.findOneByCode(entity.getPublisher().getCode());
+//					authors = authorRepos.findAllByProducts(entity);
+//					for (Author authorTmp : authors) {
+//						author = authorTmp;
+//					}
+//				}
+			}
+			if (entity == null) {
+				entity = new Product();
+
+				for (String imageUrl : imageUrls) {
+					image = new Image(imageUrl);
+					images.add(image);
+				}
+			}
+
+			entity.setType(dto.getType());
+			entity.setName(dto.getName());
+			entity.setSku(dto.getSku());
+			entity.setSlug(Slug.makeSlug(dto.getName()));
+			entity.setDescription(dto.getDescription());
+			entity.setPrice(dto.getPrice());
+			entity.setCategory(category);
+			entity.setSubcategory(subcategory);
+			entity.setBrand(brand);
+
+			switch (dto.getType()) {
+			case 1:
+				// book
+				publisher = publisherRepos.findOneByCode(dto.getPublisher());
+				for (String authorCode : authorCodes) {
+					author = authorRepos.findOneByCode(authorCode);
+					if (author != null) {
+						authors.add(author);
+					}
+				}
+				entity.setPublishingYear(dto.getPublishingYear());
+				entity.setNumberOfPages(dto.getNumberOfPages());
+				entity.setAuthors(authors);
+				entity.setPublisher(publisher);
+				break;
+			case 2:
+				// food
+				entity.setWeight(dto.getWeight());
+				entity.setPreserve(dto.getPreserve());
+				entity.setManual(dto.getManual());
+				entity.setIngredients(dto.getIngredients());
+				entity.setExpiredDate(dto.getExpiredDate());
+				break;
+			case 3:
+				// electric
+				entity.setScreen(dto.getScreen());
+				entity.setOperatorSystem(dto.getOperatorSystem());
+				entity.setRam(dto.getRam());
+				entity.setPin(dto.getPin());
+				entity.setDesign(dto.getDesign());
+				entity.setSizeWeight(dto.getSizeWeight());
+				entity.setMaterial(dto.getMaterial());
+				entity.setReleaseTime(dto.getReleaseTime());
+
+				// phone
+				entity.setBehindCamera(dto.getBehindCamera());
+				entity.setChip(dto.getChip());
+				entity.setFrontCamera(dto.getFrontCamera());
+				entity.setInternalMemory(dto.getInternalMemory());
+				entity.setSim(dto.getSim());
+				break;
+			case 4:
+				// electric
+				entity.setScreen(dto.getScreen());
+				entity.setOperatorSystem(dto.getOperatorSystem());
+				entity.setRam(dto.getRam());
+				entity.setPin(dto.getPin());
+				entity.setDesign(dto.getDesign());
+				entity.setSizeWeight(dto.getSizeWeight());
+				entity.setMaterial(dto.getMaterial());
+				entity.setReleaseTime(dto.getReleaseTime());
+				// laptop
+				entity.setCard(dto.getCard());
+				entity.setCpu(dto.getCpu());
+				entity.setHardWare(dto.getHardWare());
+				entity.setSpecial(dto.getSpecial());
+				break;
+			default:
+				break;
+			}
+
+			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
+
+			entity.setImages(images);
+			for (Image item : images) {
+				item.setProduct(entity);
+			}
+
+			entity = productRepos.save(entity);
 
 			if (image != null) {
 				image = imageRepos.save(image);

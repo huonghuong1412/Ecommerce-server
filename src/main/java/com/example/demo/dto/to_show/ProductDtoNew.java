@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.example.demo.dto.AbstractDTO;
 import com.example.demo.dto.to_entity.ImageDto;
 import com.example.demo.dto.to_entity.ProductDetailDto;
+import com.example.demo.dto.to_entity.ProductInfoDto;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.SubCategory;
 import com.example.demo.entity.product.Author;
@@ -14,20 +16,26 @@ import com.example.demo.entity.product.Brand;
 import com.example.demo.entity.product.Image;
 import com.example.demo.entity.product.Product;
 import com.example.demo.entity.product.ProductDetail;
+import com.example.demo.entity.product.ProductInfo;
 import com.example.demo.entity.product.Publisher;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class ProductDtoNew {
+public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 
 	private Integer type; // loai san phamr
 	private String name;
+	private String sku;
 	private String slug;
 	private String description;
 	private Long price;
 	private List<String> images;
 	private CategoryDtoNew category;
 	private SubcategoryDtoNew subcategory;
+
+	// info
+	@JsonInclude(value = Include.NON_EMPTY)
+	private List<ProductInforNew> productInfos;
 
 	// sach
 	@JsonInclude(value = Include.NON_NULL)
@@ -125,8 +133,10 @@ public class ProductDtoNew {
 
 	public ProductDtoNew(Product entity) {
 		super();
+		this.setId(entity.getId());
 		this.type = entity.getType();
 		this.name = entity.getName();
+		this.sku = entity.getSku();
 		this.slug = entity.getSlug();
 		this.description = entity.getDescription();
 		this.price = entity.getPrice();
@@ -147,6 +157,12 @@ public class ProductDtoNew {
 			images.add(dto.getUrl());
 		}
 
+		this.productInfos = new ArrayList<>();
+		for (ProductInfo info : entity.getProduct_infos()) {
+			ProductInforNew dto = new ProductInforNew(info);
+			this.productInfos.add(dto);
+		}
+
 		// sach
 		authors = new HashSet<>();
 		this.publishingYear = entity.getPublishingYear();
@@ -164,20 +180,18 @@ public class ProductDtoNew {
 			}
 		}
 
-		if (this.type == 2 || this.type == 3) {
-			brand = new BrandDtoNew();
-			if (brand != null) {
-				Brand brandEntity = entity.getBrand();
-				brand = new BrandDtoNew(brandEntity);
-			}
+		brand = new BrandDtoNew();
+		if (brand != null) {
+			Brand brandEntity = entity.getBrand();
+			brand = new BrandDtoNew(brandEntity);
+		}
 //			product_specs = new ArrayList<ProductDetailDto>();
 //			for (ProductDetail item : entity.getDetails()) {
 //				ProductDetailDto dto = new ProductDetailDto(item);
 //				product_specs.add(dto);
 //			}
-		}
-		
-		if (this.type == 3) {
+
+		if (this.type == 3 || this.type == 4) {
 			product_specs = new ArrayList<ProductDetailDto>();
 			try {
 				for (ProductDetail item : entity.getDetails()) {
@@ -234,6 +248,14 @@ public class ProductDtoNew {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getSku() {
+		return sku;
+	}
+
+	public void setSku(String sku) {
+		this.sku = sku;
 	}
 
 	public String getSlug() {
@@ -506,6 +528,14 @@ public class ProductDtoNew {
 
 	public void setProduct_specs(List<ProductDetailDto> product_specs) {
 		this.product_specs = product_specs;
+	}
+
+	public List<ProductInforNew> getProductInfos() {
+		return productInfos;
+	}
+
+	public void setProductInfos(List<ProductInforNew> productInfos) {
+		this.productInfos = productInfos;
 	}
 
 }

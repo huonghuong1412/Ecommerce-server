@@ -11,7 +11,7 @@ import com.example.demo.entity.product.Product;
 
 @Repository
 public interface BrandRepository extends JpaRepository<Brand, Long> {
-	public Brand findOneByName(String name);
+	public Brand findOneByCode(String code);
 
 	public Set<Brand> findAllByProducts(Product food);
 	

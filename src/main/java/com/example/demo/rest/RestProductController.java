@@ -66,56 +66,17 @@ public class RestProductController {
 		ProductDtoNew result = service.getProductById(id);
 		return new ResponseEntity<ProductDtoNew>(result, HttpStatus.OK);
 	}
-	
-	@PostMapping("/add-book")
-	public ResponseEntity<ProductDto> createBook(@RequestBody ProductDto dto) {
-		ProductDto result = service.saveOrUpdateBook(dto);
-		return new ResponseEntity<ProductDto>(result, HttpStatus.OK);
-	}
-	
-	@PostMapping("/add-food")
-	public ResponseEntity<ProductDto> createFood(@RequestBody ProductDto dto) {
-		ProductDto result = service.saveOrUpdateFood(dto);
-		return new ResponseEntity<ProductDto>(result, HttpStatus.OK);
-	}
-	
-	@PostMapping("/add-phone")
-	public ResponseEntity<ProductDto> createPhone(@RequestBody ProductDto dto) {
-		ProductDto result = service.saveOrUpdatePhone(dto);
-		return new ResponseEntity<ProductDto>(result, HttpStatus.OK);
-	}
-	
-	@PostMapping("/add-laptop")
-	public ResponseEntity<ProductDto> createLaptop(@RequestBody ProductDto dto) {
-		ProductDto result = service.saveOrUpdateLaptop(dto);
+
+	@PostMapping("/add-product")
+	public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto dto) {
+		ProductDto result = service.saveOrUpdate(dto);
 		return new ResponseEntity<ProductDto>(result, HttpStatus.OK);
 	}
 
-	@PutMapping(value = "/update-book/{id}")
-	public ResponseEntity<ProductDto> updateBook(@RequestBody ProductDto dto, @PathVariable Long id) {
-		dto.setId(id);
-		ProductDto result = service.saveOrUpdateBook(dto);
-		return new ResponseEntity<ProductDto>(result, HttpStatus.OK);
-	}
-	
-	@PutMapping(value = "/update-food/{id}")
-	public ResponseEntity<ProductDto> updateFood(@RequestBody ProductDto dto, @PathVariable Long id) {
-		dto.setId(id);
-		ProductDto result = service.saveOrUpdateFood(dto);
-		return new ResponseEntity<ProductDto>(result, HttpStatus.OK);
-	}
-	
-	@PutMapping(value = "/update-phone/{id}")
-	public ResponseEntity<ProductDto> updatePhone(@RequestBody ProductDto dto, @PathVariable Long id) {
-		dto.setId(id);
-		ProductDto result = service.saveOrUpdatePhone(dto);
-		return new ResponseEntity<ProductDto>(result, HttpStatus.OK);
-	}
-	
-	@PutMapping(value = "/update-laptop/{id}")
+	@PutMapping(value = "/update-product/{id}")
 	public ResponseEntity<ProductDto> updateLaptop(@RequestBody ProductDto dto, @PathVariable Long id) {
 		dto.setId(id);
-		ProductDto result = service.saveOrUpdateLaptop(dto);
+		ProductDto result = service.saveOrUpdate(dto);
 		return new ResponseEntity<ProductDto>(result, HttpStatus.OK);
 	}
 
@@ -124,7 +85,7 @@ public class RestProductController {
 		Boolean result = service.delete(id);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
 	}
-	
+
 	////////////////////////////// Nhập hàng
 	@PutMapping(value = "/import-laptop/{id}")
 	public ResponseEntity<ProductDto> importLaptop(@RequestBody ProductDto dto, @PathVariable Long id) {

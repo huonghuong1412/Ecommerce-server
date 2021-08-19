@@ -41,7 +41,7 @@ public class RestSubCategoryController {
 		return new ResponseEntity<SubCategoryDto>(result, HttpStatus.OK);
 	}
 	
-	@GetMapping("/category/")
+	@GetMapping("/category")
 	public ResponseEntity<List<SubCategoryDto>> getAllByCategory(@RequestParam(name = "category") String category) {
 		List<SubCategoryDto> result = service.getSubCategoryByCategory(category);
 		return new ResponseEntity<List<SubCategoryDto>>(result, HttpStatus.OK);

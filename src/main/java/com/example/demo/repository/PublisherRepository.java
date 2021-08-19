@@ -11,7 +11,7 @@ import com.example.demo.entity.product.Publisher;
 
 @Repository
 public interface PublisherRepository extends JpaRepository<Publisher, Long> {
-	public Publisher findOneByName(String name);
+	public Publisher findOneByCode(String code);
 
 	public Set<Publisher> findAllByProducts(Product book);
 	

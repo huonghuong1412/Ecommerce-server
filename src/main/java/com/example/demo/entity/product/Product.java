@@ -35,6 +35,9 @@ public class Product extends BaseEntity {
 	@Column(name = "name") // 1, 2, 3
 	private String name;
 
+	@Column(name = "sku") // 1, 2, 3
+	private String sku;
+
 	@Column(name = "slug")
 	private String slug;
 
@@ -51,6 +54,9 @@ public class Product extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id") // 1, 2, 3
 	private Category category;
+
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<ProductInfo> product_infos = new ArrayList<>();
 
 //	----------------	BOOK	--------------------
 
@@ -145,7 +151,7 @@ public class Product extends BaseEntity {
 //	----------------	BRAND	--------------------
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "brand_id") // 2, 3
+	@JoinColumn(name = "brand_id") // 1, 2, 3
 	private Brand brand;
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
@@ -161,7 +167,7 @@ public class Product extends BaseEntity {
 //	 private Set<ProductInfo> productInfos;
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "product" ,cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 	@NotFound(action = NotFoundAction.IGNORE)
 	private List<ProductDetail> details; // 3,4,1,2
 
@@ -189,6 +195,14 @@ public class Product extends BaseEntity {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getSku() {
+		return sku;
+	}
+
+	public void setSku(String sku) {
+		this.sku = sku;
 	}
 
 	public String getSlug() {
@@ -477,6 +491,14 @@ public class Product extends BaseEntity {
 
 	public void setDetails(List<ProductDetail> details) {
 		this.details = details;
+	}
+
+	public List<ProductInfo> getProduct_infos() {
+		return product_infos;
+	}
+
+	public void setProduct_infos(List<ProductInfo> product_infos) {
+		this.product_infos = product_infos;
 	}
 
 //	public Set<Color> getColors() {

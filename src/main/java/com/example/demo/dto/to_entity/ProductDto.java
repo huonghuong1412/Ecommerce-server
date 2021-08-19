@@ -6,32 +6,27 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.demo.dto.AbstractDTO;
-import com.example.demo.entity.Category;
-import com.example.demo.entity.SubCategory;
 import com.example.demo.entity.product.Author;
-import com.example.demo.entity.product.Brand;
 import com.example.demo.entity.product.Image;
 import com.example.demo.entity.product.Product;
-import com.example.demo.entity.product.ProductDetail;
-import com.example.demo.entity.product.Publisher;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.example.demo.entity.product.ProductInfo;
 
 public class ProductDto extends AbstractDTO<ProductDto> {
 	private Integer type; // loai san phamr
 	private String name;
+	private String sku;
 	private String slug;
 	private String description;
 	private Long price;
 	private List<String> images;
-	private CategoryDto category;
-	private SubCategoryDto subcategory;
+	private String category;
+	private String subcategory;
 
 	// sach
 	private Integer publishingYear;
 	private Integer numberOfPages;
-	private Set<AuthorDto> authors;
-	private PublisherDto publisher;
+	private Set<String> authorCodes;
+	private String publisher;
 
 	// food
 	private String weight; // trong luong
@@ -64,13 +59,16 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 	private String special;
 
 	// brand
-	private BrandDto brand;
+	private String brand;
+
+	// info
+	private List<ProductInfoDto> productInfos;
 
 	// info
 //	private Set<Color> colors;
 //	private Integer quantity;
-	@JsonInclude(value = Include.NON_EMPTY)
-	private List<ProductDetailDto> product_specs = new ArrayList<>();
+//	@JsonInclude(value = Include.NON_EMPTY)
+//	private List<ProductDetailDto> product_specs = new ArrayList<>();
 
 	public ProductDto() {
 		super();
@@ -81,90 +79,95 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 		this.setId(entity.getId());
 		this.type = entity.getType();
 		this.name = entity.getName();
+		this.sku = entity.getSku();
 		this.slug = entity.getSlug();
 		this.description = entity.getDescription();
 		this.price = entity.getPrice();
 
-		category = new CategoryDto();
-		if (category != null) {
-			Category item = entity.getCategory();
-			this.category = new CategoryDto(item);
-		}
-		subcategory = new SubCategoryDto();
-		if (subcategory != null) {
-			SubCategory item = entity.getSubcategory();
-			this.subcategory = new SubCategoryDto(item);
-		}
+		this.category = entity.getCategory().getCode();
+		this.subcategory = entity.getSubcategory().getCode();
+		this.brand = entity.getBrand().getCode();
 		images = new ArrayList<>();
 		for (Image image : entity.getImages()) {
 			ImageDto dto = new ImageDto(image);
 			images.add(dto.getUrl());
 		}
-		// sach
-		this.publishingYear = entity.getPublishingYear();
-		this.numberOfPages = entity.getNumberOfPages();
-		if (this.type == 1) {
-			authors = new HashSet<>();
+
+		this.productInfos = new ArrayList<>();
+		for (ProductInfo info : entity.getProduct_infos()) {
+			ProductInfoDto dto = new ProductInfoDto(info);
+			this.productInfos.add(dto);
+		}
+
+		switch (this.type) {
+		case 1:
+			// sach
+			this.publishingYear = entity.getPublishingYear();
+			this.numberOfPages = entity.getNumberOfPages();
+			authorCodes = new HashSet<>();
 			for (Author author : entity.getAuthors()) {
 				AuthorDto dto = new AuthorDto(author);
-				authors.add(dto);
+				authorCodes.add(dto.getCode());
 			}
-			publisher = new PublisherDto();
-			if (publisher != null) {
-				Publisher item = entity.getPublisher();
-				this.publisher = new PublisherDto(item);
-			}
+			this.publisher = entity.getPublisher().getCode();
+			break;
+		case 2:
+			// food
+			this.weight = entity.getWeight();
+			this.ingredients = entity.getIngredients();
+			this.expiredDate = entity.getExpiredDate();
+			this.manual = entity.getManual();
+			this.preserve = entity.getPreserve();
+			break;
+		case 3:
+			// electric
+			this.screen = entity.getScreen();
+			this.operatorSystem = entity.getOperatorSystem();
+			this.ram = entity.getRam();
+			this.pin = entity.getPin();
+			this.design = entity.getDesign();
+			this.sizeWeight = entity.getSizeWeight();
+			this.material = entity.getMaterial();
+			this.releaseTime = entity.getReleaseTime();
+			// phone
+			this.frontCamera = entity.getFrontCamera();
+			this.behindCamera = entity.getBehindCamera();
+			this.chip = entity.getChip();
+			this.internalMemory = entity.getInternalMemory();
+			this.sim = entity.getSim();
+			break;
+		case 4:
+			// electric
+			this.screen = entity.getScreen();
+			this.operatorSystem = entity.getOperatorSystem();
+			this.ram = entity.getRam();
+			this.pin = entity.getPin();
+			this.design = entity.getDesign();
+			this.sizeWeight = entity.getSizeWeight();
+			this.material = entity.getMaterial();
+			this.releaseTime = entity.getReleaseTime();
+			// laptop
+			this.cpu = entity.getCpu();
+			this.hardWare = entity.getHardWare();
+			this.card = entity.getCard();
+			this.special = entity.getSpecial();
+			break;
+		default:
+			break;
 		}
 
-		if (this.type == 2 || this.type == 3) {
-			brand = new BrandDto();
-			if (brand != null) {
-				Brand brandEntity = entity.getBrand();
-				brand = new BrandDto(brandEntity);
-			}
-		}
-		
-		this.product_specs = new ArrayList<>();
-		if (this.type == 3) {
-			try {
-				for (ProductDetail item : entity.getDetails()) {
-					ProductDetailDto dto = new ProductDetailDto(item);
-					product_specs.add(dto);
-				}
-			} catch (Exception e) {
-				System.out.println(e.getMessage());
-			}
-		}
+//		this.product_specs = new ArrayList<>();
+//		if (this.type == 3) {
+//			try {
+//				for (ProductDetail item : entity.getDetails()) {
+//					ProductDetailDto dto = new ProductDetailDto(item);
+//					product_specs.add(dto);
+//				}
+//			} catch (Exception e) {
+//				System.out.println(e.getMessage());
+//			}
+//		}
 
-		// food
-		this.weight = entity.getWeight();
-		this.ingredients = entity.getIngredients();
-		this.expiredDate = entity.getExpiredDate();
-		this.manual = entity.getManual();
-		this.preserve = entity.getPreserve();
-
-		// electric
-		this.screen = entity.getScreen();
-		this.operatorSystem = entity.getOperatorSystem();
-		this.ram = entity.getRam();
-		this.pin = entity.getPin();
-		this.design = entity.getDesign();
-		this.sizeWeight = entity.getSizeWeight();
-		this.material = entity.getMaterial();
-		this.releaseTime = entity.getReleaseTime();
-
-		// phone
-		this.frontCamera = entity.getFrontCamera();
-		this.behindCamera = entity.getBehindCamera();
-		this.chip = entity.getChip();
-		this.internalMemory = entity.getInternalMemory();
-		this.sim = entity.getSim();
-
-		// laptop
-		this.cpu = entity.getCpu();
-		this.hardWare = entity.getHardWare();
-		this.card = entity.getCard();
-		this.special = entity.getSpecial();
 	}
 
 	public Integer getType() {
@@ -181,6 +184,14 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getSku() {
+		return sku;
+	}
+
+	public void setSku(String sku) {
+		this.sku = sku;
 	}
 
 	public String getSlug() {
@@ -215,24 +226,56 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 		this.images = images;
 	}
 
-	public CategoryDto getCategory() {
-		return category;
-	}
-
-	public void setCategory(CategoryDto category) {
-		this.category = category;
-	}
-
-	public SubCategoryDto getSubcategory() {
-		return subcategory;
-	}
-
-	public void setSubcategory(SubCategoryDto subcategory) {
-		this.subcategory = subcategory;
-	}
+//	public CategoryDto getCategory() {
+//		return category;
+//	}
+//
+//	public void setCategory(CategoryDto category) {
+//		this.category = category;
+//	}
+//
+//	public SubCategoryDto getSubcategory() {
+//		return subcategory;
+//	}
+//
+//	public void setSubcategory(SubCategoryDto subcategory) {
+//		this.subcategory = subcategory;
+//	}
 
 	public Integer getPublishingYear() {
 		return publishingYear;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public String getSubcategory() {
+		return subcategory;
+	}
+
+	public void setSubcategory(String subcategory) {
+		this.subcategory = subcategory;
+	}
+
+	public String getPublisher() {
+		return publisher;
+	}
+
+	public void setPublisher(String publisher) {
+		this.publisher = publisher;
+	}
+
+	public String getBrand() {
+		return brand;
+	}
+
+	public void setBrand(String brand) {
+		this.brand = brand;
 	}
 
 	public void setPublishingYear(Integer publishingYear) {
@@ -247,20 +290,12 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 		this.numberOfPages = numberOfPages;
 	}
 
-	public Set<AuthorDto> getAuthors() {
-		return authors;
+	public Set<String> getAuthorCodes() {
+		return authorCodes;
 	}
 
-	public void setAuthors(Set<AuthorDto> authors) {
-		this.authors = authors;
-	}
-
-	public PublisherDto getPublisher() {
-		return publisher;
-	}
-
-	public void setPublisher(PublisherDto publisher) {
-		this.publisher = publisher;
+	public void setAuthorCodes(Set<String> authorCodes) {
+		this.authorCodes = authorCodes;
 	}
 
 	public String getWeight() {
@@ -439,12 +474,12 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 		this.special = special;
 	}
 
-	public BrandDto getBrand() {
-		return brand;
+	public List<ProductInfoDto> getProductInfos() {
+		return productInfos;
 	}
 
-	public void setBrand(BrandDto brand) {
-		this.brand = brand;
+	public void setProductInfos(List<ProductInfoDto> productInfos) {
+		this.productInfos = productInfos;
 	}
 
 //	public Integer getQuantity() {
@@ -463,12 +498,12 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 //		this.colors = colors;
 //	}
 
-	public List<ProductDetailDto> getProduct_specs() {
-		return product_specs;
-	}
+//	public List<ProductDetailDto> getProduct_specs() {
+//		return product_specs;
+//	}
 
-	public void setProduct_specs(List<ProductDetailDto> product_specs) {
-		this.product_specs = product_specs;
-	}
+//	public void setProduct_specs(List<ProductDetailDto> product_specs) {
+//		this.product_specs = product_specs;
+//	}
 
 }
