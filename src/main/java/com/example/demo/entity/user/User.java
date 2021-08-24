@@ -17,7 +17,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.example.demo.entity.BaseEntity;
-import com.example.demo.entity.Comment;
 import com.example.demo.entity.order.Order;
 
 @Entity
@@ -43,10 +42,7 @@ public class User extends BaseEntity {
 	private FullName fullname = new FullName();
 
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Address address = new Address();
-
-//	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//	private List<Address> addresses = new ArrayList<>();
+	private ShipAddress address = new ShipAddress();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Order> orders = new ArrayList<>();
@@ -62,7 +58,7 @@ public class User extends BaseEntity {
 	}
 
 	public User(String phone, String email, String username, String password, String dateOfBirth, FullName fullname,
-			Address address) {
+			ShipAddress address) {
 		super();
 		this.phone = phone;
 		this.email = email;
@@ -135,11 +131,11 @@ public class User extends BaseEntity {
 		return roles;
 	}
 
-	public Address getAddress() {
+	public ShipAddress getAddress() {
 		return address;
 	}
 
-	public void setAddress(Address address) {
+	public void setAddress(ShipAddress address) {
 		this.address = address;
 	}
 

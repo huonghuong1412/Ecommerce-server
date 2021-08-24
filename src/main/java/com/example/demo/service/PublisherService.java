@@ -1,20 +1,19 @@
 package com.example.demo.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.to_entity.PublisherDto;
+import com.example.demo.dto.product.PublisherDto;
 
 @Service
 public interface PublisherService {
-	public List<PublisherDto> getAll();
+	public Page<PublisherDto> getList(Integer page, Integer limit, String sortBy);
 
 	public PublisherDto saveOrUpdate(PublisherDto dto);
-	
+
 	public PublisherDto getOne(Long id);
 
 	public Boolean delete(Long id);
-	
+
 	public Boolean checkCode(Long id, String code);
 }

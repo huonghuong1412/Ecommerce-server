@@ -20,27 +20,31 @@ import org.springframework.util.StringUtils;
 
 import com.example.demo.common.Slug;
 import com.example.demo.dto.SearchDto;
-import com.example.demo.dto.to_entity.ProductDto;
-import com.example.demo.dto.to_show.ProductDtoNew;
-import com.example.demo.dto.to_show.ProductListDto;
-import com.example.demo.entity.Category;
-import com.example.demo.entity.SubCategory;
+import com.example.demo.dto.product.ProductDto;
+import com.example.demo.dto.product.ProductDtoNew;
+import com.example.demo.dto.product.ProductListDto;
+import com.example.demo.entity.category.Category;
+import com.example.demo.entity.category.SubCategory;
+import com.example.demo.entity.category.Tag;
+import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.product.Author;
+import com.example.demo.entity.product.Book;
 import com.example.demo.entity.product.Brand;
-import com.example.demo.entity.product.Color;
 import com.example.demo.entity.product.Image;
 import com.example.demo.entity.product.Product;
-import com.example.demo.entity.product.ProductDetail;
 import com.example.demo.entity.product.Publisher;
+import com.example.demo.entity.product.Technology;
 import com.example.demo.repository.AuthorRepository;
+import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.BrandRepository;
 import com.example.demo.repository.CategoryRepository;
-import com.example.demo.repository.ColorRepository;
 import com.example.demo.repository.ImageRepository;
-import com.example.demo.repository.ProductDetailRepository;
+import com.example.demo.repository.InventoryRepository;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.PublisherRepository;
 import com.example.demo.repository.SubCategoryRepository;
+import com.example.demo.repository.TagRepository;
+import com.example.demo.repository.TechnologyRepository;
 import com.example.demo.service.ProductService;
 
 @Service
@@ -63,6 +67,9 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private SubCategoryRepository subcategoryRepos;
+	
+	@Autowired
+	private TagRepository tagRepos;
 
 	@Autowired
 	private ImageRepository imageRepos;
@@ -71,10 +78,13 @@ public class ProductServiceImpl implements ProductService {
 	private BrandRepository brandRepos;
 
 	@Autowired
-	private ProductDetailRepository productDetailRepos;
+	private BookRepository bookRepos;
 
 	@Autowired
-	private ColorRepository colorRepos;
+	private TechnologyRepository techRepos;
+	
+	@Autowired
+	private InventoryRepository inventoryRepos;
 
 	@Override
 	public Page<ProductDto> searchByPage(SearchDto dto) {
@@ -145,7 +155,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public ProductDtoNew getProductById(Long id) {
-		Product product = productRepos.getOne(id);
+		Product product = productRepos.getById(id);
 		ProductDtoNew dto = new ProductDtoNew(product);
 		return dto;
 	}
@@ -162,7 +172,7 @@ public class ProductServiceImpl implements ProductService {
 		String whereClause = "";
 		String orderBy = " ORDER BY entity.createdDate DESC";
 		String sqlCount = "select count(entity.id) from  Product as entity where (1=1) ";
-		String sql = "select new com.example.demo.dto.to_show.ProductListDto(entity) from  Product as entity where (1=1)  ";
+		String sql = "select new com.example.demo.dto.product.ProductListDto(entity) from  Product as entity where (1=1)  ";
 		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
 			whereClause += " AND ( entity.name LIKE :text OR entity.description LIKE :text )";
 		}
@@ -208,132 +218,20 @@ public class ProductServiceImpl implements ProductService {
 		return result;
 	}
 
-	@Override
-	public ProductDto importBook(ProductDto dto) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ProductDto importFood(ProductDto dto) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ProductDto importPhone(ProductDto dto) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ProductDto importLaptop(ProductDto dto) {
-		if (dto != null) {
-			Product entity = null;
-			Image image = null;
-			Category category = categoryRepos.findOneByCode(dto.getCategory());
-			SubCategory subcategory = subcategoryRepos.findOneByCode(dto.getSubcategory());
-			Publisher publisher = publisherRepos.findOneByCode(dto.getPublisher());
-			Brand brand = brandRepos.findOneByCode(dto.getBrand());
-			Color color = null;
-			ProductDetail productDetail = null;
-
-			// 1 - n product - image
-			List<String> imageUrls = dto.getImages();
-			List<Image> images = new ArrayList<>();
-
-//			List<ProductDetailDto> listProductColorDtos = dto.getProduct_specs();
-			List<ProductDetail> listProductColors = new ArrayList<>();
-
-			if (dto.getId() != null) {
-				entity = productRepos.getOne(dto.getId());
-				images = imageRepos.findAllByProductId(entity.getId());
-				listProductColors = productDetailRepos.findAllByProductId(entity.getId());
-//
-//				for (ProductDetail detail : listProductColors) {
-//					productDetailRepos.deleteByProductId(detail.getProduct().getId());
-//				}
-
-			}
-			if (entity == null) {
-				entity = new Product();
-
-				for (String imageUrl : imageUrls) {
-					image = new Image(imageUrl);
-					images.add(image);
-				}
-			}
-
-//			for (ProductDetailDto item : listProductColorDtos) {
-//				Integer quantityInStock = productDetailRepos.getQuantityByProductIdAndColorId(30L, 1L);
-//				color = colorRepos.findOneByColor(item.getColor().getColor());
-//				productDetail = new ProductDetail(entity, color, item.getQuantity());
-//				listProductColors.add(productDetail);
-//			}
-
-			entity.setType(dto.getType());
-			entity.setName(dto.getName());
-			entity.setSlug(Slug.makeSlug(dto.getName()));
-			entity.setDescription(dto.getDescription());
-			entity.setPrice(dto.getPrice());
-			entity.setCategory(category);
-			entity.setSubcategory(subcategory);
-
-			// electric
-			entity.setBrand(brand);
-			entity.setType(dto.getType());
-			entity.setScreen(dto.getScreen());
-			entity.setOperatorSystem(dto.getOperatorSystem());
-			entity.setRam(dto.getRam());
-			entity.setPin(dto.getPin());
-			entity.setDesign(dto.getDesign());
-			entity.setSizeWeight(dto.getSizeWeight());
-			entity.setMaterial(dto.getMaterial());
-			entity.setReleaseTime(dto.getReleaseTime());
-
-			// laptop
-			entity.setCard(dto.getCard());
-			entity.setCpu(dto.getCpu());
-			entity.setHardWare(dto.getHardWare());
-			entity.setSpecial(dto.getSpecial());
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-			entity.setImages(images);
-			for (Image item : images) {
-				item.setProduct(entity);
-			}
-
-//			for (ProductDetailDto item : listProductColorDtos) {
-//				color = colorRepos.findOneByColor(item.getColor().getColor());
-//				productDetail.setProduct(entity);
-//				productDetail.setColor(color);
-//			}
-
-			entity = productRepos.save(entity);
-
-			for (ProductDetail item : listProductColors) {
-				productDetail = productDetailRepos.save(item);
-			}
-
-			if (image != null) {
-				image = imageRepos.save(image);
-			}
-
-			if (entity != null) {
-				return new ProductDto(entity);
-			}
-		}
-		return null;
-	}
 
 	@Override
 	public ProductDto saveOrUpdate(ProductDto dto) {
 		if (dto != null) {
 
 			Product entity = null;
+			Book book = null;
+			Technology tech = null;
 			Author author = null;
 			Image image = null;
 			Publisher publisher = null;
-
+			Tag tag = null;
+			Inventory inventory = null;
+			
 			Category category = categoryRepos.findOneByCode(dto.getCategory());
 			SubCategory subcategory = subcategoryRepos.findOneByCode(dto.getSubcategory());
 			Brand brand = brandRepos.findOneByCode(dto.getBrand());
@@ -343,24 +241,37 @@ public class ProductServiceImpl implements ProductService {
 				authorCodes = dto.getAuthorCodes();
 			}
 			Set<Author> authors = new HashSet<>();
+			
+			List<String> tagCodes = dto.getTags();
+			List<Tag> tags = new ArrayList<Tag>();
 
 			// 1 - n product - image
 			List<String> imageUrls = dto.getImages();
 			List<Image> images = new ArrayList<>();
 
 			if (dto.getId() != null) {
-				entity = productRepos.getOne(dto.getId());
-//				images = imageRepos.findAllByProductId(entity.getId());
-//				if (entity.getType() == 1) {
-//					publisher = publisherRepos.findOneByCode(entity.getPublisher().getCode());
-//					authors = authorRepos.findAllByProducts(entity);
-//					for (Author authorTmp : authors) {
-//						author = authorTmp;
-//					}
-//				}
+				entity = productRepos.getById(dto.getId());
+				
+				switch (entity.getType()) {
+				case 1:
+					book = bookRepos.findOneByProduct(entity);
+					break;
+				case 2:
+					tech = techRepos.findOneByProduct(entity);
+					break;
+				default:
+					break;
+				}
 			}
 			if (entity == null) {
 				entity = new Product();
+				book = new Book();
+				tech = new Technology();
+				inventory = new Inventory();
+				inventory.setQuantity_item(0);
+				inventory.setTotal_import_item(0);
+				inventory.setCategory_code(category.getCode());
+				inventory.setProduct(entity);
 
 				for (String imageUrl : imageUrls) {
 					image = new Image(imageUrl);
@@ -370,13 +281,27 @@ public class ProductServiceImpl implements ProductService {
 
 			entity.setType(dto.getType());
 			entity.setName(dto.getName());
+			entity.setMainIamge(dto.getMainImage());
+			entity.setPrice(dto.getPrice());
+			entity.setList_price(dto.getList_price());
 			entity.setSku(dto.getSku());
 			entity.setSlug(Slug.makeSlug(dto.getName()));
 			entity.setDescription(dto.getDescription());
-			entity.setPrice(dto.getPrice());
+			
+			// price
+			
 			entity.setCategory(category);
 			entity.setSubcategory(subcategory);
 			entity.setBrand(brand);
+			
+			if(tagCodes != null) {
+				for(String tagCode : tagCodes) {
+					tag = tagRepos.getOneByCode(tagCode);
+					if(tag != null) {
+						tags.add(tag);
+					}
+				}
+			}
 
 			switch (dto.getType()) {
 			case 1:
@@ -388,52 +313,36 @@ public class ProductServiceImpl implements ProductService {
 						authors.add(author);
 					}
 				}
-				entity.setPublishingYear(dto.getPublishingYear());
-				entity.setNumberOfPages(dto.getNumberOfPages());
-				entity.setAuthors(authors);
-				entity.setPublisher(publisher);
+				book.setPublishingYear(dto.getPublishingYear());
+				book.setNumberOfPages(dto.getNumberOfPages());
+				book.setAuthors(authors);
+				book.setPublisher(publisher);
+				book.setProduct(entity);
 				break;
 			case 2:
-				// food
-				entity.setWeight(dto.getWeight());
-				entity.setPreserve(dto.getPreserve());
-				entity.setManual(dto.getManual());
-				entity.setIngredients(dto.getIngredients());
-				entity.setExpiredDate(dto.getExpiredDate());
-				break;
-			case 3:
 				// electric
-				entity.setScreen(dto.getScreen());
-				entity.setOperatorSystem(dto.getOperatorSystem());
-				entity.setRam(dto.getRam());
-				entity.setPin(dto.getPin());
-				entity.setDesign(dto.getDesign());
-				entity.setSizeWeight(dto.getSizeWeight());
-				entity.setMaterial(dto.getMaterial());
-				entity.setReleaseTime(dto.getReleaseTime());
+				tech.setScreen(dto.getScreen());
+				tech.setOperatorSystem(dto.getOperatorSystem());
+				tech.setRam(dto.getRam());
+				tech.setPin(dto.getPin());
+				tech.setDesign(dto.getDesign());
+				tech.setSizeWeight(dto.getSizeWeight());
+				tech.setMaterial(dto.getMaterial());
+				tech.setReleaseTime(dto.getReleaseTime());
 
 				// phone
-				entity.setBehindCamera(dto.getBehindCamera());
-				entity.setChip(dto.getChip());
-				entity.setFrontCamera(dto.getFrontCamera());
-				entity.setInternalMemory(dto.getInternalMemory());
-				entity.setSim(dto.getSim());
-				break;
-			case 4:
-				// electric
-				entity.setScreen(dto.getScreen());
-				entity.setOperatorSystem(dto.getOperatorSystem());
-				entity.setRam(dto.getRam());
-				entity.setPin(dto.getPin());
-				entity.setDesign(dto.getDesign());
-				entity.setSizeWeight(dto.getSizeWeight());
-				entity.setMaterial(dto.getMaterial());
-				entity.setReleaseTime(dto.getReleaseTime());
+				tech.setBehindCamera(dto.getBehindCamera());
+				tech.setChip(dto.getChip());
+				tech.setFrontCamera(dto.getFrontCamera());
+				tech.setInternalMemory(dto.getInternalMemory());
+				tech.setSim(dto.getSim());
 				// laptop
-				entity.setCard(dto.getCard());
-				entity.setCpu(dto.getCpu());
-				entity.setHardWare(dto.getHardWare());
-				entity.setSpecial(dto.getSpecial());
+				tech.setCard(dto.getCard());
+				tech.setCpu(dto.getCpu());
+				tech.setHardWare(dto.getHardWare());
+				tech.setSpecial(dto.getSpecial());
+
+				tech.setProduct(entity);
 				break;
 			default:
 				break;
@@ -441,22 +350,46 @@ public class ProductServiceImpl implements ProductService {
 
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 
+			entity.setTags(tags);
+			
 			entity.setImages(images);
 			for (Image item : images) {
 				item.setProduct(entity);
 			}
-
+			entity.setBook(book);
+			entity.setTechnology(tech);
 			entity = productRepos.save(entity);
+			switch (dto.getType()) {
+			case 1:
+				book = bookRepos.save(book);
+				break;
+			case 2:
+				tech = techRepos.save(tech);
+				break;
+			default:
+				break;
+			}
 
 			if (image != null) {
 				image = imageRepos.save(image);
 			}
-
+			
+			if(inventory != null) {
+				inventoryRepos.save(inventory);
+			}
+	
 			if (entity != null) {
 				return new ProductDto(entity);
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public ProductDto getDetailProduct(Long id) {
+		Product product = productRepos.getById(id);
+		ProductDto dto = new ProductDto(product);
+		return dto;
 	}
 
 }

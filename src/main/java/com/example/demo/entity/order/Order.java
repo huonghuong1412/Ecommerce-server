@@ -31,12 +31,15 @@ public class Order extends BaseEntity {
 	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
 	private Payment payment;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "shipment_id")
-	private Shipment shipment;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "shipment_id")
+//	private Shipment shipment;
 
 	@Column(name = "total_price")
-	private Double total_price;
+	private Long total_price;
+
+	@Column(name = "total_item")
+	private Integer total_item;
 
 	@Column(name = "order_info")
 	private String orderInfo;
@@ -45,7 +48,7 @@ public class Order extends BaseEntity {
 	private String address;
 
 	@Column(name = "user_name")
-	private String username;
+	private String user_fullname;
 
 	@Column(name = "phone")
 	private String phone;
@@ -57,32 +60,8 @@ public class Order extends BaseEntity {
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<OrderDetail> orderDetails = new ArrayList<>();
 
-	public Order(String create_time, User user, Double total_price, List<OrderDetail> orderDetails) {
-		this.create_time = create_time;
-		this.user = user;
-		this.total_price = total_price;
-		this.orderDetails = orderDetails;
-	}
-
-	public Order(String create_time, User user, Payment payment, Shipment shipment, Double total_price,
-			String orderInfo, String address, String username, String phone, Integer status,
-			List<OrderDetail> orderDetails) {
-		super();
-		this.create_time = create_time;
-		this.user = user;
-		this.payment = payment;
-		this.shipment = shipment;
-		this.total_price = total_price;
-		this.orderInfo = orderInfo;
-		this.address = address;
-		this.username = username;
-		this.phone = phone;
-		this.status = status;
-		this.orderDetails = orderDetails;
-	}
-
 	public Order() {
-
+		super();
 	}
 
 	public String getCreate_time() {
@@ -101,12 +80,20 @@ public class Order extends BaseEntity {
 		this.user = user;
 	}
 
-	public Double getTotal_price() {
+	public Long getTotal_price() {
 		return total_price;
 	}
 
-	public void setTotal_price(Double total_price) {
+	public void setTotal_price(Long total_price) {
 		this.total_price = total_price;
+	}
+
+	public Integer getTotal_item() {
+		return total_item;
+	}
+
+	public void setTotal_item(Integer total_item) {
+		this.total_item = total_item;
 	}
 
 	public List<OrderDetail> getOrderDetails() {
@@ -133,12 +120,12 @@ public class Order extends BaseEntity {
 		this.address = address;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getUser_fullname() {
+		return user_fullname;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUser_fullname(String user_fullname) {
+		this.user_fullname = user_fullname;
 	}
 
 	public String getPhone() {
@@ -165,12 +152,12 @@ public class Order extends BaseEntity {
 		this.payment = payment;
 	}
 
-	public Shipment getShipment() {
-		return shipment;
-	}
-
-	public void setShipment(Shipment shipment) {
-		this.shipment = shipment;
-	}
+//	public Shipment getShipment() {
+//		return shipment;
+//	}
+//
+//	public void setShipment(Shipment shipment) {
+//		this.shipment = shipment;
+//	}
 
 }

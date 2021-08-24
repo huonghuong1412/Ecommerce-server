@@ -1,16 +1,16 @@
 package com.example.demo.service.impl;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.example.demo.dto.to_entity.PaymentMethodDto;
-import com.example.demo.entity.order.Payment;
+import com.example.demo.dto.order.PaymentMethodDto;
 import com.example.demo.entity.order.PaymentMethod;
 import com.example.demo.repository.PaymentMethodRepository;
 import com.example.demo.service.PaymentMethodService;
@@ -22,14 +22,12 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 	private PaymentMethodRepository repos;
 	
 	@Override
-	public List<PaymentMethodDto> getAll() {
-		List<PaymentMethodDto> list = new ArrayList<PaymentMethodDto>();
-		List<PaymentMethod> entities = repos.findAll();
-		for(PaymentMethod method : entities) {
-			PaymentMethodDto dto = new PaymentMethodDto(method);
-			list.add(dto);
-		}
-		return list;
+	public Page<PaymentMethodDto> getList(Integer page, Integer limit, String sortBy) {
+		Page<PaymentMethod> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<PaymentMethodDto> dtos = list.map(tag -> new PaymentMethodDto(tag));
+
+		return dtos;
 	}
 
 	@Override
@@ -37,7 +35,7 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 		if (dto != null) {
 			PaymentMethod entity = null;
 			if (dto.getId() != null) {
-				entity = repos.getOne(dto.getId());
+				entity = repos.getById(dto.getId());
 			}
 			if (entity == null) {
 				entity = new PaymentMethod();
@@ -77,7 +75,7 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 	@Override
 	public PaymentMethodDto getOne(Long id) {
 		// TODO Auto-generated method stub
-		PaymentMethod entity = repos.getOne(id);
+		PaymentMethod entity = repos.getById(id);
 		PaymentMethodDto dto = new PaymentMethodDto(entity);
 		return dto;
 	}

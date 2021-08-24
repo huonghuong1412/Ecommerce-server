@@ -23,7 +23,7 @@ public class Publisher extends BaseEntity {
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL)
-	private Set<Product> products;
+	private Set<Book> products;
 
 	public Publisher() {
 		super();
@@ -38,7 +38,6 @@ public class Publisher extends BaseEntity {
 	public Publisher(String name, Set<Product> products) {
 		super();
 		this.name = name;
-		this.products = products;
 	}
 
 	public String getName() {
@@ -57,11 +56,11 @@ public class Publisher extends BaseEntity {
 		this.code = code;
 	}
 
-	public Set<Product> getProducts() {
+	public Set<Book> getProducts() {
 		return products;
 	}
 
-	public void setProducts(Set<Product> products) {
+	public void setProducts(Set<Book> products) {
 		this.products = products;
 	}
 

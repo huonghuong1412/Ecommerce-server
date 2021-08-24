@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.example.demo.dto.to_entity.CategoryDto;
-import com.example.demo.entity.Category;
-import com.example.demo.entity.SubCategory;
+import com.example.demo.dto.category.CategoryDto;
+import com.example.demo.entity.category.Category;
+import com.example.demo.entity.category.SubCategory;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.SubCategoryRepository;
 import com.example.demo.service.CategoryService;
@@ -47,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
 		if (dto != null) {
 			Category entity = null;
 			if (dto.getId() != null) {
-				entity = repos.getOne(dto.getId());
+				entity = repos.getById(dto.getId());
 			}
 			if (entity == null) {
 				entity = new Category();
@@ -101,7 +101,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public CategoryDto getOne(Long id) {
-		Category category = repos.getOne(id);
+		Category category = repos.getById(id);
 		CategoryDto dto = new CategoryDto(category);
 		return dto;
 	}

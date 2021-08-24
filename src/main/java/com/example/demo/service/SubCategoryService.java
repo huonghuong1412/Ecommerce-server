@@ -2,14 +2,15 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.to_entity.SubCategoryDto;
+import com.example.demo.dto.category.SubCategoryDto;
 
 @Service
 public interface SubCategoryService {
 	
-	public List<SubCategoryDto> getAllSubCategory();
+	public Page<SubCategoryDto> getList(Integer page, Integer limit, String sortBy);
 	
 	public List<SubCategoryDto> getSubCategoryByCategory(String categoryCode);
 	

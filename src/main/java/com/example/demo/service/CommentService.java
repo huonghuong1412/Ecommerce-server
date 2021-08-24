@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.SearchDto;
-import com.example.demo.dto.to_entity.CommentDto;
+import com.example.demo.dto.user.CommentDto;
 
 @Service
 public interface CommentService {

@@ -21,7 +21,7 @@ public class Author extends BaseEntity {
 	private String code;
 
 	@ManyToMany(mappedBy = "authors", cascade = CascadeType.ALL)
-	private List<Product> products;
+	private List<Book> books;
 
 	public Author() {
 		super();
@@ -36,7 +36,6 @@ public class Author extends BaseEntity {
 	public Author(String name, List<Product> products) {
 		super();
 		this.name = name;
-		this.products = products;
 	}
 
 	public String getName() {
@@ -55,12 +54,12 @@ public class Author extends BaseEntity {
 		this.code = code;
 	}
 
-	public List<Product> getProducts() {
-		return products;
+	public List<Book> getBooks() {
+		return books;
 	}
 
-	public void setProducts(List<Product> products) {
-		this.products = products;
+	public void setBooks(List<Book> books) {
+		this.books = books;
 	}
 
 }

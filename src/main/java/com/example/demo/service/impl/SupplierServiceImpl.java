@@ -1,16 +1,17 @@
 package com.example.demo.service.impl;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.example.demo.dto.to_entity.SupplierDto;
-import com.example.demo.entity.product.Supplier;
+import com.example.demo.dto.inventory.SupplierDto;
+import com.example.demo.entity.inventory.Supplier;
 import com.example.demo.repository.SupplierRepository;
 import com.example.demo.service.SupplierService;
 
@@ -21,14 +22,12 @@ public class SupplierServiceImpl implements SupplierService {
 	private SupplierRepository repos;
 
 	@Override
-	public List<SupplierDto> getAll() {
-		List<SupplierDto> list = new ArrayList<>();
-		List<Supplier> entities = repos.findAll();
-		for (Supplier entity : entities) {
-			SupplierDto dto = new SupplierDto(entity);
-			list.add(dto);
-		}
-		return list;
+	public Page<SupplierDto> getList(Integer page, Integer limit, String sortBy) {
+		Page<Supplier> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<SupplierDto> dtos = list.map(tag -> new SupplierDto(tag));
+
+		return dtos;
 	}
 
 	@Override
@@ -36,7 +35,7 @@ public class SupplierServiceImpl implements SupplierService {
 		if (dto != null) {
 			Supplier entity = null;
 			if (dto.getId() != null) {
-				entity = repos.getOne(dto.getId());
+				entity = repos.getById(dto.getId());
 			}
 			if (entity == null) {
 				entity = new Supplier();
@@ -78,7 +77,7 @@ public class SupplierServiceImpl implements SupplierService {
 
 	@Override
 	public SupplierDto getOne(Long id) {
-		Supplier entity = repos.getOne(id);
+		Supplier entity = repos.getById(id);
 		SupplierDto dto = new SupplierDto(entity);
 		return dto;
 	}

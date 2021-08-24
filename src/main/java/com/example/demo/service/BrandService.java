@@ -1,14 +1,13 @@
 package com.example.demo.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.to_entity.BrandDto;
+import com.example.demo.dto.product.BrandDto;
 
 @Service
 public interface BrandService {
-	public List<BrandDto> getAll();
+	public Page<BrandDto> getList(Integer page, Integer limit, String sortBy);
 
 	public BrandDto getOne(Long id);
 	

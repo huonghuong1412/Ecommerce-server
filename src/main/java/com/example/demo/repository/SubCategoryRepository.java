@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.example.demo.entity.SubCategory;
+import com.example.demo.entity.category.SubCategory;
 
 @Repository
 public interface SubCategoryRepository extends JpaRepository<SubCategory, Long> {

@@ -8,8 +8,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.to_entity.SlideDto;
-import com.example.demo.entity.Slide;
+import com.example.demo.dto.category.SlideDto;
+import com.example.demo.entity.category.Slide;
 import com.example.demo.repository.SlideRepository;
 import com.example.demo.service.SlideService;
 
@@ -35,7 +35,7 @@ public class SlideServiceImpl implements SlideService {
 		if (dto != null) {
 			Slide entity = null;
 			if (dto.getId() != null) {
-				entity = repos.getOne(dto.getId());
+				entity = repos.getById(dto.getId());
 			}
 			if (entity == null) {
 				entity = new Slide();

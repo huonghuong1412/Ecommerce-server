@@ -1,21 +1,20 @@
 package com.example.demo.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.to_entity.PaymentMethodDto;
+import com.example.demo.dto.order.PaymentMethodDto;
 
 @Service
 public interface PaymentMethodService {
-	
-	public List<PaymentMethodDto> getAll();
+
+	public Page<PaymentMethodDto> getList(Integer page, Integer limit, String sortBy);
 
 	public PaymentMethodDto saveOrUpdate(PaymentMethodDto dto);
-	
+
 	public PaymentMethodDto getOne(Long id);
 
 	public Boolean delete(Long id);
-	
+
 	public Boolean checkCode(Long id, String code);
 }

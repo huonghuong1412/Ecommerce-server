@@ -16,9 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.SearchDto;
-import com.example.demo.dto.to_entity.CommentDto;
-import com.example.demo.entity.Comment;
+import com.example.demo.dto.user.CommentDto;
 import com.example.demo.entity.product.Product;
+import com.example.demo.entity.user.Comment;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.ProductRepository;
@@ -49,7 +49,7 @@ public class CommentServiceImpl implements CommentService {
 				entity = new Comment();
 			}
 
-			Product product = productRepos.getOne(dto.getProductId());
+			Product product = productRepos.getById(dto.getProductId());
 			User user = userRepos.findOneByUsername(dto.getUsername());
 
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());

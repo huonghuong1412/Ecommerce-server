@@ -21,9 +21,6 @@ public class Payment extends BaseEntity {
 	@JoinColumn(name = "payment_method_id")
 	private PaymentMethod method;
 
-	@Column(name = "type")
-	private Integer type;
-
 	@Column(name = "bank_name")
 	private String bankName;
 
@@ -43,12 +40,11 @@ public class Payment extends BaseEntity {
 		super();
 	}
 
-	public Payment(Order order, PaymentMethod method, Integer type, String bankName, String datePayment,
+	public Payment(Order order, PaymentMethod method, String bankName, String datePayment,
 			String tradingCode, Integer status) {
 		super();
 		this.order = order;
 		this.method = method;
-		this.type = type;
 		this.bankName = bankName;
 		this.datePayment = datePayment;
 		this.tradingCode = tradingCode;
@@ -69,14 +65,6 @@ public class Payment extends BaseEntity {
 
 	public void setMethod(PaymentMethod method) {
 		this.method = method;
-	}
-
-	public Integer getType() {
-		return type;
-	}
-
-	public void setType(Integer type) {
-		this.type = type;
 	}
 
 	public String getBankName() {

@@ -12,7 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.example.demo.entity.BaseEntity;
-import com.example.demo.entity.Category;
+import com.example.demo.entity.category.Category;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity

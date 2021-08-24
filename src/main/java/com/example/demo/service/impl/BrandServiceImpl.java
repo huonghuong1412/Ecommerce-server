@@ -1,16 +1,17 @@
 package com.example.demo.service.impl;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.example.demo.dto.to_entity.BrandDto;
-import com.example.demo.entity.Category;
+import com.example.demo.dto.product.BrandDto;
+import com.example.demo.entity.category.Category;
 import com.example.demo.entity.product.Brand;
 import com.example.demo.repository.BrandRepository;
 import com.example.demo.repository.CategoryRepository;
@@ -21,29 +22,27 @@ public class BrandServiceImpl implements BrandService {
 
 	@Autowired
 	private BrandRepository repos;
-	
+
 	@Autowired
 	private CategoryRepository categoryRepository;
 
 	@Override
-	public List<BrandDto> getAll() {
-		List<BrandDto> list = new ArrayList<>();
-		List<Brand> entities = repos.findAll();
-		for (Brand entity : entities) {
-			BrandDto dto = new BrandDto(entity);
-			list.add(dto);
-		}
-		return list;
+	public Page<BrandDto> getList(Integer page, Integer limit, String sortBy) {
+		Page<Brand> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<BrandDto> dtos = list.map(tag -> new BrandDto(tag));
+
+		return dtos;
 	}
 
 	@Override
 	public BrandDto saveOrUpdate(BrandDto dto) {
 		if (dto != null) {
 			Category category = categoryRepository.findOneByCode(dto.getCategoryCode());
-			
+
 			Brand entity = null;
 			if (dto.getId() != null) {
-				entity = repos.getOne(dto.getId());
+				entity = repos.getById(dto.getId());
 			}
 			if (entity == null) {
 				entity = new Brand();
@@ -54,7 +53,6 @@ public class BrandServiceImpl implements BrandService {
 			entity.setMadeIn(dto.getMadeIn());
 			entity.setCategory(category);
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-			
 
 			entity = repos.save(entity);
 
@@ -85,7 +83,7 @@ public class BrandServiceImpl implements BrandService {
 
 	@Override
 	public BrandDto getOne(Long id) {
-		Brand brand = repos.getOne(id);
+		Brand brand = repos.getById(id);
 		BrandDto dto = new BrandDto(brand);
 		return dto;
 	}

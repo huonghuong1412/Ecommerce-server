@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.to_entity.CategoryDto;
+import com.example.demo.dto.category.CategoryDto;
 
 @Service
 public interface CategoryService {

@@ -1,15 +1,16 @@
 package com.example.demo.service.impl;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.example.demo.dto.to_entity.AuthorDto;
+import com.example.demo.dto.product.AuthorDto;
 import com.example.demo.entity.product.Author;
 import com.example.demo.repository.AuthorRepository;
 import com.example.demo.service.AuthorService;
@@ -21,14 +22,12 @@ public class AuthorServiceImpl implements AuthorService {
 	private AuthorRepository repos;
 
 	@Override
-	public List<AuthorDto> getAll() {
-		List<AuthorDto> list = new ArrayList<>();
-		List<Author> entities = repos.findAll();
-		for (Author entity : entities) {
-			AuthorDto dto = new AuthorDto(entity);
-			list.add(dto);
-		}
-		return list;
+	public Page<AuthorDto> getList(Integer page, Integer limit, String sortBy) {
+		Page<Author> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<AuthorDto> dtos = list.map(tag -> new AuthorDto(tag));
+
+		return dtos;
 	}
 
 	@Override
@@ -36,7 +35,7 @@ public class AuthorServiceImpl implements AuthorService {
 		if (dto != null) {
 			Author entity = null;
 			if (dto.getId() != null) {
-				entity = repos.getOne(dto.getId());
+				entity = repos.getById(dto.getId());
 			}
 			if (entity == null) {
 				entity = new Author();
@@ -75,7 +74,7 @@ public class AuthorServiceImpl implements AuthorService {
 
 	@Override
 	public AuthorDto getOne(Long id) {
-		Author author = repos.getOne(id);
+		Author author = repos.getById(id);
 		AuthorDto dto = new AuthorDto(author);
 		return dto;
 	}

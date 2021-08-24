@@ -1,14 +1,13 @@
 package com.example.demo.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.to_entity.AuthorDto;
+import com.example.demo.dto.product.AuthorDto;
 
 @Service
 public interface AuthorService {
-	public List<AuthorDto> getAll();
+	public Page<AuthorDto> getList(Integer page, Integer limit, String sortBy);;
 
 	public AuthorDto saveOrUpdate(AuthorDto dto);
 	

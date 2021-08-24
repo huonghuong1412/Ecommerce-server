@@ -8,8 +8,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.to_entity.UserAddressDto;
-import com.example.demo.entity.user.Address;
+import com.example.demo.dto.user.UserAddressDto;
+import com.example.demo.entity.user.ShipAddress;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.AddressRepository;
 import com.example.demo.repository.UserRepository;
@@ -27,15 +27,15 @@ public class AddressServiceImpl implements AddressService {
 	@Override
 	public UserAddressDto saveOrUpdate(UserAddressDto dto) {
 		if (dto != null) {
-			Address entity = null;
+			ShipAddress entity = null;
 
 			User user = userRepos.findOneByUsername(dto.getUsername());
 
 			if (dto.getId() != null) {
-				entity = addRepos.getOne(dto.getId());
+				entity = addRepos.getById(dto.getId());
 			}
 			if (entity == null) {
-				entity = new Address();
+				entity = new ShipAddress();
 			}
 
 			entity.setCity(dto.getCity());
@@ -69,8 +69,8 @@ public class AddressServiceImpl implements AddressService {
 	public List<UserAddressDto> getAllAddressByUser(String username) {
 		List<UserAddressDto> list = new ArrayList<>();
 		User user = userRepos.findOneByUsername(username);
-		List<Address> entities = addRepos.findAllByUser(user);
-		for (Address entity : entities) {
+		List<ShipAddress> entities = addRepos.findAllByUser(user);
+		for (ShipAddress entity : entities) {
 			UserAddressDto dto = new UserAddressDto(entity);
 			list.add(dto);
 		}

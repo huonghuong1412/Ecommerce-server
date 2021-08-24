@@ -6,12 +6,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.example.demo.dto.to_entity.SubCategoryDto;
-import com.example.demo.entity.Category;
-import com.example.demo.entity.SubCategory;
+import com.example.demo.dto.category.SubCategoryDto;
+import com.example.demo.entity.category.Category;
+import com.example.demo.entity.category.SubCategory;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.SubCategoryRepository;
 import com.example.demo.service.SubCategoryService;
@@ -26,15 +29,12 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 	private CategoryRepository categoryRepository;
 
 	@Override
-	public List<SubCategoryDto> getAllSubCategory() {
-		List<SubCategoryDto> list = new ArrayList<>();
-		List<SubCategory> entities = repos.findAll();
-		for (SubCategory entity : entities) {
-			SubCategoryDto dto = new SubCategoryDto(entity);
-			list.add(dto);
-		}
+	public Page<SubCategoryDto> getList(Integer page, Integer limit, String sortBy) {
+		Page<SubCategory> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
 
-		return list;
+		Page<SubCategoryDto> dtos = list.map(tag -> new SubCategoryDto(tag));
+
+		return dtos;
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 		if (dto != null) {
 			SubCategory entity = null;
 			if (dto.getId() != null) {
-				entity = repos.getOne(dto.getId());
+				entity = repos.getById(dto.getId());
 			}
 			if (entity == null) {
 				entity = new SubCategory();
@@ -98,7 +98,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 	@Override
 	public SubCategoryDto getOne(Long id) {
 		// TODO Auto-generated method stub
-		SubCategory entity = repos.getOne(id);
+		SubCategory entity = repos.getById(id);
 		SubCategoryDto dto = new SubCategoryDto(entity);
 		return dto;
 	}

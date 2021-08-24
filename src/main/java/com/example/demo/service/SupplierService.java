@@ -1,19 +1,18 @@
 package com.example.demo.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.to_entity.SupplierDto;
+import com.example.demo.dto.inventory.SupplierDto;
 
 @Service
 public interface SupplierService {
 
-	public List<SupplierDto> getAll();
+	public Page<SupplierDto> getList(Integer page, Integer limit, String sortBy);
 
 	public SupplierDto saveOrUpdate(SupplierDto dto);
-	
-	public SupplierDto getOne(Long id); 
+
+	public SupplierDto getOne(Long id);
 
 	public Boolean delete(Long id);
 
