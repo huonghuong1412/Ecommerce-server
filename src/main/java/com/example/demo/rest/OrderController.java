@@ -21,6 +21,7 @@ import com.example.demo.dto.auth.MessageResponse;
 import com.example.demo.dto.order.OrderDetailHisDto;
 import com.example.demo.dto.order.OrderDto;
 import com.example.demo.dto.order.OrderHisDto;
+import com.example.demo.dto.order.OrderHisFullDto;
 import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.order.Order;
 import com.example.demo.entity.order.OrderDetail;
@@ -63,6 +64,12 @@ public class OrderController {
 	public ResponseEntity<List<OrderDetailHisDto>> getDetail(@PathVariable Long id) {
 		List<OrderDetailHisDto> result = service.getDetailOrderById(id);
 		return new ResponseEntity<List<OrderDetailHisDto>>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping("/detail-full/{id}")
+	public ResponseEntity<OrderHisFullDto> getDetailFull(@PathVariable Long id) {
+		OrderHisFullDto result = service.getDetailOrder(id);
+		return new ResponseEntity<OrderHisFullDto>(result, HttpStatus.OK);
 	}
 
 	@GetMapping("/user")
@@ -126,7 +133,7 @@ public class OrderController {
 		Payment payment = paymentRepository.findOneByOrderId(order.getId());
 		
 		if (order.getStatus() == 1) {
-			return ResponseEntity.ok(new MessageResponse("Bạn đã nập nhật trạng thái đơn hàng này rồi!"));
+			return ResponseEntity.ok(new MessageResponse("Đơn hàng đang được giao!"));
 		} else if (order.getStatus() == -1) {
 			return ResponseEntity.ok(new MessageResponse("Đơn hàng này đã bị huỷ!"));
 		} else if (order.getStatus() == 2) {

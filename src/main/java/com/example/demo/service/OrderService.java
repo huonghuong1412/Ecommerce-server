@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.dto.order.OrderDetailHisDto;
 import com.example.demo.dto.order.OrderDto;
 import com.example.demo.dto.order.OrderHisDto;
+import com.example.demo.dto.order.OrderHisFullDto;
 
 @Service
 public interface OrderService {
@@ -18,6 +19,8 @@ public interface OrderService {
 	public List<OrderDetailHisDto> getDetailOrderById(Long id);
 	
 	public List<OrderHisDto> getAllOrderByUser(String username);
+	
+	public OrderHisFullDto getDetailOrder(Long id);
 	
 	public OrderDto createOrder(OrderDto dto);
 	

@@ -2,36 +2,30 @@ package com.example.demo.dto.order;
 
 import com.example.demo.entity.order.Order;
 
-public class OrderHisDto {
-	private Long id;
+public class OrderHisInfoDto {
+	
 	private String create_time;
 	private Long total_price;
 	private Integer total_item;
-//	private List<OrderDetailHisDto> order_details;
 	private String orderInfo;
 	private String address;
-	private String username;
-	private String user_fullname;
-	private String phone;
+	
 	private Integer status_order;
 	private String status_order_name;
 	private Integer status_payment;
 	private String status_payment_name;
 
-	public OrderHisDto() {
+	public OrderHisInfoDto() {
+		// TODO Auto-generated constructor stub
 	}
-
-	public OrderHisDto(Order entity) {
-		this.setId(entity.getId());
+	
+	public OrderHisInfoDto(Order entity) {
+		// TODO Auto-generated constructor stub
 		this.create_time = entity.getCreate_time();
 		this.total_price = entity.getTotal_price();
 		this.total_item = entity.getTotal_item();
 		this.orderInfo = entity.getOrderInfo();
 		this.address = entity.getAddress();
-		this.phone = entity.getPhone();
-		this.username = entity.getUser().getUsername();
-		this.user_fullname = entity.getUser().getFullname().getLastName() + " "
-				+ entity.getUser().getFullname().getFirstName();
 		this.status_order = entity.getStatus();
 		this.status_payment = entity.getPayment().getStatus();
 		switch (this.status_order) {
@@ -69,17 +63,16 @@ public class OrderHisDto {
 			this.status_payment_name = "Chưa thanh toán";
 			break;
 		}
-		
 	}
 
-	public Long getId() {
-		return id;
+	public String getAddress() {
+		return address;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setAddress(String address) {
+		this.address = address;
 	}
-
+	
 	public String getCreate_time() {
 		return create_time;
 	}
@@ -104,30 +97,6 @@ public class OrderHisDto {
 		this.total_item = total_item;
 	}
 
-	public Integer getStatus_order() {
-		return status_order;
-	}
-
-	public void setStatus_order(Integer status_order) {
-		this.status_order = status_order;
-	}
-
-	public Integer getStatus_payment() {
-		return status_payment;
-	}
-
-	public void setStatus_payment(Integer status_payment) {
-		this.status_payment = status_payment;
-	}
-
-	public String getUser_fullname() {
-		return user_fullname;
-	}
-
-	public void setUser_fullname(String user_fullname) {
-		this.user_fullname = user_fullname;
-	}
-
 	public String getOrderInfo() {
 		return orderInfo;
 	}
@@ -136,28 +105,12 @@ public class OrderHisDto {
 		this.orderInfo = orderInfo;
 	}
 
-	public String getAddress() {
-		return address;
+	public Integer getStatus_order() {
+		return status_order;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
+	public void setStatus_order(Integer status_order) {
+		this.status_order = status_order;
 	}
 
 	public String getStatus_order_name() {
@@ -168,6 +121,14 @@ public class OrderHisDto {
 		this.status_order_name = status_order_name;
 	}
 
+	public Integer getStatus_payment() {
+		return status_payment;
+	}
+
+	public void setStatus_payment(Integer status_payment) {
+		this.status_payment = status_payment;
+	}
+
 	public String getStatus_payment_name() {
 		return status_payment_name;
 	}
@@ -175,6 +136,7 @@ public class OrderHisDto {
 	public void setStatus_payment_name(String status_payment_name) {
 		this.status_payment_name = status_payment_name;
 	}
+	
 	
 
 }

@@ -1,12 +1,12 @@
 package com.example.demo.rest;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,21 +18,24 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.common.Erole;
 import com.example.demo.common.JwtUtils;
+import com.example.demo.dto.SearchDto;
 import com.example.demo.dto.auth.JwtResponse;
 import com.example.demo.dto.auth.LoginDto;
 import com.example.demo.dto.auth.MessageResponse;
 import com.example.demo.dto.auth.RegisterDto;
 import com.example.demo.dto.user.UserDto;
-import com.example.demo.entity.user.ShipAddress;
 import com.example.demo.entity.user.FullName;
 import com.example.demo.entity.user.Role;
+import com.example.demo.entity.user.ShipAddress;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
@@ -59,7 +62,7 @@ public class AuthController {
 
 	@Autowired
 	private JwtUtils jwtUtils;
-	
+
 	@Autowired
 	private UserService userService;
 
@@ -93,12 +96,12 @@ public class AuthController {
 		ShipAddress address = new ShipAddress();
 		FullName fullname = new FullName(dto.getFirstName(), dto.getLastName());
 
-		User user = new User(dto.getPhone(), dto.getEmail(), dto.getUsername(), encoder.encode(dto.getPassword()), dto.getDateOfBirth(),
-				fullname, address);
-		
+		User user = new User(dto.getPhone(), dto.getEmail(), dto.getUsername(), encoder.encode(dto.getPassword()),
+				dto.getDateOfBirth(), fullname, address);
+
 		address.setUser(user);
 		fullname.setUser(user);
-		
+
 		Set<String> strRoles = dto.getRole();
 		Set<Role> roles = new HashSet<>();
 
@@ -144,7 +147,7 @@ public class AuthController {
 		return ResponseEntity.ok(new MessageResponse("Đăng ký tài khoản thành công!"));
 
 	}
-	
+
 	@GetMapping("/info")
 	@PreAuthorize("hasRole('USER') or hasRole('STAFF') or hasRole('ADMIN')")
 	public ResponseEntity<UserDto> getNewById() {
@@ -153,18 +156,23 @@ public class AuthController {
 		UserDto result = userService.getCurrentUser(userDetails.getId());
 		return new ResponseEntity<UserDto>(result, HttpStatus.OK);
 	}
-	
-	
+
 	@GetMapping("/all/user")
 //	@PreAuthorize("hasRole('STAFF_BUSINESS') or hasRole('STAFF_SALE')")
-	public ResponseEntity<List<UserDto>> getAll() {
-		List<UserDto> dtos = new ArrayList<>();
-		List<User> users = userRepository.findAll();
-		for(User item : users) {
-			UserDto dto = new UserDto(item);
-			dtos.add(dto);
-		}
-		return new ResponseEntity<List<UserDto>>(dtos, HttpStatus.OK);
+	public ResponseEntity<Page<UserDto>> getList(@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "limit", defaultValue = "10") int limit,
+			@RequestParam(name = "keyword", defaultValue = "") String keyword) {
+		SearchDto dto = new SearchDto(page, limit, keyword);
+		Page<UserDto> result = userService.getList(dto);
+		return new ResponseEntity<Page<UserDto>>(result, HttpStatus.OK);
 	}
-	
+
+	@GetMapping("/customer/{id}")
+//	@PreAuthorize("hasRole('STAFF_BUSINESS') or hasRole('STAFF_SALE')")
+	public ResponseEntity<UserDto> getCustomerById(@PathVariable Long id) {
+		User user = userRepository.getById(id);
+		UserDto result = new UserDto(user);
+		return new ResponseEntity<UserDto>(result, HttpStatus.OK);
+	}
+
 }

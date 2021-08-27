@@ -1,7 +1,6 @@
 package com.example.demo.dto.user;
 
 import com.example.demo.dto.AbstractDTO;
-import com.example.demo.entity.user.ShipAddress;
 import com.example.demo.entity.user.User;
 
 public class UserDto extends AbstractDTO<UserDto> {
@@ -34,8 +33,8 @@ public class UserDto extends AbstractDTO<UserDto> {
 //		this.ward = user.getAddress().getWard();
 		this.address = new UserAddressDto();
 		if (address != null) {
-			ShipAddress add = user.getAddress();
-			this.address = new UserAddressDto(add);
+//			ShipAddress add = user.getAddress();
+			this.address = new UserAddressDto(user.getAddress());
 		}
 	}
 

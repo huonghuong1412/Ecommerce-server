@@ -44,6 +44,9 @@ public class User extends BaseEntity {
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private ShipAddress address = new ShipAddress();
 
+//	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//	private Store store = new Store();
+
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Order> orders = new ArrayList<>();
 
@@ -150,6 +153,14 @@ public class User extends BaseEntity {
 	public void setComments(List<Comment> comments) {
 		this.comments = comments;
 	}
+
+//	public Store getStore() {
+//		return store;
+//	}
+//
+//	public void setStore(Store store) {
+//		this.store = store;
+//	}
 
 	public List<Order> getOrders() {
 		return orders;

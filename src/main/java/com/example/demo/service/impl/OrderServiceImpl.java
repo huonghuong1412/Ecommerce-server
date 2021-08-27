@@ -14,6 +14,7 @@ import com.example.demo.dto.order.OrderDetailDto;
 import com.example.demo.dto.order.OrderDetailHisDto;
 import com.example.demo.dto.order.OrderDto;
 import com.example.demo.dto.order.OrderHisDto;
+import com.example.demo.dto.order.OrderHisFullDto;
 import com.example.demo.dto.order.PaymentDto;
 import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.order.Order;
@@ -68,7 +69,8 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public List<OrderHisDto> getAllOrderByUser(String username) {
 		User user = userRepository.findOneByUsername(username);
-		List<Order> result = orderRepository.getAllByUser(user);
+		List<Order> result = orderRepository.getAllByUser(user, Sort.by(Sort.Direction.DESC, "createdDate"));
+		
 		List<OrderHisDto> orderDtos = new ArrayList<>();
 		for (Order o : result) {
 			OrderHisDto dto = new OrderHisDto(o);
@@ -158,6 +160,17 @@ public class OrderServiceImpl implements OrderService {
 		}
 		
 		return dtos;
+	}
+
+	@Override
+	public OrderHisFullDto getDetailOrder(Long id) {
+		// TODO Auto-generated method stub
+		if(id != null) {
+			Order order = orderRepository.getById(id);
+			OrderHisFullDto dto = new OrderHisFullDto(order);
+			return dto;
+		}
+		return null;
 	}
 
 }

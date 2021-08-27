@@ -33,7 +33,7 @@ public class ProductController {
 
 	@GetMapping(value = "/search")
 	public ResponseEntity<Page<ProductListDto>> searchByPage(@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "limit", defaultValue = "10") int limit,
+			@RequestParam(name = "limit", defaultValue = "12") int limit,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword) {
 		SearchDto dto = new SearchDto(page, limit, keyword, null, null);
 		Page<ProductListDto> result = service.productList(dto);
@@ -43,7 +43,7 @@ public class ProductController {
 	@GetMapping(value = "/danh-muc/{category}", name = "getByCategory")
 	public ResponseEntity<Page<ProductListDto>> searchByPageCategory(
 			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "limit", defaultValue = "10") int limit,
+			@RequestParam(name = "limit", defaultValue = "2") int limit,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword, @PathVariable String category) {
 		SearchDto dto = new SearchDto(page, limit, keyword, category, null);
 		Page<ProductListDto> result = service.productList(dto);
@@ -53,7 +53,7 @@ public class ProductController {
 	@GetMapping(value = "/danh-muc/{category}/{subcategory}")
 	public ResponseEntity<Page<ProductListDto>> searchByPageSubCategory(
 			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "limit", defaultValue = "10") int limit,
+			@RequestParam(name = "limit", defaultValue = "2") int limit,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword, @PathVariable String category,
 			@PathVariable String subcategory) {
 		SearchDto dto = new SearchDto(page, limit, keyword, category, subcategory);
