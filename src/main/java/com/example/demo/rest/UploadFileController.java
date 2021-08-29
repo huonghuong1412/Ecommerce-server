@@ -24,8 +24,11 @@ public class UploadFileController {
 
 	@Value("${file-upload-dir}")
 	String FILE_DIRECTORY;
+	
+	@Value("${slide-file-upload-dir}")
+	String SLIDE_FILE_DIRECTORY;
 
-	@PostMapping("/image")
+	@PostMapping(value="/image/product")
 	public ResponseEntity<?> fileUpload(@RequestParam("File") MultipartFile[] multipartFile) throws IOException {
 
 		List<File> files = new ArrayList<File>();
@@ -43,6 +46,20 @@ public class UploadFileController {
 		}
 		fos.close();
 		return ResponseEntity.ok(new MessageResponse("Upload hình ảnh thành công!"));
+
+	}
+	
+	@PostMapping("/image/slide")
+	public ResponseEntity<?> imageSlidefileUpload(@RequestParam("File") MultipartFile multipartFile) throws IOException {
+
+		File file = new File(SLIDE_FILE_DIRECTORY +  multipartFile.getOriginalFilename());
+		FileOutputStream fos = null;
+		
+		file.createNewFile();
+		fos = new FileOutputStream(file);
+		fos.write(multipartFile.getBytes());
+		fos.close();
+		return ResponseEntity.ok(new MessageResponse("Upload hình ảnh slide thành công!"));
 
 	}
 

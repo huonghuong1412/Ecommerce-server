@@ -11,7 +11,7 @@ import com.example.demo.entity.BaseEntity;
 
 @Entity
 @Table(name = "tbl_address")
-public class ShipAddress extends BaseEntity {
+public class Address extends BaseEntity {
 
 	@Column(name = "city")
 	private String city;
@@ -30,10 +30,10 @@ public class ShipAddress extends BaseEntity {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	public ShipAddress() {
+	public Address() {
 	}
 
-	public ShipAddress(String city, String district, String ward, String house) {
+	public Address(String city, String district, String ward, String house) {
 		super();
 		this.city = city;
 		this.district = district;

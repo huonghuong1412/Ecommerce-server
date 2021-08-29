@@ -11,7 +11,6 @@ import com.example.demo.entity.order.Payment;
 public class OrderDto extends AbstractDTO<OrderDto> {
 	private String create_time;
 	private String username;
-	private Long user_id;
 	private Long total_price;
 	private Integer total_item;
 	private String orderInfo;
@@ -32,7 +31,6 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 		this.total_price = entity.getTotal_price();
 		this.total_item = entity.getTotal_item();
 		this.username = entity.getUser().getUsername();
-		this.user_id = entity.getUser().getId();
 		this.orderInfo = entity.getOrderInfo();
 		this.status_order = entity.getStatus();
 		this.status_payment = entity.getPayment().getStatus();
@@ -102,14 +100,6 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 
 	public void setAddress(String address) {
 		this.address = address;
-	}
-
-	public Long getUser_id() {
-		return user_id;
-	}
-
-	public void setUser_id(Long user_id) {
-		this.user_id = user_id;
 	}
 
 	public Long getTotal_price() {

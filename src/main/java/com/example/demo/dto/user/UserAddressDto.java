@@ -1,11 +1,12 @@
 package com.example.demo.dto.user;
 
 import com.example.demo.dto.AbstractDTO;
-import com.example.demo.entity.user.ShipAddress;
+import com.example.demo.entity.user.Address;
 
 public class UserAddressDto extends AbstractDTO<UserAddressDto> {
 
 	private String username;
+	private String phone;
 	private String city;
 	private String district;
 	private String ward;
@@ -15,9 +16,10 @@ public class UserAddressDto extends AbstractDTO<UserAddressDto> {
 		// TODO Auto-generated constructor stub
 	}
 
-	public UserAddressDto(ShipAddress entity) {
+	public UserAddressDto(Address entity) {
 		super();
 		this.setId(entity.getId());
+		this.phone = entity.getUser().getPhone();
 		this.username = entity.getUser().getUsername();
 		this.city = entity.getCity();
 		this.district = entity.getDistrict();
@@ -31,6 +33,14 @@ public class UserAddressDto extends AbstractDTO<UserAddressDto> {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 	public String getCity() {

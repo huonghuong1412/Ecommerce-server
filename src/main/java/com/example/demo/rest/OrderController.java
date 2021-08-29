@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import com.example.demo.dto.order.OrderDetailHisDto;
 import com.example.demo.dto.order.OrderDto;
 import com.example.demo.dto.order.OrderHisDto;
 import com.example.demo.dto.order.OrderHisFullDto;
+import com.example.demo.dto.order.PaymentDto;
 import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.order.Order;
 import com.example.demo.entity.order.OrderDetail;
@@ -48,7 +50,7 @@ public class OrderController {
 
 	@Autowired
 	private InventoryRepository inventoryRepos;
-	
+
 	@Autowired
 	private PaymentRepository paymentRepository;
 
@@ -59,13 +61,13 @@ public class OrderController {
 		Page<OrderHisDto> result = service.getAllOrder(page, limit, sortBy);
 		return new ResponseEntity<Page<OrderHisDto>>(result, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/detail/{id}")
 	public ResponseEntity<List<OrderDetailHisDto>> getDetail(@PathVariable Long id) {
 		List<OrderDetailHisDto> result = service.getDetailOrderById(id);
 		return new ResponseEntity<List<OrderDetailHisDto>>(result, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/detail-full/{id}")
 	public ResponseEntity<OrderHisFullDto> getDetailFull(@PathVariable Long id) {
 		OrderHisFullDto result = service.getDetailOrder(id);
@@ -73,6 +75,7 @@ public class OrderController {
 	}
 
 	@GetMapping("/user")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity<List<OrderHisDto>> getAllByUser(@RequestParam("username") String username) {
 
 		List<OrderHisDto> result = service.getAllOrderByUser(username);
@@ -81,12 +84,14 @@ public class OrderController {
 	}
 
 	@PostMapping("")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity<OrderDto> create(@Validated @RequestBody OrderDto dto) {
 		OrderDto result = service.createOrder(dto);
 		return new ResponseEntity<OrderDto>(result, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/checkCode")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity<Boolean> check(@RequestParam("tradingCode") String tradingCode) {
 		Boolean result = service.checkTradingCode(tradingCode);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
@@ -112,14 +117,14 @@ public class OrderController {
 //				}
 //			}
 		}
-		
+
 		if (order.getStatus() == -1) {
 			payment.setStatus(-1);
 		} else if (order.getStatus() == 2) {
 			payment.setStatus(1);
 		}
 		paymentRepository.save(payment);
-		
+
 		orderRepository.save(order);
 		return new ResponseEntity<MessageResponse>(new MessageResponse("Xác nhận đơn hàng thành công!"), HttpStatus.OK);
 //		return ResponseEntity.ok(new MessageResponse("Xác nhận đơn hàng thành công!"));
@@ -129,9 +134,9 @@ public class OrderController {
 	@PutMapping("/is-shipping/{id}")
 	public ResponseEntity<?> shipping(@PathVariable Long id) {
 		Order order = orderRepository.getById(id);
-		
+
 		Payment payment = paymentRepository.findOneByOrderId(order.getId());
-		
+
 		if (order.getStatus() == 1) {
 			return ResponseEntity.ok(new MessageResponse("Đơn hàng đang được giao!"));
 		} else if (order.getStatus() == -1) {
@@ -141,7 +146,7 @@ public class OrderController {
 		} else {
 			order.setStatus(1);
 		}
-		
+
 		if (order.getStatus() == -1) {
 			payment.setStatus(-1);
 		} else if (order.getStatus() == 2) {
@@ -154,10 +159,11 @@ public class OrderController {
 
 	// huỷ đơn hàng
 	@PutMapping("/cancel/{id}")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity<?> cancel(@PathVariable Long id) {
 		Order order = orderRepository.getById(id);
 		Payment payment = paymentRepository.findOneByOrderId(order.getId());
-		
+
 		if (order.getStatus() == -1) {
 			return ResponseEntity.ok(new MessageResponse("Bạn đã huỷ đơn hàng này rồi!"));
 		} else if (order.getStatus() == 2) {
@@ -175,18 +181,32 @@ public class OrderController {
 				}
 			}
 		}
-		
+
 //		if(order.getPayment().getStatus() == 0) {
 //			payment.setStatus(-1);
 //		} else if(order.getPayment().getStatus() == 1) {
 //			payment.setStatus(2);
 //		}
-		
+
 		payment.setStatus(-1);
 		paymentRepository.save(payment);
-		
+
 		orderRepository.save(order);
 		return ResponseEntity.ok(new MessageResponse("Huỷ đơn hàng thành công!"));
+	}
+
+	// Xác nhận thanh toán thành công
+	@PutMapping("/pay-success/{id}")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	public ResponseEntity<MessageResponse> paySuccess(@RequestBody PaymentDto dto, @PathVariable Long id) {
+		Order order = orderRepository.getById(id);
+		Payment payment = paymentRepository.findOneByOrderId(order.getId());
+		payment.setStatus(1);
+		payment.setBankName(dto.getBankName());
+		payment.setTradingCode(dto.getTradingCode());
+		paymentRepository.save(payment);
+		return new ResponseEntity<MessageResponse>(new MessageResponse("Đặt hàng thành công!"),
+				HttpStatus.OK);
 	}
 
 }

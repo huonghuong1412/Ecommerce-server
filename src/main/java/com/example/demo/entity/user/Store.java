@@ -1,22 +1,22 @@
 package com.example.demo.entity.user;
 
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import com.example.demo.entity.BaseEntity;
-import com.example.demo.entity.order.Order;
-import com.example.demo.entity.product.Product;
+//import java.util.List;
+//
+//import javax.persistence.Column;
+//import javax.persistence.Entity;
+//import javax.persistence.JoinColumn;
+//import javax.persistence.MapsId;
+//import javax.persistence.OneToMany;
+//import javax.persistence.OneToOne;
+//import javax.persistence.Table;
+//
+//import com.example.demo.entity.BaseEntity;
+//import com.example.demo.entity.order.Order;
+//import com.example.demo.entity.product.Product;
 
 //@Entity
 //@Table(name = "tbl_store")
-public class Store extends BaseEntity {
+//public class Store extends BaseEntity {
 
 //	@Column(name = "store_name")
 //	private String storeName;
@@ -134,4 +134,4 @@ public class Store extends BaseEntity {
 //		this.orders = orders;
 //	}
 
-}
+//}

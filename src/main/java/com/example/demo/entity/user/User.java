@@ -42,7 +42,7 @@ public class User extends BaseEntity {
 	private FullName fullname = new FullName();
 
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private ShipAddress address = new ShipAddress();
+	private Address address = new Address();
 
 //	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //	private Store store = new Store();
@@ -61,7 +61,7 @@ public class User extends BaseEntity {
 	}
 
 	public User(String phone, String email, String username, String password, String dateOfBirth, FullName fullname,
-			ShipAddress address) {
+			Address address) {
 		super();
 		this.phone = phone;
 		this.email = email;
@@ -134,11 +134,11 @@ public class User extends BaseEntity {
 		return roles;
 	}
 
-	public ShipAddress getAddress() {
+	public Address getAddress() {
 		return address;
 	}
 
-	public void setAddress(ShipAddress address) {
+	public void setAddress(Address address) {
 		this.address = address;
 	}
 

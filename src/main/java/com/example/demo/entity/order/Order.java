@@ -14,7 +14,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.example.demo.entity.BaseEntity;
-import com.example.demo.entity.user.Store;
 import com.example.demo.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 

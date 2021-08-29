@@ -12,10 +12,11 @@ public class RegisterDto extends AbstractDTO<RegisterDto> {
 	private String firstName;
 	private String lastName;
 	private String phone;
-//	private String city;
+	private String city;
 	private String dateOfBirth;
-//	private String district;
-//	private String ward;
+	private String district;
+	private String ward;
+	private String house;
 
 	private Set<String> role;
 
@@ -33,9 +34,10 @@ public class RegisterDto extends AbstractDTO<RegisterDto> {
 		this.firstName = entity.getFullname().getFirstName();
 		this.lastName = entity.getFullname().getLastName();
 		this.dateOfBirth = entity.getDateOfBirth();
-//		this.city = entity.getAddress().getCity();
-//		this.district = entity.getAddress().getDistrict();
-//		this.ward = entity.getAddress().getWard();
+		this.city = entity.getAddress().getCity();
+		this.district = entity.getAddress().getDistrict();
+		this.ward = entity.getAddress().getWard();
+		this.house = entity.getAddress().getHouse();
 	}
 
 	public String getUsername() {
@@ -102,28 +104,36 @@ public class RegisterDto extends AbstractDTO<RegisterDto> {
 		this.role = role;
 	}
 
-//	public String getCity() {
-//		return city;
-//	}
-//
-//	public void setCity(String city) {
-//		this.city = city;
-//	}
-//
-//	public String getDistrict() {
-//		return district;
-//	}
-//
-//	public void setDistrict(String district) {
-//		this.district = district;
-//	}
-//
-//	public String getWard() {
-//		return ward;
-//	}
-//
-//	public void setWard(String ward) {
-//		this.ward = ward;
-//	}
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public String getWard() {
+		return ward;
+	}
+
+	public void setWard(String ward) {
+		this.ward = ward;
+	}
+
+	public String getHouse() {
+		return house;
+	}
+
+	public void setHouse(String house) {
+		this.house = house;
+	}
 
 }

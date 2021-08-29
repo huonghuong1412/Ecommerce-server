@@ -22,7 +22,6 @@ import com.example.demo.entity.category.Tag;
 import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.order.OrderDetail;
 import com.example.demo.entity.user.Comment;
-import com.example.demo.entity.user.Store;
 
 @Entity
 @Table(name = "tbl_product")

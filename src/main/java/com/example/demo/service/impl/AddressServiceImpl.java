@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.user.UserAddressDto;
-import com.example.demo.entity.user.ShipAddress;
+import com.example.demo.entity.user.Address;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.AddressRepository;
 import com.example.demo.repository.UserRepository;
@@ -27,7 +27,7 @@ public class AddressServiceImpl implements AddressService {
 	@Override
 	public UserAddressDto saveOrUpdate(UserAddressDto dto) {
 		if (dto != null) {
-			ShipAddress entity = null;
+			Address entity = null;
 
 			User user = userRepos.findOneByUsername(dto.getUsername());
 
@@ -35,9 +35,10 @@ public class AddressServiceImpl implements AddressService {
 				entity = addRepos.getById(dto.getId());
 			}
 			if (entity == null) {
-				entity = new ShipAddress();
+				entity = new Address();
 			}
 
+			user.setPhone(dto.getPhone());
 			entity.setCity(dto.getCity());
 			entity.setDistrict(dto.getDistrict());
 			entity.setWard(dto.getWard());
@@ -48,6 +49,7 @@ public class AddressServiceImpl implements AddressService {
 			user.setAddress(entity);
 
 			entity = addRepos.save(entity);
+			userRepos.save(user);
 
 			if (entity != null) {
 				return new UserAddressDto(entity);
@@ -69,8 +71,8 @@ public class AddressServiceImpl implements AddressService {
 	public List<UserAddressDto> getAllAddressByUser(String username) {
 		List<UserAddressDto> list = new ArrayList<>();
 		User user = userRepos.findOneByUsername(username);
-		List<ShipAddress> entities = addRepos.findAllByUser(user);
-		for (ShipAddress entity : entities) {
+		List<Address> entities = addRepos.findAllByUser(user);
+		for (Address entity : entities) {
 			UserAddressDto dto = new UserAddressDto(entity);
 			list.add(dto);
 		}

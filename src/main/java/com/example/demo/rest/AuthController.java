@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,7 +36,7 @@ import com.example.demo.dto.auth.RegisterDto;
 import com.example.demo.dto.user.UserDto;
 import com.example.demo.entity.user.FullName;
 import com.example.demo.entity.user.Role;
-import com.example.demo.entity.user.ShipAddress;
+import com.example.demo.entity.user.Address;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
@@ -93,7 +94,7 @@ public class AuthController {
 			return ResponseEntity.badRequest().body(new MessageResponse("Email đã được đăng ký!"));
 		}
 
-		ShipAddress address = new ShipAddress();
+		Address address = new Address(dto.getCity(), dto.getDistrict(), dto.getWard(), dto.getHouse());
 		FullName fullname = new FullName(dto.getFirstName(), dto.getLastName());
 
 		User user = new User(dto.getPhone(), dto.getEmail(), dto.getUsername(), encoder.encode(dto.getPassword()),
@@ -117,22 +118,6 @@ public class AuthController {
 							.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
 					roles.add(adminRole);
 					break;
-				case "sale":
-					Role saleRole = roleRepository.findByName(Erole.ROLE_STAFF_SALE)
-							.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-					roles.add(saleRole);
-					break;
-				case "business":
-					Role businessRole = roleRepository.findByName(Erole.ROLE_STAFF_BUSINESS)
-							.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-					roles.add(businessRole);
-					break;
-				case "stock":
-					Role stockRole = roleRepository.findByName(Erole.ROLE_STAFF_STOCK)
-							.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-					roles.add(stockRole);
-					break;
-
 				default:
 					Role userRole = roleRepository.findByName(Erole.ROLE_USER)
 							.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
@@ -145,11 +130,60 @@ public class AuthController {
 		user.setRoles(roles);
 		userRepository.save(user);
 		return ResponseEntity.ok(new MessageResponse("Đăng ký tài khoản thành công!"));
+	}
+	
+	@PutMapping("/update-info/{username}")
+	public ResponseEntity<?> update(@Validated @RequestBody RegisterDto dto, @PathVariable String username) {
 
+		if (userRepository.existsByUsername(dto.getUsername())) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Tài khoản đã được đăng ký!"));
+		}
+
+		if (userRepository.existsByEmail(dto.getEmail())) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Email đã được đăng ký!"));
+		}
+		
+		User user = userRepository.findOneByUsername(username);
+
+		Address address = new Address(dto.getCity(), dto.getDistrict(), dto.getWard(), dto.getHouse());
+		FullName fullname = new FullName(dto.getFirstName(), dto.getLastName());
+
+		user = new User(dto.getPhone(), dto.getEmail(), dto.getUsername(), encoder.encode(dto.getPassword()),
+				dto.getDateOfBirth(), fullname, address);
+		address.setUser(user);
+		fullname.setUser(user);
+
+		Set<String> strRoles = dto.getRole();
+		Set<Role> roles = new HashSet<>();
+
+		if (strRoles == null) {
+			Role userRole = roleRepository.findByName(Erole.ROLE_USER)
+					.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+			roles.add(userRole);
+		} else {
+			strRoles.forEach(role -> {
+				switch (role) {
+				case "admin":
+					Role adminRole = roleRepository.findByName(Erole.ROLE_ADMIN)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+					roles.add(adminRole);
+					break;
+				default:
+					Role userRole = roleRepository.findByName(Erole.ROLE_USER)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+					roles.add(userRole);
+					break;
+				}
+			});
+		}
+
+		user.setRoles(roles);
+		userRepository.save(user);
+		return ResponseEntity.ok(new MessageResponse("Đăng ký tài khoản thành công!"));
 	}
 
 	@GetMapping("/info")
-	@PreAuthorize("hasRole('USER') or hasRole('STAFF') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity<UserDto> getNewById() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
