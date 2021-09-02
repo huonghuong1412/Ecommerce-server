@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,8 @@ public interface ProductService {
 
 	public Page<ProductDto> searchByPage(SearchDto dto);
 	public Page<ProductListDto> productList(SearchDto dto);
+	
+	public List<ProductListDto> getAllByBrand(Long productId, String brandCode);
 
 	public ProductDtoNew getProductById(Long id);
 	

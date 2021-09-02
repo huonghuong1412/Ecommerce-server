@@ -4,6 +4,12 @@ public class SearchDto {
 	private int pageIndex;
 	private int pageSize;
 	private String keyword;
+	private String sortBy; // name, price
+	private String sortValue; // asc, desc
+	private String tag; // tim theo tag
+	private String brand; // tim theo thuong hieu
+	private Long beginPrice;
+	private Long endPrice;
 	private String category;
 	private String subcategory;
 	private Long productId;
@@ -33,6 +39,54 @@ public class SearchDto {
 		this.keyword = keyword;
 		this.category = category;
 		this.subcategory = subcategory;
+	}
+
+	public String getSortBy() {
+		return sortBy;
+	}
+
+	public void setSortBy(String sortBy) {
+		this.sortBy = sortBy;
+	}
+
+	public String getSortValue() {
+		return sortValue;
+	}
+
+	public void setSortValue(String sortValue) {
+		this.sortValue = sortValue;
+	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+
+	public String getBrand() {
+		return brand;
+	}
+
+	public void setBrand(String brand) {
+		this.brand = brand;
+	}
+
+	public Long getBeginPrice() {
+		return beginPrice;
+	}
+
+	public void setBeginPrice(Long beginPrice) {
+		this.beginPrice = beginPrice;
+	}
+
+	public Long getEndPrice() {
+		return endPrice;
+	}
+
+	public void setEndPrice(Long endPrice) {
+		this.endPrice = endPrice;
 	}
 
 	public int getPageIndex() {

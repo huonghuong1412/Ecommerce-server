@@ -2,18 +2,22 @@ package com.example.demo.dto.user;
 
 import com.example.demo.dto.AbstractDTO;
 import com.example.demo.entity.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class UserDto extends AbstractDTO<UserDto> {
 	private String username;
 	private String email;
-	private String firstName;
-	private String lastName;
+	private String fullName;
 	private String phone;
 	private String dateOfBirth;
+
+	@JsonIgnore
 	private UserAddressDto address;
-//	private String city;
-//	private String district;
-//	private String ward;
+
+	private String city;
+	private String district;
+	private String ward;
+	private String house;
 
 	public UserDto() {
 		super();
@@ -24,8 +28,7 @@ public class UserDto extends AbstractDTO<UserDto> {
 		this.setId(user.getId());
 		this.username = user.getUsername();
 		this.email = user.getEmail();
-		this.firstName = user.getFullname().getFirstName();
-		this.lastName = user.getFullname().getLastName();
+		this.fullName = user.getFullname();
 		this.phone = user.getPhone();
 		this.dateOfBirth = user.getDateOfBirth();
 //		this.city = user.getAddress().getCity();
@@ -33,8 +36,11 @@ public class UserDto extends AbstractDTO<UserDto> {
 //		this.ward = user.getAddress().getWard();
 		this.address = new UserAddressDto();
 		if (address != null) {
-//			ShipAddress add = user.getAddress();
 			this.address = new UserAddressDto(user.getAddress());
+			this.city = this.address.getCity();
+			this.district = this.address.getDistrict();
+			this.ward = this.address.getWard();
+			this.house = this.address.getHouse();
 		}
 	}
 
@@ -62,20 +68,12 @@ public class UserDto extends AbstractDTO<UserDto> {
 		this.email = email;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getFullName() {
+		return fullName;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 
 	public String getPhone() {
@@ -94,27 +92,36 @@ public class UserDto extends AbstractDTO<UserDto> {
 		this.dateOfBirth = dateOfBirth;
 	}
 
-//	public String getCity() {
-//		return city;
-//	}
-//
-//	public void setCity(String city) {
-//		this.city = city;
-//	}
-//
-//	public String getDistrict() {
-//		return district;
-//	}
-//
-//	public void setDistrict(String district) {
-//		this.district = district;
-//	}
-//
-//	public String getWard() {
-//		return ward;
-//	}
-//
-//	public void setWard(String ward) {
-//		this.ward = ward;
-//	}
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public String getWard() {
+		return ward;
+	}
+
+	public void setWard(String ward) {
+		this.ward = ward;
+	}
+
+	public String getHouse() {
+		return house;
+	}
+
+	public void setHouse(String house) {
+		this.house = house;
+	}
+
 }

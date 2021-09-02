@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -170,7 +171,7 @@ public class ProductServiceImpl implements ProductService {
 			pageIndex = 0;
 
 		String whereClause = "";
-		String orderBy = " ORDER BY entity.createdDate DESC";
+		String orderBy = " ORDER BY entity." + dto.getSortBy() + " " + dto.getSortValue();
 		String sqlCount = "select count(entity.id) from  Product as entity where (1=1) ";
 		String sql = "select new com.example.demo.dto.product.ProductListDto(entity) from  Product as entity where (1=1)  ";
 		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
@@ -390,6 +391,22 @@ public class ProductServiceImpl implements ProductService {
 		Product product = productRepos.getById(id);
 		ProductDto dto = new ProductDto(product);
 		return dto;
+	}
+
+	@Override
+	public List<ProductListDto> getAllByBrand(Long productId, String brandCode) {
+		Brand brand = brandRepos.findOneByCode(brandCode);
+		Product product = productRepos.getById(productId);
+		List<Product> list = productRepos.findAllByBrand(brand, PageRequest.of(0, 4, Sort.by("id").descending()));
+		
+		List<ProductListDto> dtos = new ArrayList<>();
+		for(Product p : list) {
+			if(p.getId() != product.getId()) {
+				ProductListDto dto = new ProductListDto(p);
+				dtos.add(dto);
+			} 
+		}
+		return dtos;
 	}
 
 }

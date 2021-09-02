@@ -3,6 +3,8 @@ package com.example.demo.entity.tinhthanh;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -16,8 +18,11 @@ public class Ward {
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "districtid")
-	private String districtid;
+//	@Column(name = "districtid")
+//	private String districtid;
+	@ManyToOne
+	@JoinColumn(name = "districtid")
+	private District district;
 
 	public String getWardid() {
 		return wardid;
@@ -35,12 +40,12 @@ public class Ward {
 		this.name = name;
 	}
 
-	public String getDistrictid() {
-		return districtid;
+	public District getDistrict() {
+		return district;
 	}
 
-	public void setDistrictid(String districtid) {
-		this.districtid = districtid;
+	public void setDistrict(District district) {
+		this.district = district;
 	}
 
 }

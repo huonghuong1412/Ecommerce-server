@@ -43,7 +43,8 @@ public class TinhThanhServiceImpl implements TinhThanhService {
 	@Override
 	public List<DistrictDto> getAllDistrictByProvinceId(String id) {
 		List<DistrictDto> list = new ArrayList<>();
-		List<District> entities = districtRepos.findAllByProvinceid(id);
+		Province province = provinceRepos.findOneByProvinceid(id);
+		List<District> entities = districtRepos.findAllByProvince(province);
 		for (District entity : entities) {
 			DistrictDto dto = new DistrictDto(entity);
 			list.add(dto);
@@ -54,7 +55,8 @@ public class TinhThanhServiceImpl implements TinhThanhService {
 	@Override
 	public List<WardDto> getAllWardByDistrictId(String id) {
 		List<WardDto> list = new ArrayList<>();
-		List<Ward> entities = wardRepos.findAllByDistrictid(id);
+		District district = districtRepos.findOneByDistrictid(id);
+		List<Ward> entities = wardRepos.findAllByDistrict(district);
 		for (Ward entity : entities) {
 			WardDto dto = new WardDto(entity);
 			list.add(dto);

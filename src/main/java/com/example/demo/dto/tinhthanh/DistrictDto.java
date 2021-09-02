@@ -16,7 +16,7 @@ public class DistrictDto {
 		super();
 		this.districtid = entity.getDistrictid();
 		this.name = entity.getName();
-		this.provinceid = entity.getProvinceid();
+		this.provinceid = entity.getProvince().getProvinceid();
 	}
 
 	public String getDistrictid() {

@@ -20,8 +20,7 @@ public class OrderHisUserDto {
 
 		this.phone = entity.getPhone();
 		this.username = entity.getUser().getUsername();
-		this.user_fullname = entity.getUser().getFullname().getLastName() + " "
-				+ entity.getUser().getFullname().getFirstName();
+		this.user_fullname = entity.getUser().getFullname();
 	}
 
 	public String getUsername() {

@@ -1,5 +1,7 @@
 package com.example.demo.rest;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -33,9 +35,13 @@ public class ProductController {
 
 	@GetMapping(value = "/search")
 	public ResponseEntity<Page<ProductListDto>> searchByPage(@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "limit", defaultValue = "12") int limit,
-			@RequestParam(name = "keyword", defaultValue = "") String keyword) {
+			@RequestParam(name = "limit", defaultValue = "20") int limit,
+			@RequestParam(name = "keyword", defaultValue = "") String keyword, 
+			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy, 
+			@RequestParam(name = "sortValue", defaultValue = "DESC") String sortValue) {
 		SearchDto dto = new SearchDto(page, limit, keyword, null, null);
+		dto.setSortBy(sortBy);
+		dto.setSortValue(sortValue);
 		Page<ProductListDto> result = service.productList(dto);
 		return new ResponseEntity<Page<ProductListDto>>(result, HttpStatus.OK);
 	}
@@ -43,9 +49,13 @@ public class ProductController {
 	@GetMapping(value = "/danh-muc/{category}", name = "getByCategory")
 	public ResponseEntity<Page<ProductListDto>> searchByPageCategory(
 			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "limit", defaultValue = "2") int limit,
-			@RequestParam(name = "keyword", defaultValue = "") String keyword, @PathVariable String category) {
+			@RequestParam(name = "limit", defaultValue = "20") int limit,
+			@RequestParam(name = "keyword", defaultValue = "") String keyword, @PathVariable String category,
+			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy, 
+			@RequestParam(name = "sortValue", defaultValue = "DESC") String sortValue) {
 		SearchDto dto = new SearchDto(page, limit, keyword, category, null);
+		dto.setSortBy(sortBy);
+		dto.setSortValue(sortValue);
 		Page<ProductListDto> result = service.productList(dto);
 		return new ResponseEntity<Page<ProductListDto>>(result, HttpStatus.OK);
 	}
@@ -53,12 +63,23 @@ public class ProductController {
 	@GetMapping(value = "/danh-muc/{category}/{subcategory}")
 	public ResponseEntity<Page<ProductListDto>> searchByPageSubCategory(
 			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "limit", defaultValue = "2") int limit,
-			@RequestParam(name = "keyword", defaultValue = "") String keyword, @PathVariable String category,
+			@RequestParam(name = "limit", defaultValue = "20") int limit,
+			@RequestParam(name = "keyword", defaultValue = "") String keyword, 
+			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy, 
+			@RequestParam(name = "sortValue", defaultValue = "DESC") String sortValue,
+			@PathVariable String category,
 			@PathVariable String subcategory) {
 		SearchDto dto = new SearchDto(page, limit, keyword, category, subcategory);
+		dto.setSortBy(sortBy);
+		dto.setSortValue(sortValue);
 		Page<ProductListDto> result = service.productList(dto);
 		return new ResponseEntity<Page<ProductListDto>>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/brand")
+	public ResponseEntity<List<ProductListDto>> getProductListByBrand(@RequestParam Long productId, @RequestParam String brandCode) {
+		List<ProductListDto> result = service.getAllByBrand(productId, brandCode);
+		return new ResponseEntity<List<ProductListDto>>(result, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/san-pham/{id}", name = "getProductByID")

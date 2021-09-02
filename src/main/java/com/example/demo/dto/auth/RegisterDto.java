@@ -9,8 +9,7 @@ public class RegisterDto extends AbstractDTO<RegisterDto> {
 	private String username;
 	private String password;
 	private String email;
-	private String firstName;
-	private String lastName;
+	private String fullName;
 	private String phone;
 	private String city;
 	private String dateOfBirth;
@@ -31,8 +30,7 @@ public class RegisterDto extends AbstractDTO<RegisterDto> {
 		this.password = entity.getPassword();
 		this.phone = entity.getPhone();
 		this.email = entity.getEmail();
-		this.firstName = entity.getFullname().getFirstName();
-		this.lastName = entity.getFullname().getLastName();
+		this.fullName = entity.getFullname();
 		this.dateOfBirth = entity.getDateOfBirth();
 		this.city = entity.getAddress().getCity();
 		this.district = entity.getAddress().getDistrict();
@@ -80,20 +78,12 @@ public class RegisterDto extends AbstractDTO<RegisterDto> {
 		this.phone = phone;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getFullName() {
+		return fullName;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
 	}
 
 	public Set<String> getRole() {

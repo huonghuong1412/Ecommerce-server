@@ -30,8 +30,7 @@ public class OrderHisDto {
 		this.address = entity.getAddress();
 		this.phone = entity.getPhone();
 		this.username = entity.getUser().getUsername();
-		this.user_fullname = entity.getUser().getFullname().getLastName() + " "
-				+ entity.getUser().getFullname().getFirstName();
+		this.user_fullname = entity.getUser().getFullname();
 		this.status_order = entity.getStatus();
 		this.status_payment = entity.getPayment().getStatus();
 		switch (this.status_order) {

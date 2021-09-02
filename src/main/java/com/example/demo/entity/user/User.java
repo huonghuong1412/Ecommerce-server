@@ -34,12 +34,14 @@ public class User extends BaseEntity {
 
 	@Column(name = "password")
 	private String password;
+	
+	@Column(name = "fullname")
+	private String fullname;
 
 	@Column(name = "date_of_birth")
 	private String dateOfBirth;
 
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private FullName fullname = new FullName();
+	
 
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Address address = new Address();
@@ -60,7 +62,7 @@ public class User extends BaseEntity {
 	public User() {
 	}
 
-	public User(String phone, String email, String username, String password, String dateOfBirth, FullName fullname,
+	public User(String phone, String email, String username, String password, String dateOfBirth, String fullname,
 			Address address) {
 		super();
 		this.phone = phone;
@@ -72,7 +74,7 @@ public class User extends BaseEntity {
 		this.address = address;
 	}
 
-	public User(String phone, String email, String username, String password, String dateOfBirth, FullName fullname) {
+	public User(String phone, String email, String username, String password, String dateOfBirth, String fullname) {
 		super();
 		this.phone = phone;
 		this.email = email;
@@ -122,11 +124,11 @@ public class User extends BaseEntity {
 		this.dateOfBirth = dateOfBirth;
 	}
 
-	public FullName getFullname() {
+	public String getFullname() {
 		return fullname;
 	}
 
-	public void setFullname(FullName fullname) {
+	public void setFullname(String fullname) {
 		this.fullname = fullname;
 	}
 

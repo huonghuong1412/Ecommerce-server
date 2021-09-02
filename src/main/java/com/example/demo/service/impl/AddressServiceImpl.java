@@ -13,6 +13,9 @@ import com.example.demo.entity.user.Address;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.AddressRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.tinhthanh.DistrictRepository;
+import com.example.demo.repository.tinhthanh.ProvinceRepository;
+import com.example.demo.repository.tinhthanh.WardRepository;
 import com.example.demo.service.AddressService;
 
 @Service
@@ -20,6 +23,15 @@ public class AddressServiceImpl implements AddressService {
 
 	@Autowired
 	private AddressRepository addRepos;
+	
+	@Autowired
+	private ProvinceRepository provinceRepos;
+	
+	@Autowired
+	private DistrictRepository districtRepos;
+	
+	@Autowired
+	private WardRepository wardRepos;
 
 	@Autowired
 	private UserRepository userRepos;
@@ -39,9 +51,9 @@ public class AddressServiceImpl implements AddressService {
 			}
 
 			user.setPhone(dto.getPhone());
-			entity.setCity(dto.getCity());
-			entity.setDistrict(dto.getDistrict());
-			entity.setWard(dto.getWard());
+			entity.setCity(provinceRepos.findOneByProvinceid(dto.getCity()).getName());
+			entity.setDistrict(districtRepos.findOneByDistrictid(dto.getDistrict()).getName());
+			entity.setWard(wardRepos.findOneByWardid(dto.getWard()).getName());
 			entity.setHouse(dto.getHouse());
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			entity.setUser(user);

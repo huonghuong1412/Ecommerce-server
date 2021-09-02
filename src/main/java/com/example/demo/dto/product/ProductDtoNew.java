@@ -190,6 +190,7 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 			ImageDto dto = new ImageDto(image);
 			images.add(dto.getUrl());
 		}
+		images.add(0, this.mainImage);
 
 		this.tags = new ArrayList<TagDto>();
 		for (Tag tag : entity.getTags()) {

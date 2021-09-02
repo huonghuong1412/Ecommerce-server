@@ -34,9 +34,8 @@ import com.example.demo.dto.auth.LoginDto;
 import com.example.demo.dto.auth.MessageResponse;
 import com.example.demo.dto.auth.RegisterDto;
 import com.example.demo.dto.user.UserDto;
-import com.example.demo.entity.user.FullName;
-import com.example.demo.entity.user.Role;
 import com.example.demo.entity.user.Address;
+import com.example.demo.entity.user.Role;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
@@ -95,13 +94,11 @@ public class AuthController {
 		}
 
 		Address address = new Address(dto.getCity(), dto.getDistrict(), dto.getWard(), dto.getHouse());
-		FullName fullname = new FullName(dto.getFirstName(), dto.getLastName());
 
 		User user = new User(dto.getPhone(), dto.getEmail(), dto.getUsername(), encoder.encode(dto.getPassword()),
-				dto.getDateOfBirth(), fullname, address);
+				dto.getDateOfBirth(), dto.getFullName(), address);
 
 		address.setUser(user);
-		fullname.setUser(user);
 
 		Set<String> strRoles = dto.getRole();
 		Set<Role> roles = new HashSet<>();
@@ -146,12 +143,10 @@ public class AuthController {
 		User user = userRepository.findOneByUsername(username);
 
 		Address address = new Address(dto.getCity(), dto.getDistrict(), dto.getWard(), dto.getHouse());
-		FullName fullname = new FullName(dto.getFirstName(), dto.getLastName());
 
 		user = new User(dto.getPhone(), dto.getEmail(), dto.getUsername(), encoder.encode(dto.getPassword()),
-				dto.getDateOfBirth(), fullname, address);
+				dto.getDateOfBirth(), dto.getUsername(), address);
 		address.setUser(user);
-		fullname.setUser(user);
 
 		Set<String> strRoles = dto.getRole();
 		Set<Role> roles = new HashSet<>();

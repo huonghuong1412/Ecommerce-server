@@ -16,7 +16,7 @@ public class WardDto {
 		super();
 		this.wardid = entity.getWardid();
 		this.name = entity.getName();
-		this.districtid = entity.getDistrictid();
+		this.districtid = entity.getDistrict().getDistrictid();
 	}
 
 	public String getWardid() {
