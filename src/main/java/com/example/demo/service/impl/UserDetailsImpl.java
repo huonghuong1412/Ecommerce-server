@@ -1,14 +1,17 @@
 package com.example.demo.service.impl;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.example.demo.entity.user.Role;
 import com.example.demo.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -19,18 +22,21 @@ public class UserDetailsImpl implements UserDetails {
 	private Long id;
 	private String username;
 	private String email;
+	private Set<String> roles;
 
 	@JsonIgnore
 	private String password;
 
 	public Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImpl(Long id, String username, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+	public UserDetailsImpl(Long id, String username, String email, String password, Set<String> roles,
+			Collection<? extends GrantedAuthority> authorities) {
 		super();
 		this.id = id;
 		this.username = username;
 		this.email = email;
 		this.password = password;
+		this.roles = roles;
 		this.authorities = authorities;
 	}
 
@@ -38,7 +44,13 @@ public class UserDetailsImpl implements UserDetails {
 		List<GrantedAuthority> authorities = user.getRoles().stream()
 				.map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
 
-		return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), authorities);
+		Set<String> roleNames = new HashSet<>();
+		for(Role role : user.getRoles()) {
+			roleNames.add(role.getName().toString());
+		}
+		
+		return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(),
+				roleNames, authorities);
 	}
 
 	@Override
@@ -66,6 +78,14 @@ public class UserDetailsImpl implements UserDetails {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public Set<String> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<String> roles) {
+		this.roles = roles;
 	}
 
 	@Override

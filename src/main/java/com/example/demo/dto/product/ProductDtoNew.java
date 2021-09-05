@@ -75,12 +75,6 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 	@JsonInclude(value = Include.NON_NULL)
 	private BookDto book;
 
-//	@JsonInclude(value = Include.NON_NULL)
-//	private Integer publishingYear;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private Integer numberOfPages;
-
 	@JsonInclude(value = Include.NON_NULL)
 	private Set<AuthorDtoNew> authors;
 
@@ -90,60 +84,7 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 	// ---------------- Technology --------------
 	@JsonInclude(value = Include.NON_NULL)
 	private TechDto technology;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String screen;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String operatorSystem;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String ram;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String pin;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String design;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String sizeWeight;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String material;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String releaseTime;
-
-	// phone
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String frontCamera;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String behindCamera;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String chip;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String internalMemory;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String sim;
-
-	// laptop
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String cpu;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String hardWare;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String card;
-
-//	@JsonInclude(value = Include.NON_NULL)
-//	private String special;
-
+	
 	public ProductDtoNew() {
 		// TODO Auto-generated constructor stub
 	}
@@ -256,7 +197,6 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 			Brand brandEntity = entity.getBrand();
 			brand = new BrandDtoNew(brandEntity);
 		}
-
 	}
 
 	public Integer getType() {

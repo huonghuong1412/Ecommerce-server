@@ -1,18 +1,19 @@
-package com.example.demo.dto.product;
+package com.example.demo.dto.user;
 
 import com.example.demo.dto.AbstractDTO;
 import com.example.demo.dto.category.CategoryDtoNew;
 import com.example.demo.dto.category.SubcategoryDtoNew;
 import com.example.demo.entity.category.Category;
 import com.example.demo.entity.category.SubCategory;
-import com.example.demo.entity.product.Brand;
-import com.example.demo.entity.product.Product;
+import com.example.demo.entity.user.LikedProduct;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class ProductListDto extends AbstractDTO<ProductListDto> {
+public class LikedProductDto extends AbstractDTO<LikedProductDto> {
 
-	private Integer type;
+	private String username;
+	private Long productId;
+	private Long id;
 	private String name;
 	private String slug;
 	private Long price;
@@ -22,22 +23,20 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 	private String mainImage;
 	private CategoryDtoNew category;
 	private SubcategoryDtoNew subcategory;
-
-	@JsonInclude(value = Include.NON_NULL)
-	private BrandDtoNew brand;
-
-	public ProductListDto() {
+	public LikedProductDto() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ProductListDto(Product entity) {
-		super();
+	public LikedProductDto(LikedProduct entity) {
+		// TODO Auto-generated constructor stub
 		this.setId(entity.getId());
-		this.type = entity.getType();
-		this.name = entity.getName();
-		this.slug = entity.getSlug();
-		this.price = entity.getPrice();
-		this.list_price = entity.getList_price();
+		this.username = entity.getUser().getUsername();
+		this.productId = entity.getProduct().getId();
+		this.id = entity.getProduct().getId();
+		this.name = entity.getProduct().getName();
+		this.slug = entity.getProduct().getSlug();
+		this.price = entity.getProduct().getPrice();
+		this.list_price = entity.getProduct().getList_price();
 		if (this.price != null && this.list_price != null) {
 
 			Double percent = (this.list_price.doubleValue() - this.price.doubleValue()) / this.list_price.doubleValue()
@@ -47,30 +46,41 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 		} else {
 			this.percent_discount = null;
 		}
-		this.mainImage = entity.getMainIamge();
+		this.mainImage = entity.getProduct().getMainIamge();
 		category = new CategoryDtoNew();
 		if (category != null) {
-			Category item = entity.getCategory();
+			Category item = entity.getProduct().getCategory();
 			this.category = new CategoryDtoNew(item);
 		}
 		subcategory = new SubcategoryDtoNew();
 		if (subcategory != null) {
-			SubCategory item = entity.getSubcategory();
+			SubCategory item = entity.getProduct().getSubcategory();
 			this.subcategory = new SubcategoryDtoNew(item);
 		}
-
-		this.brand = new BrandDtoNew();
-		Brand brandEntity = entity.getBrand();
-		this.brand = new BrandDtoNew(brandEntity);
-
 	}
 
-	public Integer getType() {
-		return type;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setType(Integer type) {
-		this.type = type;
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public Long getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Long productId) {
+		this.productId = productId;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -135,14 +145,6 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 
 	public void setSubcategory(SubcategoryDtoNew subcategory) {
 		this.subcategory = subcategory;
-	}
-
-	public BrandDtoNew getBrand() {
-		return brand;
-	}
-
-	public void setBrand(BrandDtoNew brand) {
-		this.brand = brand;
 	}
 
 }
