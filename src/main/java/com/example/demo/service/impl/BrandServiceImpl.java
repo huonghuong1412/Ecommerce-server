@@ -88,4 +88,11 @@ public class BrandServiceImpl implements BrandService {
 		return dto;
 	}
 
+	@Override
+	public BrandDto getOneByCode(String code) {
+		Brand brand = repos.findOneByCode(code);
+		BrandDto dto = new BrandDto(brand);
+		return dto;
+	}
+
 }

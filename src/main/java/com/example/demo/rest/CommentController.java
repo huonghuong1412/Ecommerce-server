@@ -36,27 +36,23 @@ public class CommentController {
 		return new ResponseEntity<CommentDto>(result, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/search")
-	public ResponseEntity<Page<CommentDto>> getAllByProduct(@RequestParam(name = "product") Long productId,
-			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "limit", defaultValue = "10") int limit) {
-		SearchDto dto = new SearchDto(page, limit, productId);
-		Page<CommentDto> result = service.getAllCommentByProduct(dto);
-		return new ResponseEntity<Page<CommentDto>>(result, HttpStatus.OK);
+	@GetMapping(value = "/product/search")
+	public ResponseEntity<List<CommentDto>> getAllByProduct(@RequestParam Long productId) {
+		List<CommentDto> result = service.getAllCommentByProduct(productId);
+		return new ResponseEntity<List<CommentDto>>(result, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(value = "/user")
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity<List<CommentDto>> getAllByUser(@RequestParam(name = "username") String username) {
-		List<CommentDto>result = service.getAllCommentByUser(username);
+		List<CommentDto> result = service.getAllCommentByUser(username);
 		return new ResponseEntity<List<CommentDto>>(result, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(value = "/all")
 	public ResponseEntity<Page<CommentDto>> getAll(@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "limit", defaultValue = "10") int limit,
-			@RequestParam(name = "keyword", defaultValue = "") String keyword
-			) {
+			@RequestParam(name = "keyword", defaultValue = "") String keyword) {
 		SearchDto dto = new SearchDto(page, limit, keyword);
 		Page<CommentDto> result = service.getAllComments(dto);
 		return new ResponseEntity<Page<CommentDto>>(result, HttpStatus.OK);

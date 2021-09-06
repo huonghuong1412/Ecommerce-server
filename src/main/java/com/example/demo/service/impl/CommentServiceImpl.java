@@ -44,7 +44,7 @@ public class CommentServiceImpl implements CommentService {
 	public CommentDto createComment(CommentDto dto) {
 		if (dto != null) {
 			Comment entity = null;
-			
+
 			if (entity == null) {
 				entity = new Comment();
 			}
@@ -53,6 +53,7 @@ public class CommentServiceImpl implements CommentService {
 			User user = userRepos.findOneByUsername(dto.getUsername());
 
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
+			entity.setDate_comment(dto.getDate_comment());
 			entity.setContent(dto.getContent());
 			entity.setRating(dto.getRating());
 			entity.setDisplayName(dto.getDisplayName());
@@ -82,40 +83,16 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
-	public Page<CommentDto> getAllCommentByProduct(SearchDto dto) {
-		int pageIndex = dto.getPageIndex();
-		int pageSize = dto.getPageSize();
-		Long productId = dto.getProductId();
-		if (pageIndex > 0)
-			pageIndex -= 1;
-		else
-			pageIndex = 0;
-
-		String whereClause = "";
-		String orderBy = " ORDER BY entity.createdDate DESC";
-		String sqlCount = "select count(entity.id) from  Comment as entity where (1=1) ";
-		String sql = "select new com.example.demo.dto.CommentDto(entity) from  Comment as entity where (1=1)  ";
-		if (dto.getProductId() != null) {
-			whereClause += " AND entity.product.id = " + productId;
+	public List<CommentDto> getAllCommentByProduct(Long productId) {
+		List<CommentDto> list = new ArrayList<CommentDto>();
+		Product product = productRepos.getById(productId);
+		List<Comment> entities = repos.findAllByProduct(product);
+		for (Comment entity : entities) {
+			CommentDto dto = new CommentDto(entity);
+			list.add(dto);
 		}
 
-		sql += whereClause + orderBy;
-		sqlCount += whereClause;
-
-		Query q = manager.createQuery(sql, CommentDto.class);
-		Query qCount = manager.createQuery(sqlCount);
-
-		int startPosition = pageIndex * pageSize;
-		q.setFirstResult(startPosition);
-		q.setMaxResults(pageSize);
-
-		@SuppressWarnings("unchecked")
-		List<CommentDto> entities = q.getResultList();
-
-		long count = (long) qCount.getSingleResult();
-		Pageable pageable = PageRequest.of(pageIndex, pageSize);
-		Page<CommentDto> result = new PageImpl<CommentDto>(entities, pageable, count);
-		return result;
+		return list;
 	}
 
 	@Override

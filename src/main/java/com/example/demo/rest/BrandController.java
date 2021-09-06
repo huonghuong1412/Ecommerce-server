@@ -65,5 +65,11 @@ public class BrandController {
 		Boolean result = service.checkCode(id, code);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
 	}
+	
+	@GetMapping(value = "/get-one/{code}")
+	public ResponseEntity<BrandDto> getByCode(@PathVariable String code) {
+		BrandDto result = service.getOneByCode(code);
+		return new ResponseEntity<BrandDto>(result, HttpStatus.OK);
+	}
 
 }

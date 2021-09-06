@@ -11,6 +11,7 @@ public class CommentDto extends AbstractDTO<CommentDto> {
 	private Long productId;
 	private String displayName;
 	private String createdDate;
+	private String date_comment;
 
 	public CommentDto() {
 		super();
@@ -24,6 +25,7 @@ public class CommentDto extends AbstractDTO<CommentDto> {
 		this.username = entity.getUser().getUsername();
 		this.productId = entity.getProduct().getId();
 		this.createdDate = entity.getCreatedDate();
+		this.date_comment = entity.getDate_comment();
 	}
 
 	public String getDisplayName() {
@@ -72,6 +74,14 @@ public class CommentDto extends AbstractDTO<CommentDto> {
 
 	public void setCreatedDate(String createdDate) {
 		this.createdDate = createdDate;
+	}
+
+	public String getDate_comment() {
+		return date_comment;
+	}
+
+	public void setDate_comment(String date_comment) {
+		this.date_comment = date_comment;
 	}
 
 }

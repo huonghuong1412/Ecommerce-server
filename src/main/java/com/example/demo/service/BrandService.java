@@ -11,6 +11,8 @@ public interface BrandService {
 
 	public BrandDto getOne(Long id);
 	
+	public BrandDto getOneByCode(String code);
+	
 	public BrandDto saveOrUpdate(BrandDto dto);
 
 	public Boolean delete(Long id);

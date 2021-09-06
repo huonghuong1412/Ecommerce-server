@@ -68,7 +68,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private SubCategoryRepository subcategoryRepos;
-	
+
 	@Autowired
 	private TagRepository tagRepos;
 
@@ -83,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private TechnologyRepository techRepos;
-	
+
 	@Autowired
 	private InventoryRepository inventoryRepos;
 
@@ -219,7 +219,6 @@ public class ProductServiceImpl implements ProductService {
 		return result;
 	}
 
-
 	@Override
 	public ProductDto saveOrUpdate(ProductDto dto) {
 		if (dto != null) {
@@ -232,7 +231,7 @@ public class ProductServiceImpl implements ProductService {
 			Publisher publisher = null;
 			Tag tag = null;
 			Inventory inventory = null;
-			
+
 			Category category = categoryRepos.findOneByCode(dto.getCategory());
 			SubCategory subcategory = subcategoryRepos.findOneByCode(dto.getSubcategory());
 			Brand brand = brandRepos.findOneByCode(dto.getBrand());
@@ -242,7 +241,7 @@ public class ProductServiceImpl implements ProductService {
 				authorCodes = dto.getAuthorCodes();
 			}
 			Set<Author> authors = new HashSet<>();
-			
+
 			List<String> tagCodes = dto.getTags();
 			List<Tag> tags = new ArrayList<Tag>();
 
@@ -252,7 +251,7 @@ public class ProductServiceImpl implements ProductService {
 
 			if (dto.getId() != null) {
 				entity = productRepos.getById(dto.getId());
-				
+
 				switch (entity.getType()) {
 				case 1:
 					book = bookRepos.findOneByProduct(entity);
@@ -288,17 +287,17 @@ public class ProductServiceImpl implements ProductService {
 			entity.setSku(dto.getSku());
 			entity.setSlug(Slug.makeSlug(dto.getName()));
 			entity.setDescription(dto.getDescription());
-			
+
 			// price
-			
+
 			entity.setCategory(category);
 			entity.setSubcategory(subcategory);
 			entity.setBrand(brand);
-			
-			if(tagCodes != null) {
-				for(String tagCode : tagCodes) {
+
+			if (tagCodes != null) {
+				for (String tagCode : tagCodes) {
 					tag = tagRepos.getOneByCode(tagCode);
-					if(tag != null) {
+					if (tag != null) {
 						tags.add(tag);
 					}
 				}
@@ -352,7 +351,7 @@ public class ProductServiceImpl implements ProductService {
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 
 			entity.setTags(tags);
-			
+
 			entity.setImages(images);
 			for (Image item : images) {
 				item.setProduct(entity);
@@ -374,11 +373,11 @@ public class ProductServiceImpl implements ProductService {
 			if (image != null) {
 				image = imageRepos.save(image);
 			}
-			
-			if(inventory != null) {
+
+			if (inventory != null) {
 				inventoryRepos.save(inventory);
 			}
-	
+
 			if (entity != null) {
 				return new ProductDto(entity);
 			}
@@ -394,17 +393,30 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductListDto> getAllByBrand(Long productId, String brandCode) {
+	public List<ProductListDto> getAllByBrandAndNotExists(Long productId, String brandCode) {
 		Brand brand = brandRepos.findOneByCode(brandCode);
 		Product product = productRepos.getById(productId);
 		List<Product> list = productRepos.findAllByBrand(brand, PageRequest.of(0, 4, Sort.by("id").descending()));
-		
+
 		List<ProductListDto> dtos = new ArrayList<>();
-		for(Product p : list) {
-			if(p.getId() != product.getId()) {
+		for (Product p : list) {
+			if (p.getId() != product.getId()) {
 				ProductListDto dto = new ProductListDto(p);
 				dtos.add(dto);
-			} 
+			}
+		}
+		return dtos;
+	}
+
+	@Override
+	public List<ProductListDto> getAllByBrand(String brandCode) {
+		Brand brand = brandRepos.findOneByCode(brandCode);
+		List<Product> list = productRepos.findAllByBrand(brand, PageRequest.of(0, 4, Sort.by("id").descending()));
+
+		List<ProductListDto> dtos = new ArrayList<>();
+		for (Product p : list) {
+			ProductListDto dto = new ProductListDto(p);
+			dtos.add(dto);
 		}
 		return dtos;
 	}

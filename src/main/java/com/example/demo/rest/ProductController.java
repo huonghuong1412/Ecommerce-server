@@ -77,8 +77,14 @@ public class ProductController {
 	}
 	
 	@GetMapping(value = "/brand")
-	public ResponseEntity<List<ProductListDto>> getProductListByBrand(@RequestParam Long productId, @RequestParam String brandCode) {
-		List<ProductListDto> result = service.getAllByBrand(productId, brandCode);
+	public ResponseEntity<List<ProductListDto>> getProductListByBrandNotExists(@RequestParam Long productId, @RequestParam String brandCode) {
+		List<ProductListDto> result = service.getAllByBrandAndNotExists(productId, brandCode);
+		return new ResponseEntity<List<ProductListDto>>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/all/{brandCode}")
+	public ResponseEntity<List<ProductListDto>> getProductListByBrand(@PathVariable String brandCode) {
+		List<ProductListDto> result = service.getAllByBrand(brandCode);
 		return new ResponseEntity<List<ProductListDto>>(result, HttpStatus.OK);
 	}
 

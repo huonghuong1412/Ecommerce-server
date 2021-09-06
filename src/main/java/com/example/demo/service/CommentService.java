@@ -13,7 +13,7 @@ public interface CommentService {
 	
 	public CommentDto createComment(CommentDto dto);
 	
-	public Page<CommentDto> getAllCommentByProduct(SearchDto dto);
+	public List<CommentDto> getAllCommentByProduct(Long productId);
 	
 	public Page<CommentDto> getAllComments(SearchDto dto);
 	
