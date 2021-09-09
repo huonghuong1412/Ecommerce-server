@@ -32,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 		List<SubCategory> listSub = new ArrayList<>();
 
-		List<Category> entities = repos.findAll();
+		List<Category> entities = repos.getList();
 		for (Category entity : entities) {
 			SubCategory subDto = subRepos.findOneByCode(entity.getCode());
 			listSub.add(subDto);
@@ -56,7 +56,7 @@ public class CategoryServiceImpl implements CategoryService {
 			entity.setName(dto.getName());
 			entity.setCode(dto.getCode());
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-
+			entity.setDisplay(1);
 			entity = repos.save(entity);
 
 			if (entity != null) {
@@ -69,7 +69,9 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public Boolean deleteCategory(Long id) {
 		if (id != null) {
-			repos.deleteById(id);
+			Category entity = repos.getById(id);
+			entity.setDisplay(0);
+			entity = repos.save(entity);
 			return true;
 		}
 		return false;

@@ -23,7 +23,7 @@ public class AuthorServiceImpl implements AuthorService {
 
 	@Override
 	public Page<AuthorDto> getList(Integer page, Integer limit, String sortBy) {
-		Page<Author> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+		Page<Author> list = repos.getList(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
 
 		Page<AuthorDto> dtos = list.map(tag -> new AuthorDto(tag));
 
@@ -44,6 +44,7 @@ public class AuthorServiceImpl implements AuthorService {
 			entity.setName(dto.getName());
 			entity.setCode(dto.getCode());
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
+			entity.setDisplay(1);
 
 			entity = repos.save(entity);
 
@@ -57,7 +58,10 @@ public class AuthorServiceImpl implements AuthorService {
 	@Override
 	public Boolean delete(Long id) {
 		if (id != null) {
-			repos.deleteById(id);
+//			repos.deleteById(id);
+			Author entity = repos.getById(id);
+			entity.setDisplay(0);
+			entity = repos.save(entity);
 			return true;
 		}
 		return false;

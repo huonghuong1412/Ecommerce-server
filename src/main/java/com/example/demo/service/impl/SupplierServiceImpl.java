@@ -23,7 +23,7 @@ public class SupplierServiceImpl implements SupplierService {
 
 	@Override
 	public Page<SupplierDto> getList(Integer page, Integer limit, String sortBy) {
-		Page<Supplier> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+		Page<Supplier> list = repos.getList(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
 
 		Page<SupplierDto> dtos = list.map(tag -> new SupplierDto(tag));
 
@@ -47,7 +47,7 @@ public class SupplierServiceImpl implements SupplierService {
 			entity.setAddress(dto.getAddress());
 			entity.setPhone(dto.getPhone());
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-
+			entity.setDisplay(1);
 			entity = repos.save(entity);
 
 			if (entity != null) {
@@ -60,7 +60,9 @@ public class SupplierServiceImpl implements SupplierService {
 	@Override
 	public Boolean delete(Long id) {
 		if (id != null) {
-			repos.deleteById(id);
+			Supplier entity = repos.getById(id);
+			entity.setDisplay(0);
+			entity = repos.save(entity);
 			return true;
 		}
 		return false;

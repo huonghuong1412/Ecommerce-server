@@ -109,7 +109,7 @@ public class CommentServiceImpl implements CommentService {
 		String sqlCount = "select count(entity.id) from  Comment as entity where (1=1) ";
 		String sql = "select new com.example.demo.dto.CommentDto(entity) from  Comment as entity where (1=1)  ";
 		if (dto.getProductId() != null) {
-			whereClause += " AND ( entity.content LIKE :text )";
+			whereClause += "AND entity.display=1 AND ( entity.content LIKE :text )";
 		}
 
 		sql += whereClause + orderBy;

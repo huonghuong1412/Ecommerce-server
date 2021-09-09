@@ -21,6 +21,9 @@ public class Publisher extends BaseEntity {
 	@Column(name = "code")
 	private String code;
 
+	@Column(name = "display")
+	private Integer display; // 1 : show, 0: hidden
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL)
 	private Set<Book> products;
@@ -54,6 +57,14 @@ public class Publisher extends BaseEntity {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
 	}
 
 	public Set<Book> getProducts() {

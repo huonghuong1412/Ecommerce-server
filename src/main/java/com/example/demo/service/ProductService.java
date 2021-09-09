@@ -16,10 +16,9 @@ public interface ProductService {
 	public Page<ProductDto> searchByPage(SearchDto dto);
 	public Page<ProductListDto> productList(SearchDto dto);
 	
-	public List<ProductListDto> getAllByBrandAndNotExists(Long productId, String brandCode);
+	public List<ProductListDto> getAllByBrand(Long productId, String brandCode);
+	public Page<ProductListDto> getAllProductByBrand(String brandCode, Integer page, Integer limit, String sortBy);
 	
-	public List<ProductListDto> getAllByBrand(String brandCode);
-
 	public ProductDtoNew getProductById(Long id);
 	
 	public ProductDto getDetailProduct(Long id);

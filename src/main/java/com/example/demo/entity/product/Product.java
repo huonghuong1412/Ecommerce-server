@@ -51,6 +51,9 @@ public class Product extends BaseEntity {
 	@Column(name = "main_image")
 	private String mainIamge;
 
+	@Column(name = "display")
+	private Integer display; // 1 : show, 0: hidden
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "subcategory_id") // 1, 2, 3
 	private SubCategory subcategory;
@@ -181,6 +184,14 @@ public class Product extends BaseEntity {
 
 	public SubCategory getSubcategory() {
 		return subcategory;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
 	}
 
 	public void setSubcategory(SubCategory subcategory) {

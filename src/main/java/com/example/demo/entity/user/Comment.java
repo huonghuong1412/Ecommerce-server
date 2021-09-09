@@ -28,6 +28,9 @@ public class Comment extends BaseEntity {
 	@Column(name = "date_comment")
 	private String date_comment;
 
+	@Column(name = "display")
+	private Integer display; // 1 : show, 0: hidden
+
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
@@ -74,6 +77,14 @@ public class Comment extends BaseEntity {
 
 	public void setDate_comment(String date_comment) {
 		this.date_comment = date_comment;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
 	}
 
 	public User getUser() {

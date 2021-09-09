@@ -36,8 +36,8 @@ public class ProductController {
 	@GetMapping(value = "/search")
 	public ResponseEntity<Page<ProductListDto>> searchByPage(@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "limit", defaultValue = "20") int limit,
-			@RequestParam(name = "keyword", defaultValue = "") String keyword, 
-			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy, 
+			@RequestParam(name = "keyword", defaultValue = "") String keyword,
+			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
 			@RequestParam(name = "sortValue", defaultValue = "DESC") String sortValue) {
 		SearchDto dto = new SearchDto(page, limit, keyword, null, null);
 		dto.setSortBy(sortBy);
@@ -51,7 +51,7 @@ public class ProductController {
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "limit", defaultValue = "20") int limit,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword, @PathVariable String category,
-			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy, 
+			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
 			@RequestParam(name = "sortValue", defaultValue = "DESC") String sortValue) {
 		SearchDto dto = new SearchDto(page, limit, keyword, category, null);
 		dto.setSortBy(sortBy);
@@ -64,10 +64,9 @@ public class ProductController {
 	public ResponseEntity<Page<ProductListDto>> searchByPageSubCategory(
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "limit", defaultValue = "20") int limit,
-			@RequestParam(name = "keyword", defaultValue = "") String keyword, 
-			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy, 
-			@RequestParam(name = "sortValue", defaultValue = "DESC") String sortValue,
-			@PathVariable String category,
+			@RequestParam(name = "keyword", defaultValue = "") String keyword,
+			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
+			@RequestParam(name = "sortValue", defaultValue = "DESC") String sortValue, @PathVariable String category,
 			@PathVariable String subcategory) {
 		SearchDto dto = new SearchDto(page, limit, keyword, category, subcategory);
 		dto.setSortBy(sortBy);
@@ -75,17 +74,21 @@ public class ProductController {
 		Page<ProductListDto> result = service.productList(dto);
 		return new ResponseEntity<Page<ProductListDto>>(result, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(value = "/brand")
-	public ResponseEntity<List<ProductListDto>> getProductListByBrandNotExists(@RequestParam Long productId, @RequestParam String brandCode) {
-		List<ProductListDto> result = service.getAllByBrandAndNotExists(productId, brandCode);
+	public ResponseEntity<List<ProductListDto>> getProductListByBrandNotExists(@RequestParam Long productId,
+			@RequestParam String brandCode) {
+		List<ProductListDto> result = service.getAllByBrand(productId, brandCode);
 		return new ResponseEntity<List<ProductListDto>>(result, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(value = "/all/{brandCode}")
-	public ResponseEntity<List<ProductListDto>> getProductListByBrand(@PathVariable String brandCode) {
-		List<ProductListDto> result = service.getAllByBrand(brandCode);
-		return new ResponseEntity<List<ProductListDto>>(result, HttpStatus.OK);
+	public ResponseEntity<Page<ProductListDto>> getProductListByBrand(@PathVariable String brandCode,
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "20") Integer limit,
+			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy) {
+		Page<ProductListDto> result = service.getAllProductByBrand(brandCode, page, limit, sortBy);
+		return new ResponseEntity<Page<ProductListDto>>(result, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/san-pham/{id}", name = "getProductByID")
@@ -93,7 +96,7 @@ public class ProductController {
 		ProductDtoNew result = service.getProductById(id);
 		return new ResponseEntity<ProductDtoNew>(result, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(value = "/detail/{id}")
 	public ResponseEntity<ProductDto> getProductByIdToCreate(@PathVariable Long id) {
 		ProductDto result = service.getDetailProduct(id);

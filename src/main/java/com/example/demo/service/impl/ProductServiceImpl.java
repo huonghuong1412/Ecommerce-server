@@ -99,7 +99,7 @@ public class ProductServiceImpl implements ProductService {
 		String whereClause = "";
 		String orderBy = " ORDER BY entity.id DESC";
 		String sqlCount = "select count(entity.id) from  Product as entity where (1=1) ";
-		String sql = "select new com.example.demo.dto.product.ProductDto(entity) from  Product as entity where (1=1)  ";
+		String sql = "select new com.example.demo.dto.product.ProductDto(entity) from  Product as entity where entity.display=1 AND (1=1)  ";
 		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
 			whereClause += " AND ( entity.name LIKE :text OR entity.description LIKE :text )";
 		}
@@ -148,7 +148,10 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Boolean delete(Long id) {
 		if (id != null) {
-			productRepos.deleteById(id);
+//			productRepos.deleteById(id);
+			Product entity = productRepos.getById(id);
+			entity.setDisplay(0);
+			productRepos.save(entity);
 			return true;
 		}
 		return false;
@@ -173,7 +176,7 @@ public class ProductServiceImpl implements ProductService {
 		String whereClause = "";
 		String orderBy = " ORDER BY entity." + dto.getSortBy() + " " + dto.getSortValue();
 		String sqlCount = "select count(entity.id) from  Product as entity where (1=1) ";
-		String sql = "select new com.example.demo.dto.product.ProductListDto(entity) from  Product as entity where (1=1)  ";
+		String sql = "select new com.example.demo.dto.product.ProductListDto(entity) from  Product as entity where entity.display=1 AND (1=1)  ";
 		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
 			whereClause += " AND ( entity.name LIKE :text OR entity.description LIKE :text )";
 		}
@@ -287,7 +290,7 @@ public class ProductServiceImpl implements ProductService {
 			entity.setSku(dto.getSku());
 			entity.setSlug(Slug.makeSlug(dto.getName()));
 			entity.setDescription(dto.getDescription());
-
+			entity.setDisplay(1);
 			// price
 
 			entity.setCategory(category);
@@ -393,30 +396,24 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductListDto> getAllByBrandAndNotExists(Long productId, String brandCode) {
+	public Page<ProductListDto> getAllProductByBrand(String brandCode, Integer page, Integer limit, String sortBy) {
 		Brand brand = brandRepos.findOneByCode(brandCode);
-		Product product = productRepos.getById(productId);
-		List<Product> list = productRepos.findAllByBrand(brand, PageRequest.of(0, 4, Sort.by("id").descending()));
-
-		List<ProductListDto> dtos = new ArrayList<>();
-		for (Product p : list) {
-			if (p.getId() != product.getId()) {
-				ProductListDto dto = new ProductListDto(p);
-				dtos.add(dto);
-			}
-		}
-		return dtos;
+		Page<Product> list = productRepos.findAllByBrand(brand, PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+		Page<ProductListDto> dtoPage = list.map(item -> new ProductListDto(item));
+		return dtoPage;
 	}
 
 	@Override
-	public List<ProductListDto> getAllByBrand(String brandCode) {
+	public List<ProductListDto> getAllByBrand(Long productId, String brandCode) {
 		Brand brand = brandRepos.findOneByCode(brandCode);
-		List<Product> list = productRepos.findAllByBrand(brand, PageRequest.of(0, 4, Sort.by("id").descending()));
-
+		Page<Product> pages = productRepos.findAllByBrand(brand, PageRequest.of(0, 4, Sort.by("id").descending()));
+		List<Product> list =pages.getContent();
 		List<ProductListDto> dtos = new ArrayList<>();
 		for (Product p : list) {
-			ProductListDto dto = new ProductListDto(p);
-			dtos.add(dto);
+			if(productId != p.getId()) {
+				ProductListDto dto = new ProductListDto(p);
+				dtos.add(dto);
+			}
 		}
 		return dtos;
 	}

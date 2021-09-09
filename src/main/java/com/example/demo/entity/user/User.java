@@ -34,14 +34,15 @@ public class User extends BaseEntity {
 
 	@Column(name = "password")
 	private String password;
-	
+
 	@Column(name = "fullname")
 	private String fullname;
 
 	@Column(name = "date_of_birth")
 	private String dateOfBirth;
 
-	
+	@Column(name = "display")
+	private Integer display; // 1 : show, 0: hidden
 
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Address address = new Address();
@@ -130,6 +131,14 @@ public class User extends BaseEntity {
 
 	public void setFullname(String fullname) {
 		this.fullname = fullname;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
 	}
 
 	public Set<Role> getRoles() {

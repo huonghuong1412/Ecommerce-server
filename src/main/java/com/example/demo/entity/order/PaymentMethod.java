@@ -24,6 +24,9 @@ public class PaymentMethod extends BaseEntity {
 	@Column(name = "code")
 	private String code;
 
+	@Column(name = "display")
+	private Integer display; // 1 : show, 0: hidden
+
 	public PaymentMethod() {
 		super();
 	}
@@ -48,6 +51,14 @@ public class PaymentMethod extends BaseEntity {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
 	}
 
 	public List<Payment> getPayments() {

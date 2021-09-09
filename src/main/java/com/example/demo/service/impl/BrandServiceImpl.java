@@ -28,7 +28,7 @@ public class BrandServiceImpl implements BrandService {
 
 	@Override
 	public Page<BrandDto> getList(Integer page, Integer limit, String sortBy) {
-		Page<Brand> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+		Page<Brand> list = repos.getList(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
 
 		Page<BrandDto> dtos = list.map(tag -> new BrandDto(tag));
 
@@ -52,6 +52,7 @@ public class BrandServiceImpl implements BrandService {
 			entity.setCode(dto.getCode());
 			entity.setMadeIn(dto.getMadeIn());
 			entity.setCategory(category);
+			entity.setDisplay(1);
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 
 			entity = repos.save(entity);
@@ -66,7 +67,9 @@ public class BrandServiceImpl implements BrandService {
 	@Override
 	public Boolean delete(Long id) {
 		if (id != null) {
-			repos.deleteById(id);
+			Brand entity = repos.getById(id);
+			entity.setDisplay(0);
+			entity = repos.save(entity);
 			return true;
 		}
 		return false;

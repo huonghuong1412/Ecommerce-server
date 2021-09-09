@@ -26,6 +26,9 @@ public class SubCategory extends BaseEntity {
 	@Column(name = "code")
 	private String code;
 
+	@Column(name = "display")
+	private Integer display; // 1 : show, 0: hidden
+
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id")
@@ -48,6 +51,14 @@ public class SubCategory extends BaseEntity {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
 	}
 
 	public Category getCategory() {

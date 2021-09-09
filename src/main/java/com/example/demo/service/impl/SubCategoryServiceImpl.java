@@ -30,7 +30,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 
 	@Override
 	public Page<SubCategoryDto> getList(Integer page, Integer limit, String sortBy) {
-		Page<SubCategory> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+		Page<SubCategory> list = repos.getList(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
 
 		Page<SubCategoryDto> dtos = list.map(tag -> new SubCategoryDto(tag));
 
@@ -67,7 +67,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 			entity.setCode(dto.getCode());
 			entity.setCategory(category);
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-
+			entity.setDisplay(1);
 			entity = repos.save(entity);
 
 			if (entity != null) {
@@ -80,7 +80,9 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 	@Override
 	public Boolean deleteSubCategory(Long id) {
 		if (id != null) {
-			repos.deleteById(id);
+			SubCategory entity = repos.getById(id);
+			entity.setDisplay(0);
+			entity = repos.save(entity);
 			return true;
 		}
 		return false;

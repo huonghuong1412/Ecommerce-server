@@ -21,6 +21,9 @@ public class Tag extends BaseEntity {
 	@Column(name = "code")
 	private String code;
 
+	@Column(name = "display")
+	private Integer display; // 1 : show, 0: hidden
+
 	@ManyToMany(mappedBy = "tags", cascade = CascadeType.ALL)
 	private List<Product> products; // 1
 
@@ -47,6 +50,14 @@ public class Tag extends BaseEntity {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
 	}
 
 	public List<Product> getProducts() {

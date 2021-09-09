@@ -20,6 +20,9 @@ public class Author extends BaseEntity {
 	@Column(name = "code")
 	private String code;
 
+	@Column(name = "display")
+	private Integer display; // 1 : show, 0: hidden
+
 	@ManyToMany(mappedBy = "authors", cascade = CascadeType.ALL)
 	private List<Book> books;
 
@@ -52,6 +55,14 @@ public class Author extends BaseEntity {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
 	}
 
 	public List<Book> getBooks() {

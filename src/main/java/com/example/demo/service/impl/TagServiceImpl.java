@@ -24,7 +24,7 @@ public class TagServiceImpl implements TagService {
 
 	@Override
 	public Page<TagDto> getList(Integer page, Integer limit, String sortBy) {
-		Page<Tag> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+		Page<Tag> list = repos.getList(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
 
 		Page<TagDto> dtos = list.map(tag -> new TagDto(tag));
 
@@ -45,7 +45,7 @@ public class TagServiceImpl implements TagService {
 			entity.setName(dto.getName());
 			entity.setCode(Slug.makeCode(dto.getName()));
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-
+			entity.setDisplay(1);
 			entity = repos.save(entity);
 
 			if (entity != null) {
@@ -65,7 +65,9 @@ public class TagServiceImpl implements TagService {
 	@Override
 	public Boolean delete(Long id) {
 		if (id != null) {
-			repos.deleteById(id);
+			Tag entity = repos.getById(id);
+			entity.setDisplay(0);
+			entity = repos.save(entity);
 			return true;
 		}
 		return false;

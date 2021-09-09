@@ -25,6 +25,9 @@ public class Supplier extends BaseEntity {
 	@Column(name = "address")
 	private String address;
 
+	@Column(name = "display")
+	private Integer display; // 1 : show, 0: hidden
+
 	public Supplier() {
 		// TODO Auto-generated constructor stub
 	}
@@ -59,6 +62,14 @@ public class Supplier extends BaseEntity {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
 	}
 
 	public String getAddress() {

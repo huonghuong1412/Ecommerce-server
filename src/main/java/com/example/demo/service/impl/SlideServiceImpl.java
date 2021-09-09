@@ -43,7 +43,7 @@ public class SlideServiceImpl implements SlideService {
 
 			entity.setUrl(dto.getUrl());
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-
+			entity.setDisplay(1);
 			entity = repos.save(entity);
 
 			if (entity != null) {
@@ -56,7 +56,9 @@ public class SlideServiceImpl implements SlideService {
 	@Override
 	public Boolean delete(Long id) {
 		if (id != null) {
-			repos.deleteById(id);
+			Slide entity = repos.getById(id);
+			entity.setDisplay(0);
+			entity = repos.save(entity);
 			return true;
 		}
 		return false;

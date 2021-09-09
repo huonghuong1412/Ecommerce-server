@@ -20,6 +20,9 @@ public class Shipment extends BaseEntity {
 //
 //	@Column(name = "fee")
 //	private Double fee;
+	
+//	@Column(name = "display")
+//	private Integer display; // 1 : show, 0: hidden
 //
 //	public Shipment() {
 //		super();

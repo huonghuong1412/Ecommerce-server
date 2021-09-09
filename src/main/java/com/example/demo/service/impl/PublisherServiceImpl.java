@@ -23,7 +23,7 @@ public class PublisherServiceImpl implements PublisherService {
 
 	@Override
 	public Page<PublisherDto> getList(Integer page, Integer limit, String sortBy) {
-		Page<Publisher> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+		Page<Publisher> list = repos.getList(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
 
 		Page<PublisherDto> dtos = list.map(tag -> new PublisherDto(tag));
 
@@ -44,7 +44,7 @@ public class PublisherServiceImpl implements PublisherService {
 			entity.setName(dto.getName());
 			entity.setCode(dto.getCode());
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-
+			entity.setDisplay(1);
 			entity = repos.save(entity);
 
 			if (entity != null) {
@@ -57,7 +57,9 @@ public class PublisherServiceImpl implements PublisherService {
 	@Override
 	public Boolean delete(Long id) {
 		if (id != null) {
-			repos.deleteById(id);
+			Publisher entity = repos.getById(id);
+			entity.setDisplay(0);
+			entity = repos.save(entity);
 			return true;
 		}
 		return false;

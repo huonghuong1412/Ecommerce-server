@@ -13,6 +13,9 @@ public class Slide extends BaseEntity {
 	@Column(name = "url")
 	private String url;
 
+	@Column(name = "display")
+	private Integer display; // 1 : show, 0: hidden
+
 	public Slide() {
 		// TODO Auto-generated constructor stub
 	}
@@ -28,6 +31,14 @@ public class Slide extends BaseEntity {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
 	}
 
 }
