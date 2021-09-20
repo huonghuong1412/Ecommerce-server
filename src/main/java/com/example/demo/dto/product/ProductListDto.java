@@ -1,5 +1,6 @@
 package com.example.demo.dto.product;
 
+import com.example.demo.common.CalculateDiscount;
 import com.example.demo.dto.AbstractDTO;
 import com.example.demo.dto.category.CategoryDtoNew;
 import com.example.demo.dto.category.SubcategoryDtoNew;
@@ -17,14 +18,13 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 	private String slug;
 	private Long price;
 	private Long list_price;
-	@JsonInclude(value = Include.NON_NULL)
-	private Double percent_discount;
 	private String mainImage;
 	private CategoryDtoNew category;
 	private SubcategoryDtoNew subcategory;
-
 	@JsonInclude(value = Include.NON_NULL)
 	private BrandDtoNew brand;
+	
+	private Double percent_discount;
 
 	public ProductListDto() {
 		// TODO Auto-generated constructor stub
@@ -39,11 +39,7 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 		this.price = entity.getPrice();
 		this.list_price = entity.getList_price();
 		if (this.price != null && this.list_price != null) {
-
-			Double percent = (this.list_price.doubleValue() - this.price.doubleValue()) / this.list_price.doubleValue()
-					* 100;
-
-			this.percent_discount = (double) Math.round(percent * 10) / 10;
+			this.percent_discount = CalculateDiscount.countDiscount(this.price, this.list_price);
 		} else {
 			this.percent_discount = null;
 		}

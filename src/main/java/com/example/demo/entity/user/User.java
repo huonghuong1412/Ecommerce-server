@@ -17,6 +17,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.example.demo.entity.BaseEntity;
+import com.example.demo.entity.order.Cart;
 import com.example.demo.entity.order.Order;
 
 @Entity
@@ -49,6 +50,9 @@ public class User extends BaseEntity {
 
 //	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //	private Store store = new Store();
+
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Cart cart = new Cart();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Order> orders = new ArrayList<>();
@@ -117,20 +121,20 @@ public class User extends BaseEntity {
 		this.password = password;
 	}
 
-	public String getDateOfBirth() {
-		return dateOfBirth;
-	}
-
-	public void setDateOfBirth(String dateOfBirth) {
-		this.dateOfBirth = dateOfBirth;
-	}
-
 	public String getFullname() {
 		return fullname;
 	}
 
 	public void setFullname(String fullname) {
 		this.fullname = fullname;
+	}
+
+	public String getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+	public void setDateOfBirth(String dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
 	}
 
 	public Integer getDisplay() {
@@ -175,6 +179,14 @@ public class User extends BaseEntity {
 
 	public List<Order> getOrders() {
 		return orders;
+	}
+
+	public Cart getCart() {
+		return cart;
+	}
+
+	public void setCart(Cart cart) {
+		this.cart = cart;
 	}
 
 	public void setOrders(List<Order> orders) {

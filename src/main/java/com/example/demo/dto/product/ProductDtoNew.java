@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.example.demo.common.CalculateDiscount;
 import com.example.demo.dto.AbstractDTO;
 import com.example.demo.dto.category.CategoryDtoNew;
 import com.example.demo.dto.category.SubcategoryDtoNew;
@@ -101,11 +102,7 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 		this.list_price = entity.getList_price();
 
 		if (this.price != null && this.list_price != null) {
-
-			Double percent = (this.list_price.doubleValue() - this.price.doubleValue()) / this.list_price.doubleValue()
-					* 100;
-
-			this.percent_discount = (double) Math.round(percent * 10) / 10;
+			this.percent_discount = CalculateDiscount.countDiscount(this.price, this.list_price);
 		} else {
 			this.percent_discount = null;
 		}

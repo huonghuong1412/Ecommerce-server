@@ -1,22 +1,10 @@
 package com.example.demo.entity.user;
 
-//import java.util.List;
-//
-//import javax.persistence.Column;
-//import javax.persistence.Entity;
-//import javax.persistence.JoinColumn;
-//import javax.persistence.MapsId;
-//import javax.persistence.OneToMany;
-//import javax.persistence.OneToOne;
-//import javax.persistence.Table;
-//
-//import com.example.demo.entity.BaseEntity;
-//import com.example.demo.entity.order.Order;
-//import com.example.demo.entity.product.Product;
+import com.example.demo.entity.BaseEntity;
 
 //@Entity
 //@Table(name = "tbl_store")
-//public class Store extends BaseEntity {
+public class Store extends BaseEntity {
 
 //	@Column(name = "store_name")
 //	private String storeName;
@@ -40,13 +28,7 @@ package com.example.demo.entity.user;
 //	@MapsId
 //	@JoinColumn(name = "user_id")
 //	private User user;
-//
-//	@OneToMany(mappedBy = "store")
-//	private List<Product> products;
-//
-//	@OneToMany(mappedBy = "store")
-//	private List<Order> orders;
-//
+
 //	public Store() {
 //		// TODO Auto-generated constructor stub
 //	}
@@ -117,21 +99,5 @@ package com.example.demo.entity.user;
 //	public void setUser(User user) {
 //		this.user = user;
 //	}
-//
-//	public List<Product> getProducts() {
-//		return products;
-//	}
-//
-//	public void setProducts(List<Product> products) {
-//		this.products = products;
-//	}
-//
-//	public List<Order> getOrders() {
-//		return orders;
-//	}
-//
-//	public void setOrders(List<Order> orders) {
-//		this.orders = orders;
-//	}
 
-//}
+}
