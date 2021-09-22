@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dto.CartResponse;
 import com.example.demo.dto.order.CartDetailDto;
 import com.example.demo.dto.order.CartDto;
 import com.example.demo.entity.order.Cart;
@@ -36,10 +37,10 @@ public class CartServiceImpl implements CartService {
 	private ProductRepository productRepos;
 
 	@Override
-	public CartDto createCart(CartDto dto) {
+	public CartResponse createCart(CartDto dto) {
 		if (dto != null) {
 			Cart cart = null;
-			User user = userRepos.getById(dto.getUser_id());
+			User user = userRepos.findOneByUsername(dto.getUsername());
 			if (cartRepos.existsByUser(user)) {
 				List<CartDetailDto> cartDetailDtos = dto.getCart_details();
 				List<CartDetail> cartDetails = new ArrayList<>();
@@ -49,10 +50,18 @@ public class CartServiceImpl implements CartService {
 					CartDetail cartDetailEntity = null;
 					if (cartDetailRepos.existsByProductAndCart(product,cart)) {
 						cartDetailEntity = cartDetailRepos.getByProductAndCart(product, cart);
-						cartDetailEntity.setQuantity(item.getQuantity() + cartDetailEntity.getQuantity());
+						if(cartDetailEntity.getQuantity() + item.getQuantity() > product.getInventory().getQuantity_item()) {
+							return new CartResponse("Sản phẩm " + product.getName() + " chỉ còn lại " + product.getInventory().getQuantity_item() + " sản phẩm");
+						} else {
+							cartDetailEntity.setQuantity(item.getQuantity() + cartDetailEntity.getQuantity());
+						}
 					} else {
 						cartDetailEntity = new CartDetail();
-						cartDetailEntity.setQuantity(item.getQuantity());
+						if(item.getQuantity() > product.getInventory().getQuantity_item()) {
+							return new CartResponse("Sản phẩm " + product.getName() + " chỉ còn lại " + product.getInventory().getQuantity_item() + " sản phẩm");
+						} else {
+							cartDetailEntity.setQuantity(item.getQuantity());
+						}
 					}
 					cartDetailEntity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 					cartDetailEntity.setProduct(product);
@@ -68,7 +77,7 @@ public class CartServiceImpl implements CartService {
 				for (CartDetail item : cartDetails) {
 					cartDetailRepos.save(item);
 				}
-				return new CartDto(cart);
+				return new CartResponse("Thêm vào giỏ hàng thành công");
 			} else {
 				cart = new Cart();
 				List<CartDetailDto> cartDetailDtos = dto.getCart_details();
@@ -91,17 +100,17 @@ public class CartServiceImpl implements CartService {
 				for (CartDetail item : cartDetails) {
 					cartDetailRepos.save(item);
 				}
-				return new CartDto(cart);
+				return new CartResponse("Thêm vào giỏ hàng thành công");
 			}
 		}
 		return null;
 	}
 
 	@Override
-	public CartDto updateCart(CartDto dto) {
+	public CartResponse updateCart(CartDto dto) {
 		if (dto != null) {
 			Cart cart = null;
-			User user = userRepos.getById(dto.getUser_id());
+			User user = userRepos.findOneByUsername(dto.getUsername());
 			List<CartDetailDto> cartDetailDtos = dto.getCart_details();
 			List<CartDetail> cartDetails = new ArrayList<>();
 			cart = cartRepos.getOneByUser(user);
@@ -110,10 +119,24 @@ public class CartServiceImpl implements CartService {
 				CartDetail cartDetailEntity = null;
 				if (cartDetailRepos.existsByProductAndCart(product, cart)) {
 					cartDetailEntity = cartDetailRepos.getByProductAndCart(product, cart);
-					cartDetailEntity.setQuantity(item.getQuantity());
+//					cartDetailEntity.setQuantity(item.getQuantity());
+					if(product.getInventory().getQuantity_item() == 0) {
+						return new CartResponse("Sản phẩm " + product.getName() + " tạm hết hàng");
+					} else if(item.getQuantity() > product.getInventory().getQuantity_item()) {
+						return new CartResponse("Sản phẩm " + product.getName() + " chỉ còn lại " + product.getInventory().getQuantity_item() + " sản phẩm");
+					} else {
+						cartDetailEntity.setQuantity(item.getQuantity());
+					}
 				} else {
 					cartDetailEntity = new CartDetail();
-					cartDetailEntity.setQuantity(item.getQuantity());
+//					cartDetailEntity.setQuantity(item.getQuantity());
+					if(product.getInventory().getQuantity_item() == 0) {
+						return new CartResponse("Sản phẩm " + product.getName() + " tạm hết hàng");
+					} else if(item.getQuantity() > product.getInventory().getQuantity_item()) {
+						return new CartResponse("Sản phẩm " + product.getName() + " chỉ còn lại " + product.getInventory().getQuantity_item() + " sản phẩm");
+					} else {
+						cartDetailEntity.setQuantity(item.getQuantity());
+					}
 				}
 				cartDetailEntity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 				cartDetailEntity.setProduct(product);
@@ -129,16 +152,16 @@ public class CartServiceImpl implements CartService {
 			for (CartDetail item : cartDetails) {
 				cartDetailRepos.save(item);
 			}
-			return new CartDto(cart);
+			return new CartResponse("Cập nhất số lượng thành công");
 		}
 		return null;
 	}
 
 	@Override
-	public CartDto getCartByUser(Long user_id) {
+	public CartDto getCartByUser(String username) {
 		// TODO Auto-generated method stub
-		if (user_id != null) {
-			User user = userRepos.getById(user_id);
+		if (username != null) {
+			User user = userRepos.findOneByUsername(username);
 			Cart cart = cartRepos.getOneByUser(user);
 			CartDto dto = new CartDto(cart);
 			return dto;
@@ -153,9 +176,9 @@ public class CartServiceImpl implements CartService {
 	}
 
 	@Override
-	public Boolean deleteCartDetail(Long user_id, Long product_id) {
+	public CartResponse deleteCartDetail(String username, Long product_id) {
 		// TODO Auto-generated method stub
-		User user = userRepos.getById(user_id);
+		User user = userRepos.findOneByUsername(username);
 		Cart cart = cartRepos.getOneByUser(user);
 		List<CartDetail> cartDetails = cartDetailRepos.findAllByCart(cart);
 		for (CartDetail item : cartDetails) {
@@ -163,22 +186,22 @@ public class CartServiceImpl implements CartService {
 			if (item.getProduct().getId() == product_id) {
 				CartDetail detail = cartDetailRepos.getByProductAndCart(product, cart);
 				cartDetailRepos.delete(detail);
-				return true;
+				return new CartResponse("Xoá sản phẩm thành công!");
 			}
 		}
-		return false;
+		return new CartResponse("Xoá sản phẩm không thành công. Mời thực hiện lại.");
 	}
 
 	@Override
-	public Integer getQuantityItemByUser(Long user_id) {	// Số lượng sản phẩm trong giỏ hàng (tính theo đầu sản phẩm)
-		User user = userRepos.getById(user_id);
+	public Integer getQuantityItemByUser(String username) {	// Số lượng sản phẩm trong giỏ hàng (tính theo đầu sản phẩm)
+		User user = userRepos.findOneByUsername(username);
 		Cart cart = cartRepos.getOneByUser(user);
 		return cart.getCart_details().size();
 	}
 	
 	@Override
-	public Integer getQuantityProductByUser(Long user_id) {	// số lượng sản phẩm, tính theo quantity mỗi sản phẩm trong giỏ hàng
-		User user = userRepos.getById(user_id);
+	public Integer getQuantityProductByUser(String username) {	// số lượng sản phẩm, tính theo quantity mỗi sản phẩm trong giỏ hàng
+		User user = userRepos.findOneByUsername(username);
 		Cart cart = cartRepos.getOneByUser(user);
 		List<CartDetail> cartDetails = cartDetailRepos.findAllByCart(cart);
 		Integer quantity = 0;
@@ -186,6 +209,31 @@ public class CartServiceImpl implements CartService {
 			quantity += item.getQuantity();
 		}
 		return quantity;
+	}
+
+	@Override
+	public CartResponse checkItemQuantity(CartDto dto) {
+		if (dto != null) {
+			Cart cart = null;
+			User user = userRepos.findOneByUsername(dto.getUsername());
+			List<CartDetailDto> cartDetailDtos = dto.getCart_details();
+			cart = cartRepos.getOneByUser(user);
+			for (CartDetailDto item : cartDetailDtos) {
+				Product product = productRepos.getById(item.getProduct_id());
+				if (cartDetailRepos.existsByProductAndCart(product, cart)) {
+//					CartDetail cartDetailEntity = cartDetailRepos.getByProductAndCart(product, cart);
+					if(product.getInventory().getQuantity_item() == 0) {
+						return new CartResponse("Sản phẩm " + product.getName() + " tạm hết hàng");
+					} else if(item.getQuantity() > product.getInventory().getQuantity_item()) {
+						return new CartResponse("Sản phẩm " + product.getName() + " chỉ được mua " + product.getInventory().getQuantity_item() + " sản phẩm");
+					} else {
+						
+					}
+				}
+			}
+			return new CartResponse("SUCCESS");
+		}
+		return null;
 	}
 
 }

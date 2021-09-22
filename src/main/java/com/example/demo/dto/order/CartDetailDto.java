@@ -2,8 +2,12 @@ package com.example.demo.dto.order;
 
 import com.example.demo.dto.AbstractDTO;
 import com.example.demo.dto.category.CategoryDtoNew;
+import com.example.demo.dto.product.BrandDtoNew;
 import com.example.demo.entity.category.Category;
 import com.example.demo.entity.order.CartDetail;
+import com.example.demo.entity.product.Brand;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class CartDetailDto extends AbstractDTO<CartDetailDto> {
 
@@ -18,7 +22,11 @@ public class CartDetailDto extends AbstractDTO<CartDetailDto> {
 	private Long price;
 	private Long list_price;
 	private String mainImage;
+	@JsonInclude(value = Include.NON_NULL)
+	private Integer in_stock;
 	private CategoryDtoNew category;
+	@JsonInclude(value = Include.NON_NULL)
+	private BrandDtoNew brand;
 
 	public CartDetailDto() {
 		// TODO Auto-generated constructor stub
@@ -35,13 +43,18 @@ public class CartDetailDto extends AbstractDTO<CartDetailDto> {
 		this.slug = entity.getProduct().getSlug();
 		this.price = entity.getProduct().getPrice();
 		this.list_price = entity.getProduct().getList_price();
-
+		if (entity.getProduct().getInventory() != null) {
+			this.in_stock = entity.getProduct().getInventory().getQuantity_item();
+		}
 		this.mainImage = entity.getProduct().getMainIamge();
 		category = new CategoryDtoNew();
 		if (category != null) {
 			Category item = entity.getProduct().getCategory();
 			this.category = new CategoryDtoNew(item);
 		}
+		this.brand = new BrandDtoNew();
+		Brand brandEntity = entity.getProduct().getBrand();
+		this.brand = new BrandDtoNew(brandEntity);
 	}
 
 	public Long getCart_id() {
@@ -108,6 +121,14 @@ public class CartDetailDto extends AbstractDTO<CartDetailDto> {
 		this.list_price = list_price;
 	}
 
+	public Integer getIn_stock() {
+		return in_stock;
+	}
+
+	public void setIn_stock(Integer in_stock) {
+		this.in_stock = in_stock;
+	}
+
 	public String getMainImage() {
 		return mainImage;
 	}
@@ -122,6 +143,14 @@ public class CartDetailDto extends AbstractDTO<CartDetailDto> {
 
 	public void setCategory(CategoryDtoNew category) {
 		this.category = category;
+	}
+
+	public BrandDtoNew getBrand() {
+		return brand;
+	}
+
+	public void setBrand(BrandDtoNew brand) {
+		this.brand = brand;
 	}
 
 }

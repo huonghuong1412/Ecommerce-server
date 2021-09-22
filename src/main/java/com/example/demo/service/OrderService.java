@@ -25,5 +25,7 @@ public interface OrderService {
 	public OrderDto createOrder(OrderDto dto);
 	
 	public Boolean checkTradingCode(String tradingCode);
+	
+	public Integer getQuantityProductSeller(Long product_id);
 
 }

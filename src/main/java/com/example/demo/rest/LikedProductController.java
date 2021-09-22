@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,30 +29,38 @@ public class LikedProductController {
 	private LikedProductService service;
 
 	@GetMapping("/products")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-	public ResponseEntity<List<LikedProductDto>> getByUserAndProduct(@RequestParam String username) {
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ADMIN')")
+	public ResponseEntity<List<LikedProductDto>> getByUserAndProduct() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
 		List<LikedProductDto> result = service.getListByUser(username);
 		return new ResponseEntity<List<LikedProductDto>>(result, HttpStatus.OK);
 	}
 
 	@GetMapping("/product")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-	public ResponseEntity<Boolean> getOneByProduct(@RequestParam String username,
-			@RequestParam Long productId) {
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ADMIN')")
+	public ResponseEntity<Boolean> getOneByProduct(@RequestParam Long productId) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
 		Boolean result = service.getByUserAndProduct(username, productId);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
 	}
 
 	@PostMapping("/user")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ADMIN')")
 	public ResponseEntity<LikedProductDto> create(@RequestBody LikedProductDto dto) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
+		dto.setUsername(username);
 		LikedProductDto result = service.saveOrUpdate(dto);
 		return new ResponseEntity<LikedProductDto>(result, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/user")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-	public ResponseEntity<Boolean> delete(@RequestParam String username, @RequestParam Long productId) {
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ADMIN')")
+	public ResponseEntity<Boolean> delete(@RequestParam Long productId) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
 		Boolean result = service.delete(username, productId);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
 	}

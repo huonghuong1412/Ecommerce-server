@@ -3,6 +3,9 @@ package com.example.demo.rest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.CartResponse;
-import com.example.demo.dto.auth.MessageResponse;
 import com.example.demo.dto.order.CartDto;
 import com.example.demo.service.CartService;
 
@@ -28,37 +30,67 @@ public class CartController {
 
 	// get all info cart
 	@GetMapping("/items")
-	public ResponseEntity<CartDto> getCartDetail(@RequestParam Long user_id) {
-		CartDto result = service.getCartByUser(user_id);
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	public ResponseEntity<CartDto> getCartDetail() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
+		CartDto result = service.getCartByUser(username);
 		return new ResponseEntity<CartDto>(result, HttpStatus.OK);
 	}
 
 	// get quantity & total price cart
 	@GetMapping("/info")
-	public ResponseEntity<CartResponse> getCartInfo(@RequestParam Long user_id) {
-		Integer items_quantity = service.getQuantityProductByUser(user_id);
-		Integer items_count = service.getQuantityItemByUser(user_id);
-		return new ResponseEntity<CartResponse>(new CartResponse("SUCCESS", items_count, items_quantity), HttpStatus.OK);
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	public ResponseEntity<CartResponse> getCartInfo() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
+
+		Integer items_quantity = service.getQuantityProductByUser(username);
+		Integer items_count = service.getQuantityItemByUser(username);
+		return new ResponseEntity<CartResponse>(new CartResponse("SUCCESS", items_count, items_quantity),
+				HttpStatus.OK);
+	}
+
+	// get quantity & total price cart
+	@PostMapping("/items/check_quantity")
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	public ResponseEntity<CartResponse> checkQuantityItemInCart(@RequestBody CartDto dto) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
+		dto.setUsername(username);
+		CartResponse result = service.checkItemQuantity(dto);
+		return new ResponseEntity<CartResponse>(result, HttpStatus.OK);
 	}
 
 	@PostMapping("/items")
-	public ResponseEntity<MessageResponse> create(@RequestBody CartDto dto) {
-		service.createCart(dto);
-		return new ResponseEntity<MessageResponse>(new MessageResponse("Thêm vào giỏ hàng thành công!"), HttpStatus.OK);
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	public ResponseEntity<CartResponse> create(@RequestBody CartDto dto) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
+		dto.setUsername(username);
+		CartResponse result = service.createCart(dto);
+		return new ResponseEntity<CartResponse>(result, HttpStatus.OK);
 	}
 
 	// cartid/quantity
 	@PutMapping("/items/update")
-	public ResponseEntity<MessageResponse> updateQuantity(@RequestBody CartDto dto) {
-		service.updateCart(dto);
-		return new ResponseEntity<MessageResponse>(new MessageResponse("Thêm vào giỏ hàng thành công!"), HttpStatus.OK);
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	public ResponseEntity<CartResponse> updateQuantity(@RequestBody CartDto dto) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
+		dto.setUsername(username);
+		CartResponse result = service.updateCart(dto);
+		return new ResponseEntity<CartResponse>(result, HttpStatus.OK);
 	}
 
 	// cartid/quantity
 	@DeleteMapping("/items/remove")
-	public ResponseEntity<Boolean> deleteItem(@RequestParam Long user_id, @RequestParam Long product_id) {
-		Boolean result = service.deleteCartDetail(user_id, product_id);
-		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	public ResponseEntity<CartResponse> deleteItem(@RequestParam Long product_id) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
+		CartResponse result = service.deleteCartDetail(username, product_id);
+		return new ResponseEntity<CartResponse>(result, HttpStatus.OK);
 	}
 
 }

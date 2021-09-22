@@ -9,7 +9,12 @@ public class CartResponse {
 	public CartResponse() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
+	public CartResponse(String message) {
+		super();
+		this.message = message;
+	}
+
 	public CartResponse(String message, Integer items_quantity, Integer items_count) {
 		super();
 		this.message = message;

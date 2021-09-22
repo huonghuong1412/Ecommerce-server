@@ -10,11 +10,11 @@ import com.example.demo.entity.order.CartDetail;
 public class CartDto extends AbstractDTO<CartDto> {
 
 	private String username;
-	private Long user_id;
 	private Integer items_quantity;
 	private Integer items_count = 0;
 	private Long total_price = 0L;
 	private List<CartDetailDto> cart_details;
+	private String mesage;
 
 	public CartDto() {
 		// TODO Auto-generated constructor stub
@@ -24,7 +24,6 @@ public class CartDto extends AbstractDTO<CartDto> {
 		// TODO Auto-generated constructor stub
 		this.setId(entity.getId());
 		this.username = entity.getUser().getUsername();
-		this.user_id = entity.getUser().getId();
 		this.cart_details = new ArrayList<>();
 		if (this.cart_details != null) {
 			for (CartDetail detail : entity.getCart_details()) {
@@ -44,14 +43,6 @@ public class CartDto extends AbstractDTO<CartDto> {
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public Long getUser_id() {
-		return user_id;
-	}
-
-	public void setUser_id(Long user_id) {
-		this.user_id = user_id;
 	}
 
 	public List<CartDetailDto> getCart_details() {
@@ -86,4 +77,14 @@ public class CartDto extends AbstractDTO<CartDto> {
 		this.total_price = total_price;
 	}
 
+	public String getMesage() {
+		return mesage;
+	}
+
+	public void setMesage(String mesage) {
+		this.mesage = mesage;
+	}
+
+	
+	
 }

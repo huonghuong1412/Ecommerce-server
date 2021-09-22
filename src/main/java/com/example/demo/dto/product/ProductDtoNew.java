@@ -53,6 +53,9 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 	@JsonInclude(value = Include.NON_NULL)
 	private Integer in_stock;
 
+	@JsonInclude(value = Include.NON_NULL)
+	private Integer seller_count;
+
 	@JsonInclude(value = Include.NON_EMPTY)
 	private List<String> images;
 
@@ -85,7 +88,7 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 	// ---------------- Technology --------------
 	@JsonInclude(value = Include.NON_NULL)
 	private TechDto technology;
-	
+
 	public ProductDtoNew() {
 		// TODO Auto-generated constructor stub
 	}
@@ -169,14 +172,14 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 				this.product_specs.add(new ProductSpecify("Trọng lượng & Kích thước", item.getSizeWeight()));
 				this.product_specs.add(new ProductSpecify("Thành phần", item.getMaterial()));
 				this.product_specs.add(new ProductSpecify("Thời điểm ra mắt", item.getReleaseTime()));
-				if(this.category.getCode().equalsIgnoreCase("dien-thoai")) {
+				if (this.category.getCode().equalsIgnoreCase("dien-thoai")) {
 					this.product_specs.add(new ProductSpecify("Camera trước", item.getFrontCamera()));
 					this.product_specs.add(new ProductSpecify("Camera sau", item.getBehindCamera()));
 					this.product_specs.add(new ProductSpecify("Chip", item.getChip()));
 					this.product_specs.add(new ProductSpecify("Bộ nhớ trong", item.getInternalMemory()));
 					this.product_specs.add(new ProductSpecify("SIM", item.getSim()));
 				}
-				if(this.category.getCode().equalsIgnoreCase("laptop")) {
+				if (this.category.getCode().equalsIgnoreCase("laptop")) {
 					this.product_specs.add(new ProductSpecify("CPU", item.getCpu()));
 					this.product_specs.add(new ProductSpecify("Phần cứng", item.getHardWare()));
 					this.product_specs.add(new ProductSpecify("Card màn hình", item.getCard()));
@@ -348,6 +351,14 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 
 	public void setIn_stock(Integer in_stock) {
 		this.in_stock = in_stock;
+	}
+
+	public Integer getSeller_count() {
+		return seller_count;
+	}
+
+	public void setSeller_count(Integer seller_count) {
+		this.seller_count = seller_count;
 	}
 
 	public List<ProductSpecify> getProduct_specs() {

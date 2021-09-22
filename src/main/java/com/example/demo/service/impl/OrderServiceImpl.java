@@ -172,5 +172,16 @@ public class OrderServiceImpl implements OrderService {
 		}
 		return null;
 	}
+	
+	@Override
+	public Integer getQuantityProductSeller(Long product_id) {
+		// TODO Auto-generated method stub
+		List<OrderDetail> orders = orderDetailRepository.getAllByProductId(product_id);
+		Integer count_seller = 0;
+		for(OrderDetail order : orders) {
+			count_seller += order.getAmount();
+		}
+		return count_seller;
+	}
 
 }

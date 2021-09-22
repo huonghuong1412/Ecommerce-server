@@ -22,6 +22,7 @@ import com.example.demo.dto.SearchDto;
 import com.example.demo.dto.product.ProductDto;
 import com.example.demo.dto.product.ProductDtoNew;
 import com.example.demo.dto.product.ProductListDto;
+import com.example.demo.service.OrderService;
 import com.example.demo.service.ProductService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -32,6 +33,9 @@ public class ProductController {
 	@Qualifier("productServiceImpl")
 	@Autowired
 	private ProductService service;
+	
+	@Autowired
+	private OrderService orderService;
 
 	@GetMapping(value = "/search")
 	public ResponseEntity<Page<ProductListDto>> searchByPage(@RequestParam(name = "page", defaultValue = "1") int page,
@@ -94,6 +98,8 @@ public class ProductController {
 	@GetMapping(value = "/san-pham/{id}", name = "getProductByID")
 	public ResponseEntity<ProductDtoNew> getProduct(@PathVariable Long id) {
 		ProductDtoNew result = service.getProductById(id);
+		Integer seller_count = orderService.getQuantityProductSeller(id);
+		result.setSeller_count(seller_count);
 		return new ResponseEntity<ProductDtoNew>(result, HttpStatus.OK);
 	}
 

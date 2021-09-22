@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -76,22 +78,26 @@ public class OrderController {
 
 	@GetMapping("/user")
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-	public ResponseEntity<List<OrderHisDto>> getAllByUser(@RequestParam("username") String username) {
-
+	public ResponseEntity<List<OrderHisDto>> getAllByUser() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
 		List<OrderHisDto> result = service.getAllOrderByUser(username);
 
 		return new ResponseEntity<List<OrderHisDto>>(result, HttpStatus.OK);
 	}
 
 	@PostMapping("")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ADMIN')")
 	public ResponseEntity<OrderDto> create(@Validated @RequestBody OrderDto dto) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
+		dto.setUsername(username);
 		OrderDto result = service.createOrder(dto);
 		return new ResponseEntity<OrderDto>(result, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/checkCode")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ADMIN')")
 	public ResponseEntity<Boolean> check(@RequestParam("tradingCode") String tradingCode) {
 		Boolean result = service.checkTradingCode(tradingCode);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
@@ -159,7 +165,7 @@ public class OrderController {
 
 	// huỷ đơn hàng
 	@PutMapping("/cancel/{id}")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ADMIN')")
 	public ResponseEntity<?> cancel(@PathVariable Long id) {
 		Order order = orderRepository.getById(id);
 		Payment payment = paymentRepository.findOneByOrderId(order.getId());
@@ -197,7 +203,7 @@ public class OrderController {
 
 	// Xác nhận thanh toán thành công
 	@PutMapping("/pay-success/{id}")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ADMIN')")
 	public ResponseEntity<MessageResponse> paySuccess(@RequestBody PaymentDto dto, @PathVariable Long id) {
 		Order order = orderRepository.getById(id);
 		Payment payment = paymentRepository.findOneByOrderId(order.getId());
