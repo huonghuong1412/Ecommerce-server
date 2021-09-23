@@ -39,7 +39,7 @@ public class ProductController {
 
 	@GetMapping(value = "/search")
 	public ResponseEntity<Page<ProductListDto>> searchByPage(@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "limit", defaultValue = "20") int limit,
+			@RequestParam(name = "limit", defaultValue = "24") int limit,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword,
 			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
 			@RequestParam(name = "sortValue", defaultValue = "DESC") String sortValue) {
@@ -53,7 +53,7 @@ public class ProductController {
 	@GetMapping(value = "/danh-muc/{category}", name = "getByCategory")
 	public ResponseEntity<Page<ProductListDto>> searchByPageCategory(
 			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "limit", defaultValue = "20") int limit,
+			@RequestParam(name = "limit", defaultValue = "24") int limit,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword, @PathVariable String category,
 			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
 			@RequestParam(name = "sortValue", defaultValue = "DESC") String sortValue) {
@@ -67,7 +67,7 @@ public class ProductController {
 	@GetMapping(value = "/danh-muc/{category}/{subcategory}")
 	public ResponseEntity<Page<ProductListDto>> searchByPageSubCategory(
 			@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "limit", defaultValue = "20") int limit,
+			@RequestParam(name = "limit", defaultValue = "24") int limit,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword,
 			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
 			@RequestParam(name = "sortValue", defaultValue = "DESC") String sortValue, @PathVariable String category,
@@ -89,7 +89,7 @@ public class ProductController {
 	@GetMapping(value = "/all/{brandCode}")
 	public ResponseEntity<Page<ProductListDto>> getProductListByBrand(@PathVariable String brandCode,
 			@RequestParam(name = "page", defaultValue = "0") Integer page,
-			@RequestParam(name = "limit", defaultValue = "20") Integer limit,
+			@RequestParam(name = "limit", defaultValue = "24") Integer limit,
 			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy) {
 		Page<ProductListDto> result = service.getAllProductByBrand(brandCode, page, limit, sortBy);
 		return new ResponseEntity<Page<ProductListDto>>(result, HttpStatus.OK);

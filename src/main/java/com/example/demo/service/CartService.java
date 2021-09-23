@@ -20,7 +20,7 @@ public interface CartService {
 	// cập nhật số lượng sản phẩm trong giỏ hàng
 	public CartResponse checkItemQuantity(CartDto dto);
 
-	// get giỏ hàng theo user
+	// get giỏ hàng theo users
 	public CartDto getCartByUser(String username);
 
 	public Integer getQuantityItemByUser(String username);
@@ -30,6 +30,10 @@ public interface CartService {
 	// Xử lý cart detail
 	public CartDetail getCartDetailByProductAndCart(Product product, Cart cart);
 
+	// Xoá 1 sản phẩm trong giỏ hàng
 	public CartResponse deleteCartDetail(String username, Long product_id);
+	
+	// Xoá giỏ hàng sau khi đặt hàng thành công
+	public Boolean deleteAllCartDetail(String username);
 
 }

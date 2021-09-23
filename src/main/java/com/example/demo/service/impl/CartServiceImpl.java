@@ -48,17 +48,20 @@ public class CartServiceImpl implements CartService {
 				for (CartDetailDto item : cartDetailDtos) {
 					Product product = productRepos.getById(item.getProduct_id());
 					CartDetail cartDetailEntity = null;
-					if (cartDetailRepos.existsByProductAndCart(product,cart)) {
+					if (cartDetailRepos.existsByProductAndCart(product, cart)) {
 						cartDetailEntity = cartDetailRepos.getByProductAndCart(product, cart);
-						if(cartDetailEntity.getQuantity() + item.getQuantity() > product.getInventory().getQuantity_item()) {
-							return new CartResponse("Sản phẩm " + product.getName() + " chỉ còn lại " + product.getInventory().getQuantity_item() + " sản phẩm");
+						if (cartDetailEntity.getQuantity() + item.getQuantity() > product.getInventory()
+								.getQuantity_item()) {
+							return new CartResponse("Sản phẩm " + product.getName() + " chỉ còn lại "
+									+ product.getInventory().getQuantity_item() + " sản phẩm");
 						} else {
 							cartDetailEntity.setQuantity(item.getQuantity() + cartDetailEntity.getQuantity());
 						}
 					} else {
 						cartDetailEntity = new CartDetail();
-						if(item.getQuantity() > product.getInventory().getQuantity_item()) {
-							return new CartResponse("Sản phẩm " + product.getName() + " chỉ còn lại " + product.getInventory().getQuantity_item() + " sản phẩm");
+						if (item.getQuantity() > product.getInventory().getQuantity_item()) {
+							return new CartResponse("Sản phẩm " + product.getName() + " chỉ còn lại "
+									+ product.getInventory().getQuantity_item() + " sản phẩm");
 						} else {
 							cartDetailEntity.setQuantity(item.getQuantity());
 						}
@@ -120,20 +123,26 @@ public class CartServiceImpl implements CartService {
 				if (cartDetailRepos.existsByProductAndCart(product, cart)) {
 					cartDetailEntity = cartDetailRepos.getByProductAndCart(product, cart);
 //					cartDetailEntity.setQuantity(item.getQuantity());
-					if(product.getInventory().getQuantity_item() == 0) {
+					if (product.getInventory().getQuantity_item() == 0) {
 						return new CartResponse("Sản phẩm " + product.getName() + " tạm hết hàng");
-					} else if(item.getQuantity() > product.getInventory().getQuantity_item()) {
-						return new CartResponse("Sản phẩm " + product.getName() + " chỉ còn lại " + product.getInventory().getQuantity_item() + " sản phẩm");
+					} else if (item.getQuantity() > product.getInventory().getQuantity_item()) {
+						return new CartResponse("Sản phẩm " + product.getName() + " chỉ còn lại "
+								+ product.getInventory().getQuantity_item() + " sản phẩm");
+					} else if (item.getQuantity() <= 0) {
+						return new CartResponse("Số lượng tổi thiểu là 1.");
 					} else {
 						cartDetailEntity.setQuantity(item.getQuantity());
 					}
 				} else {
 					cartDetailEntity = new CartDetail();
 //					cartDetailEntity.setQuantity(item.getQuantity());
-					if(product.getInventory().getQuantity_item() == 0) {
+					if (product.getInventory().getQuantity_item() == 0) {
 						return new CartResponse("Sản phẩm " + product.getName() + " tạm hết hàng");
-					} else if(item.getQuantity() > product.getInventory().getQuantity_item()) {
-						return new CartResponse("Sản phẩm " + product.getName() + " chỉ còn lại " + product.getInventory().getQuantity_item() + " sản phẩm");
+					} else if (item.getQuantity() > product.getInventory().getQuantity_item()) {
+						return new CartResponse("Sản phẩm " + product.getName() + " chỉ còn lại "
+								+ product.getInventory().getQuantity_item() + " sản phẩm");
+					} else if (item.getQuantity() <= 0) {
+						return new CartResponse("Số lượng tổi thiểu là 1.");
 					} else {
 						cartDetailEntity.setQuantity(item.getQuantity());
 					}
@@ -193,19 +202,20 @@ public class CartServiceImpl implements CartService {
 	}
 
 	@Override
-	public Integer getQuantityItemByUser(String username) {	// Số lượng sản phẩm trong giỏ hàng (tính theo đầu sản phẩm)
+	public Integer getQuantityItemByUser(String username) { // Số lượng sản phẩm trong giỏ hàng (tính theo đầu sản phẩm)
 		User user = userRepos.findOneByUsername(username);
 		Cart cart = cartRepos.getOneByUser(user);
 		return cart.getCart_details().size();
 	}
-	
+
 	@Override
-	public Integer getQuantityProductByUser(String username) {	// số lượng sản phẩm, tính theo quantity mỗi sản phẩm trong giỏ hàng
+	public Integer getQuantityProductByUser(String username) { // số lượng sản phẩm, tính theo quantity mỗi sản phẩm
+																// trong giỏ hàng
 		User user = userRepos.findOneByUsername(username);
 		Cart cart = cartRepos.getOneByUser(user);
 		List<CartDetail> cartDetails = cartDetailRepos.findAllByCart(cart);
 		Integer quantity = 0;
-		for(CartDetail item : cartDetails) {
+		for (CartDetail item : cartDetails) {
 			quantity += item.getQuantity();
 		}
 		return quantity;
@@ -221,19 +231,34 @@ public class CartServiceImpl implements CartService {
 			for (CartDetailDto item : cartDetailDtos) {
 				Product product = productRepos.getById(item.getProduct_id());
 				if (cartDetailRepos.existsByProductAndCart(product, cart)) {
-//					CartDetail cartDetailEntity = cartDetailRepos.getByProductAndCart(product, cart);
-					if(product.getInventory().getQuantity_item() == 0) {
-						return new CartResponse("Sản phẩm " + product.getName() + " tạm hết hàng");
-					} else if(item.getQuantity() > product.getInventory().getQuantity_item()) {
-						return new CartResponse("Sản phẩm " + product.getName() + " chỉ được mua " + product.getInventory().getQuantity_item() + " sản phẩm");
+					if (product.getInventory().getQuantity_item() == 0) {
+						return new CartResponse(
+								"Sản phẩm " + product.getName() + " tạm hết hàng. Vui lòng thao tác lại!");
+					} else if (item.getQuantity() > product.getInventory().getQuantity_item()) {
+						return new CartResponse("Sản phẩm " + product.getName() + " chỉ được mua "
+								+ product.getInventory().getQuantity_item() + " sản phẩm");
 					} else {
-						
+
 					}
 				}
 			}
 			return new CartResponse("SUCCESS");
 		}
 		return null;
+	}
+
+	@Override
+	public Boolean deleteAllCartDetail(String username) {
+		// TODO Auto-generated method stub
+		User user = userRepos.findOneByUsername(username);
+		Cart cart = cartRepos.getOneByUser(user);
+		List<CartDetail> details = cart.getCart_details();
+		cartDetailRepos.deleteByCartId(cart.getId());
+		if (details.size() == 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }

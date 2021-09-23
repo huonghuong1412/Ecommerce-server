@@ -14,7 +14,7 @@ import com.example.demo.entity.product.Product;
 @Table(name = "tbl_cart_item")
 public class CartDetail extends BaseEntity {
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "cart_id")
 	private Cart cart;
 	

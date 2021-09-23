@@ -93,4 +93,14 @@ public class CartController {
 		return new ResponseEntity<CartResponse>(result, HttpStatus.OK);
 	}
 
+	// cartid/quantity
+	@DeleteMapping("/items/remove_all")
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Boolean> deleteAllItem() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
+		Boolean result = service.deleteAllCartDetail(username);
+		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
+	}
+
 }
