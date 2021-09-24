@@ -88,9 +88,11 @@ public class AuthController {
 		if (userRepository.existsByUsername(dto.getUsername())) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Tài khoản đã được đăng ký!"));
 		}
-
 		if (userRepository.existsByEmail(dto.getEmail())) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Email đã được đăng ký!"));
+		}
+		if (userRepository.existsByPhone(dto.getPhone())) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Số điện thoại đã được đăng ký!"));
 		}
 
 		Address address = new Address(dto.getCity(), dto.getDistrict(), dto.getWard(), dto.getHouse());
@@ -129,52 +131,38 @@ public class AuthController {
 		return ResponseEntity.ok(new MessageResponse("Đăng ký tài khoản thành công!"));
 	}
 	
-	@PutMapping("/update-info/{username}")
-	public ResponseEntity<?> update(@Validated @RequestBody RegisterDto dto, @PathVariable String username) {
-
-		if (userRepository.existsByUsername(dto.getUsername())) {
-			return ResponseEntity.badRequest().body(new MessageResponse("Tài khoản đã được đăng ký!"));
-		}
-
-		if (userRepository.existsByEmail(dto.getEmail())) {
+	@PutMapping("/update-info")
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	public ResponseEntity<?> update(@Validated @RequestBody RegisterDto dto) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
+		User user = userRepository.findOneByUsername(username);
+		if (userRepository.existsByEmail(dto.getEmail()) && user.getEmail().equals(dto.getEmail()) == false) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Email đã được đăng ký!"));
 		}
-		
-		User user = userRepository.findOneByUsername(username);
-
-		Address address = new Address(dto.getCity(), dto.getDistrict(), dto.getWard(), dto.getHouse());
-
-		user = new User(dto.getPhone(), dto.getEmail(), dto.getUsername(), encoder.encode(dto.getPassword()),
-				dto.getDateOfBirth(), dto.getUsername(), address);
-		address.setUser(user);
-
-		Set<String> strRoles = dto.getRole();
-		Set<Role> roles = new HashSet<>();
-
-		if (strRoles == null) {
-			Role userRole = roleRepository.findByName(Erole.ROLE_USER)
-					.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-			roles.add(userRole);
-		} else {
-			strRoles.forEach(role -> {
-				switch (role) {
-				case "admin":
-					Role adminRole = roleRepository.findByName(Erole.ROLE_ADMIN)
-							.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-					roles.add(adminRole);
-					break;
-				default:
-					Role userRole = roleRepository.findByName(Erole.ROLE_USER)
-							.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-					roles.add(userRole);
-					break;
-				}
-			});
-		}
-
-		user.setRoles(roles);
+		user.setFullname(dto.getFullName());
+		user.setPhone(dto.getPhone());
+		user.setEmail(dto.getEmail());
+		user.setDateOfBirth(dto.getDateOfBirth());
 		userRepository.save(user);
-		return ResponseEntity.ok(new MessageResponse("Đăng ký tài khoản thành công!"));
+		return ResponseEntity.ok(new MessageResponse("Cập nhật thông tin tài khoản thành công!"));
+	}
+	
+	@PutMapping("/update-password")
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	public ResponseEntity<?> updatePassword(@Validated @RequestBody RegisterDto dto) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
+		User user = userRepository.findOneByUsername(username);
+		String oldPassword = dto.getPassword();
+		String newPassword = dto.getPasswordNew();
+		if (encoder.matches(oldPassword, user.getPassword())) {
+			user.setPassword(encoder.encode(newPassword));
+		} else {
+			return ResponseEntity.badRequest().body(new MessageResponse("Mật khẩu cũ không chính xác!"));
+		}
+		userRepository.save(user);
+		return ResponseEntity.ok(new MessageResponse("Cập nhật mật khẩu thành công!"));
 	}
 
 	@GetMapping("/info")

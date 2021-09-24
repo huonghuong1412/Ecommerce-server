@@ -8,6 +8,7 @@ import com.example.demo.entity.user.User;
 public class RegisterDto extends AbstractDTO<RegisterDto> {
 	private String username;
 	private String password;
+	private String passwordNew;
 	private String email;
 	private String fullName;
 	private String phone;
@@ -52,6 +53,14 @@ public class RegisterDto extends AbstractDTO<RegisterDto> {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getPasswordNew() {
+		return passwordNew;
+	}
+
+	public void setPasswordNew(String passwordNew) {
+		this.passwordNew = passwordNew;
 	}
 
 	public String getEmail() {

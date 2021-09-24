@@ -21,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	public boolean existsByEmail(String email);
 	
+	public boolean existsByPhone(String phone);
+	
 	public User findOneByEmail(String email);
 	
 	@Query("select entity from User entity where entity.display = 1")
