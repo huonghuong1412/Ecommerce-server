@@ -1,9 +1,17 @@
 package com.example.demo.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 public class CartResponse {
 
+	@JsonInclude(value = Include.NON_NULL)
 	private String message;
+	
+	@JsonInclude(value = Include.NON_NULL)
 	private Integer items_quantity;
+	
+	@JsonInclude(value = Include.NON_NULL)
 	private Integer items_count;
 
 	public CartResponse() {

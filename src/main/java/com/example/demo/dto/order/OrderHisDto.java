@@ -4,10 +4,10 @@ import com.example.demo.entity.order.Order;
 
 public class OrderHisDto {
 	private Long id;
+	private String description;
 	private String create_time;
 	private Long total_price;
 	private Integer total_item;
-//	private List<OrderDetailHisDto> order_details;
 	private String orderInfo;
 	private String address;
 	private String username;
@@ -50,7 +50,7 @@ public class OrderHisDto {
 			this.status_order_name = "Đang chờ xác nhận";
 			break;
 		}
-		
+
 		switch (this.status_payment) {
 		case -1:
 			this.status_payment_name = "Đã huỷ thanh toán";
@@ -68,7 +68,7 @@ public class OrderHisDto {
 			this.status_payment_name = "Chưa thanh toán";
 			break;
 		}
-		
+
 	}
 
 	public Long getId() {
@@ -77,6 +77,14 @@ public class OrderHisDto {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public String getCreate_time() {
@@ -174,6 +182,5 @@ public class OrderHisDto {
 	public void setStatus_payment_name(String status_payment_name) {
 		this.status_payment_name = status_payment_name;
 	}
-	
 
 }

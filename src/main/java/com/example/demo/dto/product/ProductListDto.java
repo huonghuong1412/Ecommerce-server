@@ -23,7 +23,8 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 	private SubcategoryDtoNew subcategory;
 	@JsonInclude(value = Include.NON_NULL)
 	private BrandDtoNew brand;
-	
+	@JsonInclude(value = Include.NON_NULL)
+	private Integer seller_count;
 	private Double percent_discount;
 
 	public ProductListDto() {
@@ -107,6 +108,14 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 
 	public void setPercent_discount(Double percent_discount) {
 		this.percent_discount = percent_discount;
+	}
+
+	public Integer getSeller_count() {
+		return seller_count;
+	}
+
+	public void setSeller_count(Integer seller_count) {
+		this.seller_count = seller_count;
 	}
 
 	public String getMainImage() {

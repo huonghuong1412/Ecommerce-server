@@ -3,22 +3,27 @@ package com.example.demo.dto.order;
 import com.example.demo.entity.order.Order;
 
 public class OrderHisInfoDto {
-	
+
 	private String create_time;
 	private Long total_price;
 	private Integer total_item;
 	private String orderInfo;
 	private String address;
-	
+
 	private Integer status_order;
 	private String status_order_name;
 	private Integer status_payment;
 	private String status_payment_name;
 
+	private String shipment_name;
+	private Double shipment_fee;
+
+	private String payment_method;
+
 	public OrderHisInfoDto() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public OrderHisInfoDto(Order entity) {
 		// TODO Auto-generated constructor stub
 		this.create_time = entity.getCreate_time();
@@ -45,7 +50,7 @@ public class OrderHisInfoDto {
 			this.status_order_name = "Đang chờ xác nhận";
 			break;
 		}
-		
+
 		switch (this.status_payment) {
 		case -1:
 			this.status_payment_name = "Đã huỷ thanh toán";
@@ -63,6 +68,10 @@ public class OrderHisInfoDto {
 			this.status_payment_name = "Chưa thanh toán";
 			break;
 		}
+
+		this.payment_method = entity.getPayment().getMethod().getName();
+		this.shipment_name = entity.getShipment().getName();
+		this.shipment_fee = entity.getShipment().getFee();
 	}
 
 	public String getAddress() {
@@ -72,7 +81,7 @@ public class OrderHisInfoDto {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	
+
 	public String getCreate_time() {
 		return create_time;
 	}
@@ -136,7 +145,29 @@ public class OrderHisInfoDto {
 	public void setStatus_payment_name(String status_payment_name) {
 		this.status_payment_name = status_payment_name;
 	}
-	
-	
+
+	public String getPayment_method() {
+		return payment_method;
+	}
+
+	public void setPayment_method(String payment_method) {
+		this.payment_method = payment_method;
+	}
+
+	public String getShipment_name() {
+		return shipment_name;
+	}
+
+	public void setShipment_name(String shipment_name) {
+		this.shipment_name = shipment_name;
+	}
+
+	public Double getShipment_fee() {
+		return shipment_fee;
+	}
+
+	public void setShipment_fee(Double shipment_fee) {
+		this.shipment_fee = shipment_fee;
+	}
 
 }

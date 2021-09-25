@@ -24,6 +24,12 @@ public class PaymentMethod extends BaseEntity {
 	@Column(name = "code")
 	private String code;
 
+	@Column(name = "icon")
+	private String icon;
+
+	@Column(name = "type")
+	private Integer type;
+
 	@Column(name = "display")
 	private Integer display; // 1 : show, 0: hidden
 
@@ -31,10 +37,11 @@ public class PaymentMethod extends BaseEntity {
 		super();
 	}
 
-	public PaymentMethod(String name, String code) {
+	public PaymentMethod(String name, String code, Integer type) {
 		super();
 		this.name = name;
 		this.code = code;
+		this.type = type;
 	}
 
 	public String getName() {
@@ -51,6 +58,22 @@ public class PaymentMethod extends BaseEntity {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
 	}
 
 	public Integer getDisplay() {

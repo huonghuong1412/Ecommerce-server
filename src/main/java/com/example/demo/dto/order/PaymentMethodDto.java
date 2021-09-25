@@ -10,6 +10,8 @@ public class PaymentMethodDto extends AbstractDTO<PaymentMethodDto> {
 
 	private String name;
 	private String code;
+	private String icon;
+	private Integer type;
 
 	public PaymentMethodDto() {
 		// TODO Auto-generated constructor stub
@@ -21,6 +23,8 @@ public class PaymentMethodDto extends AbstractDTO<PaymentMethodDto> {
 		this.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 		this.name = entity.getName();
 		this.code = entity.getCode();
+		this.icon = entity.getIcon();
+		this.type = entity.getType();
 	}
 
 	public String getName() {
@@ -37,6 +41,22 @@ public class PaymentMethodDto extends AbstractDTO<PaymentMethodDto> {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 
 }

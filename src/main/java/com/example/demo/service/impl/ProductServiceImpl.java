@@ -41,6 +41,7 @@ import com.example.demo.repository.BrandRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ImageRepository;
 import com.example.demo.repository.InventoryRepository;
+import com.example.demo.repository.OrderDetailRepository;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.PublisherRepository;
 import com.example.demo.repository.SubCategoryRepository;
@@ -86,6 +87,9 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private InventoryRepository inventoryRepos;
+	
+	@Autowired
+	private OrderDetailRepository orderDetailRepos;
 
 	@Override
 	public Page<ProductDto> searchByPage(SearchDto dto) {
@@ -215,6 +219,11 @@ public class ProductServiceImpl implements ProductService {
 
 		@SuppressWarnings("unchecked")
 		List<ProductListDto> entities = q.getResultList();
+		
+		for(ProductListDto item : entities) {
+			Integer seller_count = orderDetailRepos.countAllByProductId(item.getId());
+			item.setSeller_count(seller_count);
+		}
 
 		long count = (long) qCount.getSingleResult();
 		Pageable pageable = PageRequest.of(pageIndex, pageSize);

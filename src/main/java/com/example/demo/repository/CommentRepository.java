@@ -16,4 +16,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 	
 	public List<Comment> findAllByProduct(Product product);
 	
+	public Integer countAllByProduct(Product product);
+	
+	public Boolean existsByProductAndUser(Product product, User user);
+	
 }

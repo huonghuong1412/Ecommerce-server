@@ -35,9 +35,9 @@ public class Order extends BaseEntity {
 	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
 	private Payment payment;
 
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "shipment_id")
-//	private Shipment shipment;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "shipment_id")
+	private Shipment shipment;
 
 	@Column(name = "total_price")
 	private Long total_price;
@@ -164,12 +164,12 @@ public class Order extends BaseEntity {
 		this.payment = payment;
 	}
 
-//	public Shipment getShipment() {
-//		return shipment;
-//	}
-//
-//	public void setShipment(Shipment shipment) {
-//		this.shipment = shipment;
-//	}
+	public Shipment getShipment() {
+		return shipment;
+	}
+
+	public void setShipment(Shipment shipment) {
+		this.shipment = shipment;
+	}
 
 }

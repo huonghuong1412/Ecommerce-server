@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.SearchDto;
+import com.example.demo.dto.auth.MessageResponse;
 import com.example.demo.dto.user.CommentDto;
 import com.example.demo.entity.product.Product;
 import com.example.demo.entity.user.Comment;
@@ -39,9 +40,9 @@ public class CommentServiceImpl implements CommentService {
 
 	@Autowired
 	private UserRepository userRepos;
-
+	
 	@Override
-	public CommentDto createComment(CommentDto dto) {
+	public MessageResponse createComment(CommentDto dto) {
 		if (dto != null) {
 			Comment entity = null;
 
@@ -51,19 +52,21 @@ public class CommentServiceImpl implements CommentService {
 
 			Product product = productRepos.getById(dto.getProductId());
 			User user = userRepos.findOneByUsername(dto.getUsername());
+			if(repos.existsByProductAndUser(product, user)) {
+				return new MessageResponse("Bạn đã đánh giá sản phẩm này rồi!");
+			} else {
+				entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
+				entity.setDate_comment(dto.getDate_comment());
+				entity.setContent(dto.getContent());
+				entity.setRating(dto.getRating());
+				entity.setDisplayName(dto.getDisplayName());
+				entity.setUser(user);
+				entity.setProduct(product);
+				entity.setDisplay(0);
 
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-			entity.setDate_comment(dto.getDate_comment());
-			entity.setContent(dto.getContent());
-			entity.setRating(dto.getRating());
-			entity.setDisplayName(dto.getDisplayName());
-			entity.setUser(user);
-			entity.setProduct(product);
+				entity = repos.save(entity);
 
-			entity = repos.save(entity);
-
-			if (entity != null) {
-				return new CommentDto(entity);
+				return new MessageResponse("Cảm ơn bạn đã đánh giá. Chúng tôi sẽ thông báo đến bạn khi đánh giá được duyệt!");
 			}
 		}
 		return null;
@@ -129,6 +132,18 @@ public class CommentServiceImpl implements CommentService {
 		Pageable pageable = PageRequest.of(pageIndex, pageSize);
 		Page<CommentDto> result = new PageImpl<CommentDto>(entities, pageable, count);
 		return result;
+	}
+
+	@Override
+	public Integer countAllCommentByProduct(Long productId) {
+		// TODO Auto-generated method stub
+		Product product = productRepos.getById(productId);
+		Integer count = repos.countAllByProduct(product);
+		if(count != null) {
+			return count;
+		} else {
+			return 0;
+		}
 	}
 
 }

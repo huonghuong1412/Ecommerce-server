@@ -12,7 +12,6 @@ public class CommentDto extends AbstractDTO<CommentDto> {
 	private String displayName;
 	private String createdDate;
 	private String date_comment;
-
 	public CommentDto() {
 		super();
 	}

@@ -161,7 +161,7 @@ public class CartServiceImpl implements CartService {
 			for (CartDetail item : cartDetails) {
 				cartDetailRepos.save(item);
 			}
-			return new CartResponse("Cập nhất số lượng thành công");
+			return new CartResponse("SUCCESS");
 		}
 		return null;
 	}

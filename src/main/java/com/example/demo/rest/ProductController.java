@@ -22,6 +22,7 @@ import com.example.demo.dto.SearchDto;
 import com.example.demo.dto.product.ProductDto;
 import com.example.demo.dto.product.ProductDtoNew;
 import com.example.demo.dto.product.ProductListDto;
+import com.example.demo.service.CommentService;
 import com.example.demo.service.OrderService;
 import com.example.demo.service.ProductService;
 
@@ -36,6 +37,9 @@ public class ProductController {
 	
 	@Autowired
 	private OrderService orderService;
+	
+	@Autowired
+	private CommentService commentservice;
 
 	@GetMapping(value = "/search")
 	public ResponseEntity<Page<ProductListDto>> searchByPage(@RequestParam(name = "page", defaultValue = "1") int page,
@@ -99,7 +103,9 @@ public class ProductController {
 	public ResponseEntity<ProductDtoNew> getProduct(@PathVariable Long id) {
 		ProductDtoNew result = service.getProductById(id);
 		Integer seller_count = orderService.getQuantityProductSeller(id);
+		Integer comment_count = commentservice.countAllCommentByProduct(id);
 		result.setSeller_count(seller_count);
+		result.setReview_count(comment_count);
 		return new ResponseEntity<ProductDtoNew>(result, HttpStatus.OK);
 	}
 

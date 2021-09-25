@@ -56,6 +56,9 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 	@JsonInclude(value = Include.NON_NULL)
 	private Integer seller_count;
 
+	@JsonInclude(value = Include.NON_NULL)
+	private Integer review_count;
+
 	@JsonInclude(value = Include.NON_EMPTY)
 	private List<String> images;
 
@@ -359,6 +362,14 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 
 	public void setSeller_count(Integer seller_count) {
 		this.seller_count = seller_count;
+	}
+
+	public Integer getReview_count() {
+		return review_count;
+	}
+
+	public void setReview_count(Integer review_count) {
+		this.review_count = review_count;
 	}
 
 	public List<ProductSpecify> getProduct_specs() {

@@ -6,6 +6,7 @@ public class OrderDetailHisDto {
 	private Long order_id;
 	private Long product_id;
 	private String product_name;
+	private String product_slug;
 	private String category;
 	private String sub_category;
 	private String mainImage;
@@ -17,6 +18,7 @@ public class OrderDetailHisDto {
 		this.order_id = entity.getOrder().getId();
 		this.product_id = entity.getProduct().getId();
 		this.product_name = entity.getProduct().getName();
+		this.product_slug = entity.getProduct().getSlug();
 		this.category = entity.getProduct().getCategory().getName();
 		this.sub_category = entity.getProduct().getSubcategory().getName();
 		this.amount_item = entity.getAmount();
@@ -42,6 +44,14 @@ public class OrderDetailHisDto {
 
 	public void setProduct_name(String product_name) {
 		this.product_name = product_name;
+	}
+
+	public String getProduct_slug() {
+		return product_slug;
+	}
+
+	public void setProduct_slug(String product_slug) {
+		this.product_slug = product_slug;
 	}
 
 	public String getCategory() {

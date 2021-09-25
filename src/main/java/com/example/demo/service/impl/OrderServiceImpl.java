@@ -21,6 +21,7 @@ import com.example.demo.entity.order.Order;
 import com.example.demo.entity.order.OrderDetail;
 import com.example.demo.entity.order.Payment;
 import com.example.demo.entity.order.PaymentMethod;
+import com.example.demo.entity.order.Shipment;
 import com.example.demo.entity.product.Product;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.InventoryRepository;
@@ -29,6 +30,7 @@ import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaymentMethodRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.ProductRepository;
+import com.example.demo.repository.ShipmentRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.OrderService;
 
@@ -50,8 +52,8 @@ public class OrderServiceImpl implements OrderService {
 	@Autowired
 	private PaymentRepository paymentRepos;
 
-//	@Autowired
-//	private ShipmentRepository shipmentRepos;
+	@Autowired
+	private ShipmentRepository shipmentRepos;
 
 	@Autowired
 	private PaymentMethodRepository paymentMethodRepos;
@@ -74,6 +76,12 @@ public class OrderServiceImpl implements OrderService {
 		List<OrderHisDto> orderDtos = new ArrayList<>();
 		for (Order o : result) {
 			OrderHisDto dto = new OrderHisDto(o);
+			Integer quantity = o.getOrderDetails().size() - 1;
+			if(quantity > 0) {
+				dto.setDescription(o.getOrderDetails().get(0).getProduct().getName() + " và " + quantity + " sản phẩm khác");
+			} else {
+				dto.setDescription(o.getOrderDetails().get(0).getProduct().getName());
+			}
 			orderDtos.add(dto);
 		}
 		return orderDtos;
@@ -87,6 +95,9 @@ public class OrderServiceImpl implements OrderService {
 			PaymentDto paymentDto = dto.getPayment();
 			PaymentMethod payMethod = paymentMethodRepos.findOneByCode(paymentDto.getMethod_code());
 
+			String shipCode = dto.getShipment();
+			Shipment ship = shipmentRepos.findOneByCode(shipCode);
+			
 			Order order = new Order();
 			order.setCreate_time(dto.getCreate_time());
 			order.setOrderInfo(dto.getOrderInfo());
@@ -95,6 +106,7 @@ public class OrderServiceImpl implements OrderService {
 			order.setPhone(dto.getPhone());
 			order.setTotal_price(dto.getTotal_price());
 			order.setTotal_item(dto.getTotal_item());
+			order.setShipment(ship);
 			order.setUser(user);
 
 			payment.setBankName(paymentDto.getBankName());
@@ -179,7 +191,9 @@ public class OrderServiceImpl implements OrderService {
 		List<OrderDetail> orders = orderDetailRepository.getAllByProductId(product_id);
 		Integer count_seller = 0;
 		for(OrderDetail order : orders) {
-			count_seller += order.getAmount();
+			if(order.getOrder().getStatus() == 2) {
+				count_seller += order.getAmount();
+			}
 		}
 		return count_seller;
 	}

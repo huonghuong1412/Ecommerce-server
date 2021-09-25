@@ -18,7 +18,7 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 	private String phone;
 	private Integer status_order;
 	private Integer status_payment;
-//	private ShipmentDto shipment;
+	private String shipment;
 	private PaymentDto payment;
 	private List<OrderDetailDto> order_details;
 
@@ -36,11 +36,7 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 		this.status_payment = entity.getPayment().getStatus();
 		this.address = entity.getAddress();
 		this.phone = entity.getPhone();
-//		this.shipment = new ShipmentDto();
-//		if (shipment != null) {
-//			Shipment ship = entity.getShipment();
-//			this.shipment = new ShipmentDto(ship);
-//		}
+		this.shipment = entity.getShipment().getCode();
 
 		if (payment != null) {
 			Payment pay = entity.getPayment();
@@ -142,12 +138,12 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 		this.status_payment = status_payment;
 	}
 
-//	public ShipmentDto getShipment() {
-//		return shipment;
-//	}
-//
-//	public void setShipment(ShipmentDto shipment) {
-//		this.shipment = shipment;
-//	}
+	public String getShipment() {
+		return shipment;
+	}
+
+	public void setShipment(String shipment) {
+		this.shipment = shipment;
+	}
 
 }
