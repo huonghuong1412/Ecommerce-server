@@ -1,5 +1,9 @@
 package com.example.demo.dto.product;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.example.demo.common.CalculateDiscount;
 import com.example.demo.dto.AbstractDTO;
 import com.example.demo.dto.category.CategoryDtoNew;
@@ -8,12 +12,14 @@ import com.example.demo.entity.category.Category;
 import com.example.demo.entity.category.SubCategory;
 import com.example.demo.entity.product.Brand;
 import com.example.demo.entity.product.Product;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class ProductListDto extends AbstractDTO<ProductListDto> {
 
 	private Integer type;
+	private String createdDate;
 	private String name;
 	private String slug;
 	private Long price;
@@ -27,6 +33,9 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 	private Integer seller_count;
 	private Double percent_discount;
 
+	@JsonIgnore
+	private Integer display;
+
 	public ProductListDto() {
 		// TODO Auto-generated constructor stub
 	}
@@ -35,6 +44,11 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 		super();
 		this.setId(entity.getId());
 		this.type = entity.getType();
+		try {
+			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		this.name = entity.getName();
 		this.slug = entity.getSlug();
 		this.price = entity.getPrice();
@@ -59,7 +73,7 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 		this.brand = new BrandDtoNew();
 		Brand brandEntity = entity.getBrand();
 		this.brand = new BrandDtoNew(brandEntity);
-
+		this.display = entity.getDisplay();
 	}
 
 	public Integer getType() {
@@ -68,6 +82,14 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 
 	public void setType(Integer type) {
 		this.type = type;
+	}
+
+	public String getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
 	}
 
 	public String getName() {
@@ -148,6 +170,14 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 
 	public void setBrand(BrandDtoNew brand) {
 		this.brand = brand;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
 	}
 
 }

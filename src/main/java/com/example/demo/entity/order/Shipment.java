@@ -83,6 +83,14 @@ public class Shipment extends BaseEntity {
 		this.fee = fee;
 	}
 
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
+	}
+
 	public List<Order> getOrders() {
 		return orders;
 	}

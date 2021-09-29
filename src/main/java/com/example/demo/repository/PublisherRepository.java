@@ -22,4 +22,7 @@ public interface PublisherRepository extends JpaRepository<Publisher, Long> {
 	
 	@Query("select entity from Publisher entity where entity.display = 1")
 	public Page<Publisher> getList(Pageable pageable);
+	
+	@Query("select entity from Publisher entity where entity.display = 0")
+	public Page<Publisher> getListHide(Pageable pageable);
 }

@@ -1,6 +1,7 @@
 package com.example.demo.dto.order;
 
-import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.example.demo.dto.AbstractDTO;
@@ -10,8 +11,9 @@ public class PaymentMethodDto extends AbstractDTO<PaymentMethodDto> {
 
 	private String name;
 	private String code;
-	private String icon;
 	private Integer type;
+	private Integer display;
+	private String createdDate;
 
 	public PaymentMethodDto() {
 		// TODO Auto-generated constructor stub
@@ -20,11 +22,16 @@ public class PaymentMethodDto extends AbstractDTO<PaymentMethodDto> {
 	public PaymentMethodDto(PaymentMethod entity) {
 		super();
 		this.setId(entity.getId());
-		this.setCreatedDate(new Timestamp(new Date().getTime()).toString());
+		try {
+			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(
+					new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		this.name = entity.getName();
 		this.code = entity.getCode();
-		this.icon = entity.getIcon();
 		this.type = entity.getType();
+		this.display = entity.getDisplay();
 	}
 
 	public String getName() {
@@ -43,20 +50,28 @@ public class PaymentMethodDto extends AbstractDTO<PaymentMethodDto> {
 		this.code = code;
 	}
 
-	public String getIcon() {
-		return icon;
-	}
-
-	public void setIcon(String icon) {
-		this.icon = icon;
-	}
-
 	public Integer getType() {
 		return type;
 	}
 
 	public void setType(Integer type) {
 		this.type = type;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
+	}
+
+	public String getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
 	}
 
 }

@@ -19,4 +19,7 @@ public interface PaymentMethodRepository extends JpaRepository<PaymentMethod, Lo
 	@Query("select entity from PaymentMethod entity where entity.display = 1")
 	public Page<PaymentMethod> getList(Pageable pageable);
 	
+	@Query("select entity from PaymentMethod entity where entity.display = 0")
+	public Page<PaymentMethod> getListHide(Pageable pageable);
+	
 }

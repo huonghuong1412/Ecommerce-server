@@ -8,6 +8,10 @@ import com.example.demo.dto.category.TagDto;
 @Service
 public interface TagService {
 	public Page<TagDto> getList(Integer page, Integer limit, String sortBy);
+	
+	public Page<TagDto> getListHide(Integer page, Integer limit, String sortBy);
+	
+	public Page<TagDto> getAll(Integer page, Integer limit, String sortBy);
 
 	public TagDto saveOrUpdate(TagDto dto);
 	

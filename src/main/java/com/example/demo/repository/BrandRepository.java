@@ -17,4 +17,7 @@ public interface BrandRepository extends JpaRepository<Brand, Long> {
 	
 	@Query("select entity from Brand entity where entity.display = 1")
 	public Page<Brand> getList(Pageable pageable);
+	
+	@Query("select entity from Brand entity where entity.display = 0")
+	public Page<Brand> getListHide(Pageable pageable);
 }

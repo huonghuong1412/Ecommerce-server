@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.example.demo.dto.category.CategoryDto;
+import com.example.demo.dto.category.CategoryDtoNew;
 import com.example.demo.entity.category.Category;
 import com.example.demo.entity.category.SubCategory;
 import com.example.demo.repository.CategoryRepository;
@@ -24,6 +25,39 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Autowired
 	private SubCategoryRepository subRepos;
+
+	@Override
+	public List<CategoryDtoNew> getList() {
+		List<Category> list = repos.getList();
+		List<CategoryDtoNew> dtos = new ArrayList<>();
+		for (Category entity : list) {
+			CategoryDtoNew dto = new CategoryDtoNew(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+
+	@Override
+	public List<CategoryDtoNew> getListHide() {
+		List<Category> list = repos.getListHide();
+		List<CategoryDtoNew> dtos = new ArrayList<>();
+		for (Category entity : list) {
+			CategoryDtoNew dto = new CategoryDtoNew(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+
+	@Override
+	public List<CategoryDtoNew> getAll() {
+		List<Category> list = repos.findAll();
+		List<CategoryDtoNew> dtos = new ArrayList<>();
+		for (Category entity : list) {
+			CategoryDtoNew dto = new CategoryDtoNew(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
 
 	@Override
 	public List<CategoryDto> getAllCategoryWithSub() {
@@ -48,14 +82,15 @@ public class CategoryServiceImpl implements CategoryService {
 			Category entity = null;
 			if (dto.getId() != null) {
 				entity = repos.getById(dto.getId());
+				entity.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 			if (entity == null) {
 				entity = new Category();
+				entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 
 			entity.setName(dto.getName());
 			entity.setCode(dto.getCode());
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			entity.setDisplay(1);
 			entity = repos.save(entity);
 
@@ -70,7 +105,11 @@ public class CategoryServiceImpl implements CategoryService {
 	public Boolean deleteCategory(Long id) {
 		if (id != null) {
 			Category entity = repos.getById(id);
-			entity.setDisplay(0);
+			if(entity.getDisplay() == 1) {
+				entity.setDisplay(0);
+			} else {
+				entity.setDisplay(1);
+			}
 			entity = repos.save(entity);
 			return true;
 		}
@@ -84,7 +123,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Override
 	public Boolean checkCode(Long id, String code) {
-		if(code != null && StringUtils.hasText(code)) {
+		if (code != null && StringUtils.hasText(code)) {
 			Long count = repos.checkCode(code, id);
 			return count != 0l;
 		}
@@ -94,13 +133,13 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public CategoryDto getOneCategory(String code) {
 		CategoryDto dto = new CategoryDto();
-		if(code != null) {
+		if (code != null) {
 			Category category = repos.findOneByCode(code);
 			dto = new CategoryDto(category);
 		}
 		return dto;
 	}
-
+	
 	@Override
 	public CategoryDto getOne(Long id) {
 		Category category = repos.getById(id);

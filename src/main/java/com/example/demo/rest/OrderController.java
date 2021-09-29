@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.AdvanceSearchDto;
 import com.example.demo.dto.auth.MessageResponse;
 import com.example.demo.dto.order.OrderDetailHisDto;
 import com.example.demo.dto.order.OrderDto;
@@ -56,28 +57,37 @@ public class OrderController {
 	@Autowired
 	private PaymentRepository paymentRepository;
 
-	@GetMapping("")
+	@GetMapping("/all")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Page<OrderHisDto>> getAll(@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
-			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy) {
-		Page<OrderHisDto> result = service.getAllOrder(page, limit, sortBy);
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date,
+			@RequestParam(name = "status", defaultValue = "3") Integer status) {
+		AdvanceSearchDto dto = new AdvanceSearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		dto.setLast_date(last_date);
+		dto.setStatus(status);
+		Page<OrderHisDto> result = service.getAllOrder(dto);
 		return new ResponseEntity<Page<OrderHisDto>>(result, HttpStatus.OK);
 	}
 
 	@GetMapping("/detail/{id}")
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
 	public ResponseEntity<List<OrderDetailHisDto>> getDetail(@PathVariable Long id) {
 		List<OrderDetailHisDto> result = service.getDetailOrderById(id);
 		return new ResponseEntity<List<OrderDetailHisDto>>(result, HttpStatus.OK);
 	}
 
 	@GetMapping("/detail-full/{id}")
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
 	public ResponseEntity<OrderHisFullDto> getDetailFull(@PathVariable Long id) {
 		OrderHisFullDto result = service.getDetailOrder(id);
 		return new ResponseEntity<OrderHisFullDto>(result, HttpStatus.OK);
 	}
 
 	@GetMapping("/user")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
 	public ResponseEntity<List<OrderHisDto>> getAllByUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();
@@ -105,6 +115,7 @@ public class OrderController {
 
 	// xác nhận đơn hàng
 	@PutMapping("/confirm/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageResponse> confirmOrder(@PathVariable Long id) {
 		Order order = orderRepository.getById(id);
 		Payment payment = paymentRepository.findOneByOrderId(order.getId());
@@ -138,6 +149,7 @@ public class OrderController {
 
 	// đang giao hàng
 	@PutMapping("/is-shipping/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> shipping(@PathVariable Long id) {
 		Order order = orderRepository.getById(id);
 
@@ -211,8 +223,7 @@ public class OrderController {
 		payment.setBankName(dto.getBankName());
 		payment.setTradingCode(dto.getTradingCode());
 		paymentRepository.save(payment);
-		return new ResponseEntity<MessageResponse>(new MessageResponse("Đặt hàng thành công!"),
-				HttpStatus.OK);
+		return new ResponseEntity<MessageResponse>(new MessageResponse("Đặt hàng thành công!"), HttpStatus.OK);
 	}
 
 }

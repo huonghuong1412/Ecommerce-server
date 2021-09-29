@@ -24,9 +24,6 @@ public class PaymentMethod extends BaseEntity {
 	@Column(name = "code")
 	private String code;
 
-	@Column(name = "icon")
-	private String icon;
-
 	@Column(name = "type")
 	private Integer type;
 
@@ -66,14 +63,6 @@ public class PaymentMethod extends BaseEntity {
 
 	public void setType(Integer type) {
 		this.type = type;
-	}
-
-	public String getIcon() {
-		return icon;
-	}
-
-	public void setIcon(String icon) {
-		this.icon = icon;
 	}
 
 	public Integer getDisplay() {

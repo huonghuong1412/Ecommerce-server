@@ -21,9 +21,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Table(name = "tbl_order")
 public class Order extends BaseEntity {
 
-	@Column(name = "create_time")
-	private String create_time;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
@@ -51,7 +48,7 @@ public class Order extends BaseEntity {
 	@Column(name = "address")
 	private String address;
 
-	@Column(name = "user_name")
+	@Column(name = "user_fullname")
 	private String user_fullname;
 
 	@Column(name = "phone")
@@ -66,14 +63,6 @@ public class Order extends BaseEntity {
 
 	public Order() {
 		super();
-	}
-
-	public String getCreate_time() {
-		return create_time;
-	}
-
-	public void setCreate_time(String create_time) {
-		this.create_time = create_time;
 	}
 
 	public User getUser() {

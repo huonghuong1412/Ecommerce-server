@@ -8,8 +8,7 @@ public class SearchDto {
 	private String sortValue; // asc, desc
 	private String tag; // tim theo tag
 	private String brand; // tim theo thuong hieu
-	private Long beginPrice;
-	private Long endPrice;
+	private String price;
 	private String category;
 	private String subcategory;
 	private Long productId;
@@ -73,20 +72,12 @@ public class SearchDto {
 		this.brand = brand;
 	}
 
-	public Long getBeginPrice() {
-		return beginPrice;
+	public String getPrice() {
+		return price;
 	}
 
-	public void setBeginPrice(Long beginPrice) {
-		this.beginPrice = beginPrice;
-	}
-
-	public Long getEndPrice() {
-		return endPrice;
-	}
-
-	public void setEndPrice(Long endPrice) {
-		this.endPrice = endPrice;
+	public void setPrice(String price) {
+		this.price = price;
 	}
 
 	public int getPageIndex() {

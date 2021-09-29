@@ -40,7 +40,7 @@ public class CommentServiceImpl implements CommentService {
 
 	@Autowired
 	private UserRepository userRepos;
-	
+
 	@Override
 	public MessageResponse createComment(CommentDto dto) {
 		if (dto != null) {
@@ -52,7 +52,7 @@ public class CommentServiceImpl implements CommentService {
 
 			Product product = productRepos.getById(dto.getProductId());
 			User user = userRepos.findOneByUsername(dto.getUsername());
-			if(repos.existsByProductAndUser(product, user)) {
+			if (repos.existsByProductAndUser(product, user)) {
 				return new MessageResponse("Bạn đã đánh giá sản phẩm này rồi!");
 			} else {
 				entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
@@ -66,7 +66,8 @@ public class CommentServiceImpl implements CommentService {
 
 				entity = repos.save(entity);
 
-				return new MessageResponse("Cảm ơn bạn đã đánh giá. Chúng tôi sẽ thông báo đến bạn khi đánh giá được duyệt!");
+				return new MessageResponse(
+						"Cảm ơn bạn đã đánh giá. Chúng tôi sẽ thông báo đến bạn khi đánh giá được duyệt!");
 			}
 		}
 		return null;
@@ -108,9 +109,9 @@ public class CommentServiceImpl implements CommentService {
 			pageIndex = 0;
 
 		String whereClause = "";
-		String orderBy = " ORDER BY entity.createdDate DESC";
+		String orderBy = " ORDER BY entity.date_comment DESC";
 		String sqlCount = "select count(entity.id) from  Comment as entity where (1=1) ";
-		String sql = "select new com.example.demo.dto.CommentDto(entity) from  Comment as entity where (1=1)  ";
+		String sql = "select new com.example.demo.dto.user.CommentDto(entity) from  Comment as entity where (1=1)  ";
 		if (dto.getProductId() != null) {
 			whereClause += "AND entity.display=1 AND ( entity.content LIKE :text )";
 		}
@@ -139,11 +140,38 @@ public class CommentServiceImpl implements CommentService {
 		// TODO Auto-generated method stub
 		Product product = productRepos.getById(productId);
 		Integer count = repos.countAllByProduct(product);
-		if(count != null) {
+		if (count != null) {
 			return count;
 		} else {
 			return 0;
 		}
+	}
+
+	@Override
+	public MessageResponse displayComment(CommentDto dto) {
+		if (dto != null) {
+			Comment entity = repos.getById(dto.getId());
+			entity.setDisplay(1);
+			repos.save(entity);
+			return new MessageResponse("Xác nhận hiển thị bình luận thành công!");
+		}
+		return null;
+	}
+
+	@Override
+	public Boolean delete(Long id) {
+		if (id != null) {
+			repos.deleteById(id);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public CommentDto getOne(Long id) {
+		Comment entity = repos.getById(id);
+		CommentDto dto = new CommentDto(entity);
+		return dto;
 	}
 
 }

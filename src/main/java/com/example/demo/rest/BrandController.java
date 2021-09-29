@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +30,24 @@ public class BrandController {
 	@GetMapping("")
 	public ResponseEntity<Page<BrandDto>> getAll(@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
-			@RequestParam(name = "sortBy", defaultValue = "name") String sortBy) {
+			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
 		Page<BrandDto> result = service.getList(page, limit, sortBy);
+		return new ResponseEntity<Page<BrandDto>>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping("/all")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<BrandDto>> getAllAdmin(@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy, @RequestParam(name="display", defaultValue = "2") Integer display) {
+		Page<BrandDto> result = null;
+		if(display == 1) {
+			result = service.getList(page, limit, sortBy);
+		} else if(display == 0) {
+			result = service.getListHide(page, limit, sortBy);
+		} else {
+			result = service.getAll(page, limit, sortBy);
+		}
 		return new ResponseEntity<Page<BrandDto>>(result, HttpStatus.OK);
 	}
 	
@@ -41,12 +58,14 @@ public class BrandController {
 	}
 
 	@PostMapping("")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<BrandDto> create(@RequestBody BrandDto dto) {
 		BrandDto result = service.saveOrUpdate(dto);
 		return new ResponseEntity<BrandDto>(result, HttpStatus.OK);
 	}
 
 	@PutMapping(value = "/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<BrandDto> update(@RequestBody BrandDto dto, @PathVariable Long id) {
 		dto.setId(id);
 		BrandDto result = service.saveOrUpdate(dto);
@@ -54,6 +73,7 @@ public class BrandController {
 	}
 
 	@DeleteMapping(value = "/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Boolean> delete(@PathVariable Long id) {
 		Boolean result = service.delete(id);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);

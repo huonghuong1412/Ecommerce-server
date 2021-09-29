@@ -24,13 +24,31 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 
 	@Autowired
 	private SubCategoryRepository repos;
-	
+
 	@Autowired
 	private CategoryRepository categoryRepository;
 
 	@Override
 	public Page<SubCategoryDto> getList(Integer page, Integer limit, String sortBy) {
 		Page<SubCategory> list = repos.getList(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<SubCategoryDto> dtos = list.map(tag -> new SubCategoryDto(tag));
+
+		return dtos;
+	}
+
+	@Override
+	public Page<SubCategoryDto> getListHide(Integer page, Integer limit, String sortBy) {
+		Page<SubCategory> list = repos.getListHide(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<SubCategoryDto> dtos = list.map(tag -> new SubCategoryDto(tag));
+
+		return dtos;
+	}
+
+	@Override
+	public Page<SubCategoryDto> getAll(Integer page, Integer limit, String sortBy) {
+		Page<SubCategory> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
 
 		Page<SubCategoryDto> dtos = list.map(tag -> new SubCategoryDto(tag));
 
@@ -51,22 +69,23 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 
 	@Override
 	public SubCategoryDto saveOrUpdate(SubCategoryDto dto) {
-		
+
 		Category category = categoryRepository.findOneByCode(dto.getCategoryCode());
-		
+
 		if (dto != null) {
 			SubCategory entity = null;
 			if (dto.getId() != null) {
 				entity = repos.getById(dto.getId());
+				entity.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 			if (entity == null) {
 				entity = new SubCategory();
+				entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 
 			entity.setName(dto.getName());
 			entity.setCode(dto.getCode());
 			entity.setCategory(category);
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			entity.setDisplay(1);
 			entity = repos.save(entity);
 
@@ -81,7 +100,11 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 	public Boolean deleteSubCategory(Long id) {
 		if (id != null) {
 			SubCategory entity = repos.getById(id);
-			entity.setDisplay(0);
+			if(entity.getDisplay() == 1) {
+				entity.setDisplay(0);
+			} else {
+				entity.setDisplay(1);
+			}
 			entity = repos.save(entity);
 			return true;
 		}
@@ -90,7 +113,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 
 	@Override
 	public Boolean checkCode(Long id, String code) {
-		if(code != null && StringUtils.hasText(code)) {
+		if (code != null && StringUtils.hasText(code)) {
 			Long count = repos.checkCode(code, id);
 			return count != 0l;
 		}

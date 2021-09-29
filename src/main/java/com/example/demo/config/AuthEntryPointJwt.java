@@ -22,6 +22,6 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 			AuthenticationException authException) throws IOException, ServletException {
 		
 		Logger.error("Unauthorized error: {}", authException.getMessage());
-		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Tài khoản hoặc mật khẩu không chính xác!");
+		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Truy cập bị từ chối!");
 	}
 }

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.example.demo.common.Slug;
+import com.example.demo.dto.AdvanceSearchDto;
 import com.example.demo.dto.SearchDto;
 import com.example.demo.dto.product.ProductDto;
 import com.example.demo.dto.product.ProductDtoNew;
@@ -87,7 +88,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private InventoryRepository inventoryRepos;
-	
+
 	@Autowired
 	private OrderDetailRepository orderDetailRepos;
 
@@ -101,18 +102,42 @@ public class ProductServiceImpl implements ProductService {
 			pageIndex = 0;
 
 		String whereClause = "";
-		String orderBy = " ORDER BY entity.id DESC";
+		String orderBy = " ORDER BY entity.createdDate DESC";
 		String sqlCount = "select count(entity.id) from  Product as entity where (1=1) ";
 		String sql = "select new com.example.demo.dto.product.ProductDto(entity) from  Product as entity where entity.display=1 AND (1=1)  ";
 		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
-			whereClause += " AND ( entity.name LIKE :text OR entity.description LIKE :text )";
+			whereClause += " AND ( entity.name LIKE :text " + "OR entity.description LIKE :text "
+					+ "OR entity.slug LIKE :text " + "OR entity.category.name LIKE :text "
+					+ "OR entity.category.code LIKE :text " + "OR entity.subcategory.name LIKE :text "
+					+ "OR entity.subcategory.code LIKE :text )";
 		}
-
-		if (dto.getCategory() != null) {
-			whereClause += " AND ( entity.category.code LIKE :category )";
+		
+		if (dto.getBrand() != null && StringUtils.hasText(dto.getBrand())) {
+			if (dto.getBrand().contains(",")) {
+				String[] s = dto.getBrand().split(",");
+				whereClause += " AND ( entity.brand.code = '" + s[0] + "' )";
+				for (int i = 1; i < s.length; i++) {
+					whereClause += " OR ( entity.brand.code = '" + s[i] + "' )";
+				}
+			} else {
+				whereClause += " AND ( entity.brand.code = :brand )";
+			}
+		} else {
+			whereClause += "";
 		}
-		if (dto.getSubcategory() != null) {
-			whereClause += " AND ( entity.subcategory.code LIKE :subcategory )";
+		
+		if(dto.getPrice() != null) {
+			if (dto.getPrice().toString().contains(",")) {
+				String[] s = dto.getPrice().toString().split(",");
+				Long begin = Long.parseLong(s[0]);
+				Long end = Long.parseLong(s[1]);
+				whereClause += " AND ( entity.price BETWEEN " + begin + " AND " + end + " )";
+			} else {
+				Long begin = dto.getPrice();
+				whereClause += " AND ( entity.price <= " + begin + " )";
+			}
+		} else {
+			whereClause += "";
 		}
 
 		sql += whereClause + orderBy;
@@ -125,15 +150,10 @@ public class ProductServiceImpl implements ProductService {
 			q.setParameter("text", '%' + dto.getKeyword() + '%');
 			qCount.setParameter("text", '%' + dto.getKeyword() + '%');
 		}
-
-		if (dto.getCategory() != null) {
-			q.setParameter("category", dto.getCategory());
-			qCount.setParameter("category", dto.getCategory());
-		}
-
-		if (dto.getSubcategory() != null) {
-			q.setParameter("subcategory", dto.getSubcategory());
-			qCount.setParameter("subcategory", dto.getSubcategory());
+		
+		if (dto.getBrand() != null && dto.getBrand().length() > 0 && dto.getBrand().contains(",") == false) {
+			q.setParameter("brand", dto.getBrand());
+			qCount.setParameter("brand", dto.getBrand());
 		}
 
 		int startPosition = pageIndex * pageSize;
@@ -150,25 +170,6 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Boolean delete(Long id) {
-		if (id != null) {
-//			productRepos.deleteById(id);
-			Product entity = productRepos.getById(id);
-			entity.setDisplay(0);
-			productRepos.save(entity);
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public ProductDtoNew getProductById(Long id) {
-		Product product = productRepos.getById(id);
-		ProductDtoNew dto = new ProductDtoNew(product);
-		return dto;
-	}
-
-	@Override
 	public Page<ProductListDto> productList(SearchDto dto) {
 		int pageIndex = dto.getPageIndex();
 		int pageSize = dto.getPageSize();
@@ -182,7 +183,10 @@ public class ProductServiceImpl implements ProductService {
 		String sqlCount = "select count(entity.id) from  Product as entity where (1=1) ";
 		String sql = "select new com.example.demo.dto.product.ProductListDto(entity) from  Product as entity where entity.display=1 AND (1=1)  ";
 		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
-			whereClause += " AND ( entity.name LIKE :text OR entity.description LIKE :text )";
+			whereClause += " AND ( entity.name LIKE :text " + "OR entity.description LIKE :text "
+					+ "OR entity.slug LIKE :text " + "OR entity.slug LIKE :text "
+					+ "OR entity.category.name LIKE :text " + "OR entity.category.code LIKE :text "
+					+ "OR entity.subcategory.name LIKE :text " + "OR entity.subcategory.code LIKE :text )";
 		}
 
 		if (dto.getCategory() != null) {
@@ -190,6 +194,34 @@ public class ProductServiceImpl implements ProductService {
 		}
 		if (dto.getSubcategory() != null) {
 			whereClause += " AND ( entity.subcategory.code LIKE :subcategory )";
+		}
+		
+		if (dto.getBrand() != null && StringUtils.hasText(dto.getBrand())) {
+			if (dto.getBrand().contains(",")) {
+				String[] s = dto.getBrand().split(",");
+				whereClause += " AND ( entity.brand.code = '" + s[0] + "' )";
+				for (int i = 1; i < s.length; i++) {
+					whereClause += " OR ( entity.brand.code = '" + s[i] + "' )";
+				}
+			} else {
+				whereClause += " AND ( entity.brand.code = :brand )";
+			}
+		} else {
+			whereClause += "";
+		}
+		
+		if(dto.getPrice() != null) {
+			if (dto.getPrice().toString().contains(",")) {
+				String[] s = dto.getPrice().toString().split(",");
+				Long begin = Long.parseLong(s[0]);
+				Long end = Long.parseLong(s[1]);
+				whereClause += " AND ( entity.price BETWEEN " + begin + " AND " + end + " )";
+			} else {
+				Long begin = Long.parseLong(dto.getPrice());
+				whereClause += " AND ( entity.price <= " + begin + " )";
+			}
+		} else {
+			whereClause += "";
 		}
 
 		sql += whereClause + orderBy;
@@ -212,6 +244,11 @@ public class ProductServiceImpl implements ProductService {
 			q.setParameter("subcategory", dto.getSubcategory());
 			qCount.setParameter("subcategory", dto.getSubcategory());
 		}
+		
+		if (dto.getBrand() != null && dto.getBrand().length() > 0 && dto.getBrand().contains(",") == false) {
+			q.setParameter("brand", dto.getBrand());
+			qCount.setParameter("brand", dto.getBrand());
+		}
 
 		int startPosition = pageIndex * pageSize;
 		q.setFirstResult(startPosition);
@@ -219,8 +256,103 @@ public class ProductServiceImpl implements ProductService {
 
 		@SuppressWarnings("unchecked")
 		List<ProductListDto> entities = q.getResultList();
-		
-		for(ProductListDto item : entities) {
+
+		for (ProductListDto item : entities) {
+			Integer seller_count = orderDetailRepos.countAllByProductId(item.getId());
+			item.setSeller_count(seller_count);
+		}
+
+		long count = (long) qCount.getSingleResult();
+		Pageable pageable = PageRequest.of(pageIndex, pageSize);
+		Page<ProductListDto> result = new PageImpl<ProductListDto>(entities, pageable, count);
+		return result;
+	}
+
+	@Override
+	public Page<ProductListDto> getAllProduct(AdvanceSearchDto dto) {
+		int pageIndex = dto.getPageIndex();
+		int pageSize = dto.getPageSize();
+		if (pageIndex > 0)
+			pageIndex -= 1;
+		else
+			pageIndex = 0;
+
+		String whereClause = "";
+		String orderBy = " ORDER BY entity.id DESC";
+		String sqlCount = "select count(entity.id) from  Product as entity where (1=1) ";
+		String sql = "select new com.example.demo.dto.product.ProductListDto(entity) from  Product as entity where (1=1) ";
+
+		if (dto.getDisplay() == 0 || dto.getDisplay() == 1) {
+			whereClause += " AND ( entity.display = " + dto.getDisplay() + ")";
+		} else {
+			whereClause += "";
+		}
+
+		if (dto.getName() != null && StringUtils.hasText(dto.getName())) {
+			whereClause += " AND ( entity.name LIKE :name " + "OR entity.description LIKE :name "
+					+ "OR entity.slug LIKE :name )";
+		} else {
+			whereClause += "";
+		}
+
+		if (dto.getSku() != null && StringUtils.hasText(dto.getSku())) {
+			whereClause += " AND ( entity.sku LIKE :sku )";
+		}
+
+		if (dto.getCategory() != null && StringUtils.hasText(dto.getCategory())) {
+			whereClause += " AND ( entity.category.code = :category )";
+		} else {
+			whereClause += "";
+		}
+
+		if (dto.getBrand() != null && StringUtils.hasText(dto.getBrand())) {
+			if (dto.getBrand().contains(",")) {
+				String[] s = dto.getBrand().split(",");
+				whereClause += " AND ( entity.brand.code = '" + s[0] + "' )";
+				for (int i = 1; i < s.length; i++) {
+					whereClause += " OR ( entity.brand.code = '" + s[i] + "' )";
+				}
+			} else {
+				whereClause += " AND ( entity.brand.code = :brand )";
+			}
+		} else {
+			whereClause += "";
+		}
+
+		sql += whereClause + orderBy;
+		sqlCount += whereClause;
+
+		Query q = manager.createQuery(sql, ProductListDto.class);
+		Query qCount = manager.createQuery(sqlCount);
+
+		if (dto.getName() != null && StringUtils.hasText(dto.getName())) {
+			q.setParameter("name", '%' + dto.getName() + '%');
+			qCount.setParameter("name", '%' + dto.getName() + '%');
+		}
+
+		if (dto.getSku() != null && StringUtils.hasText(dto.getSku())) {
+			q.setParameter("sku", '%' + dto.getSku() + '%');
+			qCount.setParameter("sku", '%' + dto.getSku() + '%');
+		}
+
+		if (dto.getCategory() != null && dto.getCategory().length() > 0) {
+			q.setParameter("category", dto.getCategory());
+			qCount.setParameter("category", dto.getCategory());
+		}
+
+		if (dto.getBrand() != null && dto.getBrand().length() > 0 && dto.getBrand().contains(",") == false) {
+			q.setParameter("brand", dto.getBrand());
+			qCount.setParameter("brand", dto.getBrand());
+		}
+
+		int startPosition = pageIndex * pageSize;
+		q.setFirstResult(startPosition);
+		q.setMaxResults(pageSize);
+
+		@SuppressWarnings("unchecked")
+		List<ProductListDto> entities = q.getResultList();
+
+		for (ProductListDto item : entities) {
 			Integer seller_count = orderDetailRepos.countAllByProductId(item.getId());
 			item.setSeller_count(seller_count);
 		}
@@ -263,6 +395,7 @@ public class ProductServiceImpl implements ProductService {
 
 			if (dto.getId() != null) {
 				entity = productRepos.getById(dto.getId());
+				entity.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
 
 				switch (entity.getType()) {
 				case 1:
@@ -277,6 +410,8 @@ public class ProductServiceImpl implements ProductService {
 			}
 			if (entity == null) {
 				entity = new Product();
+				entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
+				entity.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
 				book = new Book();
 				tech = new Technology();
 				inventory = new Inventory();
@@ -359,9 +494,7 @@ public class ProductServiceImpl implements ProductService {
 			default:
 				break;
 			}
-
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-
+			
 			entity.setTags(tags);
 
 			entity.setImages(images);
@@ -398,6 +531,28 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	public Boolean delete(Long id) {
+		if (id != null) {
+			Product entity = productRepos.getById(id);
+			if (entity.getDisplay() == 1) {
+				entity.setDisplay(0);
+			} else {
+				entity.setDisplay(1);
+			}
+			productRepos.save(entity);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public ProductDtoNew getProductById(Long id) {
+		Product product = productRepos.getById(id);
+		ProductDtoNew dto = new ProductDtoNew(product);
+		return dto;
+	}
+
+	@Override
 	public ProductDto getDetailProduct(Long id) {
 		Product product = productRepos.getById(id);
 		ProductDto dto = new ProductDto(product);
@@ -407,7 +562,8 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Page<ProductListDto> getAllProductByBrand(String brandCode, Integer page, Integer limit, String sortBy) {
 		Brand brand = brandRepos.findOneByCode(brandCode);
-		Page<Product> list = productRepos.findAllByBrand(brand, PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+		Page<Product> list = productRepos.findAllByBrand(brand,
+				PageRequest.of(page, limit, Sort.by(sortBy).descending()));
 		Page<ProductListDto> dtoPage = list.map(item -> new ProductListDto(item));
 		return dtoPage;
 	}
@@ -416,10 +572,10 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductListDto> getAllByBrand(Long productId, String brandCode) {
 		Brand brand = brandRepos.findOneByCode(brandCode);
 		Page<Product> pages = productRepos.findAllByBrand(brand, PageRequest.of(0, 4, Sort.by("id").descending()));
-		List<Product> list =pages.getContent();
+		List<Product> list = pages.getContent();
 		List<ProductListDto> dtos = new ArrayList<>();
 		for (Product p : list) {
-			if(productId != p.getId()) {
+			if (productId != p.getId()) {
 				ProductListDto dto = new ProductListDto(p);
 				dtos.add(dto);
 			}

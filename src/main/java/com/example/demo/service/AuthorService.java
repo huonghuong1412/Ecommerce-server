@@ -7,7 +7,11 @@ import com.example.demo.dto.product.AuthorDto;
 
 @Service
 public interface AuthorService {
-	public Page<AuthorDto> getList(Integer page, Integer limit, String sortBy);;
+	public Page<AuthorDto> getList(Integer page, Integer limit, String sortBy);
+	
+	public Page<AuthorDto> getListHide(Integer page, Integer limit, String sortBy);
+	
+	public Page<AuthorDto> getAll(Integer page, Integer limit, String sortBy);
 
 	public AuthorDto saveOrUpdate(AuthorDto dto);
 	

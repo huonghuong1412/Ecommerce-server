@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,8 +34,24 @@ public class SubCategoryController {
 	@GetMapping("")
 	public ResponseEntity<Page<SubCategoryDto>> getAll(@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
-			@RequestParam(name = "sortBy", defaultValue = "name") String sortBy) {
+			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
 		Page<SubCategoryDto> result = service.getList(page, limit, sortBy);
+		return new ResponseEntity<Page<SubCategoryDto>>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping("/all")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<SubCategoryDto>> getAllAdmin(@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy, @RequestParam(name="display", defaultValue = "2") Integer display) {
+		Page<SubCategoryDto> result = null;
+		if(display == 1) {
+			result = service.getList(page, limit, sortBy);
+		} else if(display == 0) {
+			result = service.getListHide(page, limit, sortBy);
+		} else {
+			result = service.getAll(page, limit, sortBy);
+		}
 		return new ResponseEntity<Page<SubCategoryDto>>(result, HttpStatus.OK);
 	}
 	
@@ -51,12 +68,14 @@ public class SubCategoryController {
 	}
 
 	@PostMapping("")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<SubCategoryDto> create(@RequestBody SubCategoryDto dto) {
 		SubCategoryDto result = service.saveOrUpdate(dto);
 		return new ResponseEntity<SubCategoryDto>(result, HttpStatus.OK);
 	}
 	
 	@PutMapping(value = "/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<SubCategoryDto> update(@RequestBody SubCategoryDto dto, @PathVariable Long id) {
 		dto.setId(id);
 		SubCategoryDto result = service.saveOrUpdate(dto);
@@ -64,6 +83,7 @@ public class SubCategoryController {
 	}
 
 	@DeleteMapping(value = "/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Boolean> delete(@PathVariable Long id) {
 		Boolean result = service.deleteSubCategory(id);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);

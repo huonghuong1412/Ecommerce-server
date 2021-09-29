@@ -22,4 +22,8 @@ public interface AuthorRepository extends JpaRepository<Author, Long> {
 	
 	@Query("select entity from Author entity where entity.display = 1")
 	public Page<Author> getList(Pageable pageable);
+	
+	@Query("select entity from Author entity where entity.display = 0")
+	public Page<Author> getListHide(Pageable pageable);
+	
 }

@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,7 @@ public class UploadFileController {
 	String SLIDE_FILE_DIRECTORY;
 
 	@PostMapping(value="/image/product")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> fileUpload(@RequestParam("File") MultipartFile[] multipartFile) throws IOException {
 
 		List<File> files = new ArrayList<File>();
@@ -50,6 +52,7 @@ public class UploadFileController {
 	}
 	
 	@PostMapping("/image/slide")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> imageSlidefileUpload(@RequestParam("File") MultipartFile multipartFile) throws IOException {
 
 		File file = new File(SLIDE_FILE_DIRECTORY +  multipartFile.getOriginalFilename());

@@ -15,6 +15,11 @@ public interface CommentService {
 	// thêm bình luận sau khi mua hàng
 	public MessageResponse createComment(CommentDto dto);
 	
+	// xac nhan bình luận cua khach hang
+	public MessageResponse displayComment(CommentDto dto);
+	
+	public CommentDto getOne(Long id);
+	
 	public List<CommentDto> getAllCommentByProduct(Long productId);
 	
 	public Integer countAllCommentByProduct(Long productId);
@@ -22,5 +27,7 @@ public interface CommentService {
 	public Page<CommentDto> getAllComments(SearchDto dto);
 	
 	public List<CommentDto> getAllCommentByUser(String username);
+	
+	public Boolean delete(Long id);
 	
 }

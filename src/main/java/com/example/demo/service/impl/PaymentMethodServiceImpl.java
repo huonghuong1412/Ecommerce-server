@@ -23,6 +23,24 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 	
 	@Override
 	public Page<PaymentMethodDto> getList(Integer page, Integer limit, String sortBy) {
+		Page<PaymentMethod> list = repos.getList(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<PaymentMethodDto> dtos = list.map(tag -> new PaymentMethodDto(tag));
+
+		return dtos;
+	}
+	
+	@Override
+	public Page<PaymentMethodDto> getListHide(Integer page, Integer limit, String sortBy) {
+		Page<PaymentMethod> list = repos.getListHide(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<PaymentMethodDto> dtos = list.map(tag -> new PaymentMethodDto(tag));
+
+		return dtos;
+	}
+	
+	@Override
+	public Page<PaymentMethodDto> getAll(Integer page, Integer limit, String sortBy) {
 		Page<PaymentMethod> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
 
 		Page<PaymentMethodDto> dtos = list.map(tag -> new PaymentMethodDto(tag));
@@ -36,15 +54,16 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 			PaymentMethod entity = null;
 			if (dto.getId() != null) {
 				entity = repos.getById(dto.getId());
+				entity.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 			if (entity == null) {
 				entity = new PaymentMethod();
+				entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 
 			entity.setName(dto.getName());
 			entity.setCode(dto.getCode());
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
-
+			entity.setDisplay(1);
 			entity = repos.save(entity);
 
 			if (entity != null) {
@@ -57,7 +76,13 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 	@Override
 	public Boolean delete(Long id) {
 		if (id != null) {
-			repos.deleteById(id);
+			PaymentMethod entity = repos.getById(id);
+			if(entity.getDisplay() == 1) {
+				entity.setDisplay(0);
+			} else {
+				entity.setDisplay(1);
+			}
+			entity = repos.save(entity);
 			return true;
 		}
 		return false;

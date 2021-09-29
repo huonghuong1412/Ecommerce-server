@@ -7,7 +7,14 @@ import com.example.demo.dto.product.PublisherDto;
 
 @Service
 public interface PublisherService {
+	// Get danh sách client
 	public Page<PublisherDto> getList(Integer page, Integer limit, String sortBy);
+	
+	// Get danh sách client
+	public Page<PublisherDto> getListHide(Integer page, Integer limit, String sortBy);
+	
+	// get danh sách admin
+	public Page<PublisherDto> getAll(Integer page, Integer limit, String sortBy);
 
 	public PublisherDto saveOrUpdate(PublisherDto dto);
 

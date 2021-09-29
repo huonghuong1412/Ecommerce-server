@@ -1,5 +1,9 @@
 package com.example.demo.dto.product;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.example.demo.dto.AbstractDTO;
 import com.example.demo.entity.product.Publisher;
 
@@ -7,6 +11,8 @@ public class PublisherDto extends AbstractDTO<PublisherDto> {
 
 	private String name;
 	private String code;
+	private Integer display;
+	private String createdDate;
 
 	public PublisherDto() {
 		// TODO Auto-generated constructor stub
@@ -17,6 +23,13 @@ public class PublisherDto extends AbstractDTO<PublisherDto> {
 		this.setId(entity.getId());
 		this.name = entity.getName();
 		this.code = entity.getCode();
+		this.display = entity.getDisplay();
+		try {
+			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(
+					new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String getName() {
@@ -33,6 +46,22 @@ public class PublisherDto extends AbstractDTO<PublisherDto> {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
+	}
+
+	public String getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
 	}
 
 }

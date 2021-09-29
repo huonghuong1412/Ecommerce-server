@@ -9,6 +9,10 @@ import com.example.demo.dto.order.PaymentMethodDto;
 public interface PaymentMethodService {
 
 	public Page<PaymentMethodDto> getList(Integer page, Integer limit, String sortBy);
+	
+	public Page<PaymentMethodDto> getListHide(Integer page, Integer limit, String sortBy);
+	
+	public Page<PaymentMethodDto> getAll(Integer page, Integer limit, String sortBy);
 
 	public PaymentMethodDto saveOrUpdate(PaymentMethodDto dto);
 

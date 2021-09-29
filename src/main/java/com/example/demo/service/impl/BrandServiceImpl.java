@@ -34,6 +34,24 @@ public class BrandServiceImpl implements BrandService {
 
 		return dtos;
 	}
+	
+	@Override
+	public Page<BrandDto> getListHide(Integer page, Integer limit, String sortBy) {
+		Page<Brand> list = repos.getListHide(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<BrandDto> dtos = list.map(tag -> new BrandDto(tag));
+
+		return dtos;
+	}
+	
+	@Override
+	public Page<BrandDto> getAll(Integer page, Integer limit, String sortBy) {
+		Page<Brand> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<BrandDto> dtos = list.map(tag -> new BrandDto(tag));
+
+		return dtos;
+	}
 
 	@Override
 	public BrandDto saveOrUpdate(BrandDto dto) {
@@ -43,9 +61,11 @@ public class BrandServiceImpl implements BrandService {
 			Brand entity = null;
 			if (dto.getId() != null) {
 				entity = repos.getById(dto.getId());
+				entity.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 			if (entity == null) {
 				entity = new Brand();
+				entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 
 			entity.setName(dto.getName());
@@ -53,7 +73,6 @@ public class BrandServiceImpl implements BrandService {
 			entity.setMadeIn(dto.getMadeIn());
 			entity.setCategory(category);
 			entity.setDisplay(1);
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 
 			entity = repos.save(entity);
 
@@ -68,7 +87,11 @@ public class BrandServiceImpl implements BrandService {
 	public Boolean delete(Long id) {
 		if (id != null) {
 			Brand entity = repos.getById(id);
-			entity.setDisplay(0);
+			if(entity.getDisplay() == 1) {
+				entity.setDisplay(0);
+			} else {
+				entity.setDisplay(1);
+			}
 			entity = repos.save(entity);
 			return true;
 		}

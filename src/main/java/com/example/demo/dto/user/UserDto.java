@@ -31,9 +31,6 @@ public class UserDto extends AbstractDTO<UserDto> {
 		this.fullName = user.getFullname();
 		this.phone = user.getPhone();
 		this.dateOfBirth = user.getDateOfBirth();
-//		this.city = user.getAddress().getCity();
-//		this.district = user.getAddress().getDistrict();
-//		this.ward = user.getAddress().getWard();
 		this.address = new UserAddressDto();
 		if (address != null) {
 			this.address = new UserAddressDto(user.getAddress());

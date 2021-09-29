@@ -21,4 +21,7 @@ public interface SubCategoryRepository extends JpaRepository<SubCategory, Long> 
 	
 	@Query("select entity from SubCategory entity where entity.display = 1")
 	public Page<SubCategory> getList(Pageable pageable);
+	
+	@Query("select entity from SubCategory entity where entity.display = 0")
+	public Page<SubCategory> getListHide(Pageable pageable);
 }

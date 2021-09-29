@@ -1,5 +1,9 @@
 package com.example.demo.dto.inventory;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.example.demo.dto.AbstractDTO;
 import com.example.demo.entity.inventory.InventoryDetail;
 
@@ -23,7 +27,17 @@ public class InventoryDetailDto extends AbstractDTO<InventoryDetailDto> {
 		this.import_quantity = entity.getImport_quantity();
 		this.original_price = entity.getOriginal_price();
 		this.note = entity.getNote();
-		this.importDate = entity.getImportDate();
+//		this.importDate = entity.getImportDate();
+		try {
+			this.importDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getImportDate()).getTime()));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		try {
+			this.updatedDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getUpdatedDate()).getTime()));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		this.updatedDate = entity.getUpdatedDate();
 	}
 

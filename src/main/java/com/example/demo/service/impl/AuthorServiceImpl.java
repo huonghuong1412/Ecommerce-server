@@ -24,9 +24,21 @@ public class AuthorServiceImpl implements AuthorService {
 	@Override
 	public Page<AuthorDto> getList(Integer page, Integer limit, String sortBy) {
 		Page<Author> list = repos.getList(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
-
 		Page<AuthorDto> dtos = list.map(tag -> new AuthorDto(tag));
+		return dtos;
+	}
 
+	@Override
+	public Page<AuthorDto> getListHide(Integer page, Integer limit, String sortBy) {
+		Page<Author> list = repos.getListHide(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+		Page<AuthorDto> dtos = list.map(tag -> new AuthorDto(tag));
+		return dtos;
+	}
+
+	@Override
+	public Page<AuthorDto> getAll(Integer page, Integer limit, String sortBy) {
+		Page<Author> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+		Page<AuthorDto> dtos = list.map(tag -> new AuthorDto(tag));
 		return dtos;
 	}
 
@@ -36,14 +48,15 @@ public class AuthorServiceImpl implements AuthorService {
 			Author entity = null;
 			if (dto.getId() != null) {
 				entity = repos.getById(dto.getId());
+				entity.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 			if (entity == null) {
 				entity = new Author();
+				entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 
 			entity.setName(dto.getName());
 			entity.setCode(dto.getCode());
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			entity.setDisplay(1);
 
 			entity = repos.save(entity);
@@ -60,7 +73,11 @@ public class AuthorServiceImpl implements AuthorService {
 		if (id != null) {
 //			repos.deleteById(id);
 			Author entity = repos.getById(id);
-			entity.setDisplay(0);
+			if (entity.getDisplay() == 1) {
+				entity.setDisplay(0);
+			} else {
+				entity.setDisplay(1);
+			}
 			entity = repos.save(entity);
 			return true;
 		}
@@ -69,7 +86,7 @@ public class AuthorServiceImpl implements AuthorService {
 
 	@Override
 	public Boolean checkCode(Long id, String code) {
-		if(code != null && StringUtils.hasText(code)) {
+		if (code != null && StringUtils.hasText(code)) {
 			Long count = repos.checkCode(code, id);
 			return count != 0l;
 		}

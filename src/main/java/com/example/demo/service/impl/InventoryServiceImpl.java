@@ -104,6 +104,7 @@ public class InventoryServiceImpl implements InventoryService {
 			Product product = productRepos.getById(dto.getProductId());
 			if (inventoryRepos.existsByProductId(dto.getProductId())) {
 				inventory = inventoryRepos.getById(dto.getId());
+				inventory.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
 				List<InventoryDetailDto> inventoryDetailDtos = dto.getInventory_details();
 				List<InventoryDetail> inventoryDetails = new ArrayList<>();
 				for (InventoryDetailDto detailDto : inventoryDetailDtos) {

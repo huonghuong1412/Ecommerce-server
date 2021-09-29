@@ -18,5 +18,8 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
 	
 	@Query("select entity from Tag entity where entity.display = 1")
 	public Page<Tag> getList(Pageable pageable);
+	
+	@Query("select entity from Tag entity where entity.display = 0")
+	public Page<Tag> getListHide(Pageable pageable);
 
 }

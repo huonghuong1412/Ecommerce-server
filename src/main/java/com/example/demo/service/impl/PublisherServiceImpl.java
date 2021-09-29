@@ -29,6 +29,24 @@ public class PublisherServiceImpl implements PublisherService {
 
 		return dtos;
 	}
+	
+	@Override
+	public Page<PublisherDto> getListHide(Integer page, Integer limit, String sortBy) {
+		Page<Publisher> list = repos.getListHide(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<PublisherDto> dtos = list.map(tag -> new PublisherDto(tag));
+
+		return dtos;
+	}
+	
+	@Override
+	public Page<PublisherDto> getAll(Integer page, Integer limit, String sortBy) {
+		Page<Publisher> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<PublisherDto> dtos = list.map(tag -> new PublisherDto(tag));
+
+		return dtos;
+	}
 
 	@Override
 	public PublisherDto saveOrUpdate(PublisherDto dto) {
@@ -36,14 +54,15 @@ public class PublisherServiceImpl implements PublisherService {
 			Publisher entity = null;
 			if (dto.getId() != null) {
 				entity = repos.getById(dto.getId());
+				entity.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 			if (entity == null) {
 				entity = new Publisher();
+				entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 
 			entity.setName(dto.getName());
 			entity.setCode(dto.getCode());
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			entity.setDisplay(1);
 			entity = repos.save(entity);
 
@@ -58,7 +77,11 @@ public class PublisherServiceImpl implements PublisherService {
 	public Boolean delete(Long id) {
 		if (id != null) {
 			Publisher entity = repos.getById(id);
-			entity.setDisplay(0);
+			if(entity.getDisplay() == 1) {
+				entity.setDisplay(0);
+			} else {
+				entity.setDisplay(1);
+			}
 			entity = repos.save(entity);
 			return true;
 		}

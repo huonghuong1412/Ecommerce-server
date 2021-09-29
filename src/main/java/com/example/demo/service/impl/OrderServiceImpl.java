@@ -3,13 +3,19 @@ package com.example.demo.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.example.demo.dto.AdvanceSearchDto;
 import com.example.demo.dto.order.OrderDetailDto;
 import com.example.demo.dto.order.OrderDetailHisDto;
 import com.example.demo.dto.order.OrderDto;
@@ -36,6 +42,9 @@ import com.example.demo.service.OrderService;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+	
+	@Autowired
+	private EntityManager manager;
 
 	@Autowired
 	private OrderRepository orderRepository;
@@ -62,23 +71,110 @@ public class OrderServiceImpl implements OrderService {
 	private InventoryRepository inventoryRepos;
 
 	@Override
-	public Page<OrderHisDto> getAllOrder(Integer page, Integer limit, String sortBy) {
-		Page<Order> orders = orderRepository.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
-		Page<OrderHisDto> dtos = orders.map(item -> new OrderHisDto(item));
-		return dtos;
+	public Page<OrderHisDto> getAllOrder(AdvanceSearchDto dto) {
+		
+		/* 
+		 SELECT * FROM datn_ecomerce.tbl_order
+			WHERE created_date >= TIMESTAMP(NOW()) - INTERVAL 30 DAY
+			and status = 2
+			ORDER BY created_date DESC
+		 * */
+		
+		
+		
+//		Page<Order> orders = orderRepository.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+//		List<OrderHisDto> orderDtos = new ArrayList<>();
+//		for (Order o : orders.toList()) {
+//			OrderHisDto dto = new OrderHisDto(o);
+//			Integer quantity = o.getOrderDetails().size() - 1;
+//			if (quantity > 0) {
+//				dto.setDescription(
+//						o.getOrderDetails().get(0).getProduct().getName() + " và " + quantity + " sản phẩm khác");
+//			} else {
+//				dto.setDescription(o.getOrderDetails().get(0).getProduct().getName());
+//			}
+//			if(dto != null) {
+//				orderDtos.add(dto);
+//			}
+//		}
+//		Page<OrderHisDto> dtos = new PageImpl<>(orderDtos);
+//		return dtos;
+		int pageIndex = dto.getPageIndex();
+		int pageSize = dto.getPageSize();
+		if (pageIndex > 0)
+			pageIndex -= 1;
+		else
+			pageIndex = 0;
+
+		String whereClause = "";
+		String orderBy = " ORDER BY entity.createdDate ";
+		String sqlCount = "select count(entity.id) from  Order as entity where (1=1) ";
+		String sql = "select new com.example.demo.dto.order.OrderHisDto(entity) from  Order as entity where (1=1) ";
+
+		if (dto.getStatus() == -1 || dto.getStatus() == 0 || dto.getStatus() == 1 || dto.getStatus() == 2) {
+			whereClause += " AND ( entity.status = " + dto.getStatus() + ")";
+		} else {
+			whereClause += "";
+		}
+
+		// and TIMESTAMPDIFF(MINUTE, timestamp, NOW()) <:timeOffSet
+		if (dto.getLast_date() != null && (dto.getLast_date() == 1 || dto.getLast_date() == 7 || dto.getLast_date() == 30)) {
+			whereClause += " AND (TIMESTAMPDIFF(DAY, entity.createdDate, NOW()) <= " + dto.getLast_date() + " )";
+		} else {
+			whereClause += "";
+		}
+
+
+		sql += whereClause + orderBy;
+		sqlCount += whereClause;
+
+//		System.out.println(sql);
+		
+		Query q = manager.createQuery(sql, OrderHisDto.class);
+		Query qCount = manager.createQuery(sqlCount);
+
+		int startPosition = pageIndex * pageSize;
+		q.setFirstResult(startPosition);
+		q.setMaxResults(pageSize);
+
+		@SuppressWarnings("unchecked")
+		List<OrderHisDto> entities = q.getResultList();
+
+		long count = (long) qCount.getSingleResult();
+		Pageable pageable = PageRequest.of(pageIndex, pageSize);
+		
+		List<OrderHisDto> orderDtos = new ArrayList<>();
+		for (OrderHisDto o : entities) {
+			Order order = orderRepository.getById(o.getId());
+			Integer quantity = order.getOrderDetails().size() - 1;
+			if (quantity > 0) {
+				o.setDescription(
+						order.getOrderDetails().get(0).getProduct().getName() + " và " + quantity + " sản phẩm khác");
+			} else {
+				o.setDescription(order.getOrderDetails().get(0).getProduct().getName());
+			}
+			if(dto != null) {
+				orderDtos.add(o);
+			}
+		}
+		
+		Page<OrderHisDto> result = new PageImpl<OrderHisDto>(entities, pageable, count);
+		return result;
+		
 	}
 
 	@Override
 	public List<OrderHisDto> getAllOrderByUser(String username) {
 		User user = userRepository.findOneByUsername(username);
 		List<Order> result = orderRepository.getAllByUser(user, Sort.by(Sort.Direction.DESC, "createdDate"));
-		
+
 		List<OrderHisDto> orderDtos = new ArrayList<>();
 		for (Order o : result) {
 			OrderHisDto dto = new OrderHisDto(o);
 			Integer quantity = o.getOrderDetails().size() - 1;
-			if(quantity > 0) {
-				dto.setDescription(o.getOrderDetails().get(0).getProduct().getName() + " và " + quantity + " sản phẩm khác");
+			if (quantity > 0) {
+				dto.setDescription(
+						o.getOrderDetails().get(0).getProduct().getName() + " và " + quantity + " sản phẩm khác");
 			} else {
 				dto.setDescription(o.getOrderDetails().get(0).getProduct().getName());
 			}
@@ -97,9 +193,8 @@ public class OrderServiceImpl implements OrderService {
 
 			String shipCode = dto.getShipment();
 			Shipment ship = shipmentRepos.findOneByCode(shipCode);
-			
+
 			Order order = new Order();
-			order.setCreate_time(dto.getCreate_time());
 			order.setOrderInfo(dto.getOrderInfo());
 			order.setStatus(0);
 			order.setAddress(dto.getAddress());
@@ -163,35 +258,35 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public List<OrderDetailHisDto> getDetailOrderById(Long id) {
 		// TODO Auto-generated method stub
-		
+
 		List<OrderDetail> details = orderDetailRepository.getAllByOrderId(id);
 		List<OrderDetailHisDto> dtos = new ArrayList<>();
-		for(OrderDetail detail : details) {
+		for (OrderDetail detail : details) {
 			OrderDetailHisDto dto = new OrderDetailHisDto(detail);
 			dtos.add(dto);
 		}
-		
+
 		return dtos;
 	}
 
 	@Override
 	public OrderHisFullDto getDetailOrder(Long id) {
 		// TODO Auto-generated method stub
-		if(id != null) {
+		if (id != null) {
 			Order order = orderRepository.getById(id);
 			OrderHisFullDto dto = new OrderHisFullDto(order);
 			return dto;
 		}
 		return null;
 	}
-	
+
 	@Override
 	public Integer getQuantityProductSeller(Long product_id) {
 		// TODO Auto-generated method stub
 		List<OrderDetail> orders = orderDetailRepository.getAllByProductId(product_id);
 		Integer count_seller = 0;
-		for(OrderDetail order : orders) {
-			if(order.getOrder().getStatus() == 2) {
+		for (OrderDetail order : orders) {
+			if (order.getOrder().getStatus() == 2) {
 				count_seller += order.getAmount();
 			}
 		}

@@ -1,11 +1,15 @@
 package com.example.demo.dto.order;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.example.demo.entity.order.Order;
 
 public class OrderHisDto {
 	private Long id;
 	private String description;
-	private String create_time;
+	private String createdDate;
 	private Long total_price;
 	private Integer total_item;
 	private String orderInfo;
@@ -23,7 +27,13 @@ public class OrderHisDto {
 
 	public OrderHisDto(Order entity) {
 		this.setId(entity.getId());
-		this.create_time = entity.getCreate_time();
+		try {
+			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(
+					new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.total_price = entity.getTotal_price();
 		this.total_item = entity.getTotal_item();
 		this.orderInfo = entity.getOrderInfo();
@@ -87,12 +97,12 @@ public class OrderHisDto {
 		this.description = description;
 	}
 
-	public String getCreate_time() {
-		return create_time;
+	public String getCreatedDate() {
+		return createdDate;
 	}
 
-	public void setCreate_time(String create_time) {
-		this.create_time = create_time;
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
 	}
 
 	public Long getTotal_price() {

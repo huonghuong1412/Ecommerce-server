@@ -1,6 +1,9 @@
 package com.example.demo.dto.order;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.example.demo.dto.AbstractDTO;
@@ -9,7 +12,7 @@ import com.example.demo.entity.order.OrderDetail;
 import com.example.demo.entity.order.Payment;
 
 public class OrderDto extends AbstractDTO<OrderDto> {
-	private String create_time;
+	private String createdDate;
 	private String username;
 	private Long total_price;
 	private Integer total_item;
@@ -27,7 +30,12 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 
 	public OrderDto(Order entity) {
 		this.setId(entity.getId());
-		this.create_time = entity.getCreate_time();
+		try {
+			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.total_price = entity.getTotal_price();
 		this.total_item = entity.getTotal_item();
 		this.username = entity.getUser().getUsername();
@@ -50,12 +58,12 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 		}
 	}
 
-	public String getCreate_time() {
-		return create_time;
+	public String getCreatedDate() {
+		return createdDate;
 	}
 
-	public void setCreate_time(String create_time) {
-		this.create_time = create_time;
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
 	}
 
 	public List<OrderDetailDto> getOrder_details() {

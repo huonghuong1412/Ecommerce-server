@@ -12,6 +12,10 @@ public interface SubCategoryService {
 	
 	public Page<SubCategoryDto> getList(Integer page, Integer limit, String sortBy);
 	
+	public Page<SubCategoryDto> getListHide(Integer page, Integer limit, String sortBy);
+	
+	public Page<SubCategoryDto> getAll(Integer page, Integer limit, String sortBy);
+	
 	public List<SubCategoryDto> getSubCategoryByCategory(String categoryCode);
 	
 	public SubCategoryDto saveOrUpdate(SubCategoryDto dto);

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,12 +42,14 @@ public class SupplierController {
 	}
 
 	@PostMapping("")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<SupplierDto> create(@RequestBody SupplierDto dto) {
 		SupplierDto result = service.saveOrUpdate(dto);
 		return new ResponseEntity<SupplierDto>(result, HttpStatus.OK);
 	}
 
 	@PutMapping(value = "/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<SupplierDto> update(@RequestBody SupplierDto dto, @PathVariable Long id) {
 		dto.setId(id);
 		SupplierDto result = service.saveOrUpdate(dto);
@@ -54,6 +57,7 @@ public class SupplierController {
 	}
 
 	@DeleteMapping(value = "/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Boolean> delete(@PathVariable Long id) {
 		Boolean result = service.delete(id);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);

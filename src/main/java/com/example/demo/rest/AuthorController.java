@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,8 +32,24 @@ public class AuthorController {
 	@GetMapping("")
 	public ResponseEntity<Page<AuthorDto>> getAll(@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
-			@RequestParam(name = "sortBy", defaultValue = "name") String sortBy) {
+			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
 		Page<AuthorDto> result = service.getList(page, limit, sortBy);
+		return new ResponseEntity<Page<AuthorDto>>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping("/all")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<AuthorDto>> getAllAdmin(@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy, @RequestParam(name="display", defaultValue = "2") Integer display) {
+		Page<AuthorDto> result = null;
+		if(display == 1) {
+			result = service.getList(page, limit, sortBy);
+		} else if(display == 0) {
+			result = service.getListHide(page, limit, sortBy);
+		} else {
+			result = service.getAll(page, limit, sortBy);
+		}
 		return new ResponseEntity<Page<AuthorDto>>(result, HttpStatus.OK);
 	}
 
@@ -43,12 +60,14 @@ public class AuthorController {
 	}
 
 	@PostMapping("")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<AuthorDto> create(@RequestBody AuthorDto dto) {
 		AuthorDto result = service.saveOrUpdate(dto);
 		return new ResponseEntity<AuthorDto>(result, HttpStatus.OK);
 	}
 
 	@PutMapping(value = "/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<AuthorDto> update(@RequestBody AuthorDto dto, @PathVariable Long id) {
 		dto.setId(id);
 		AuthorDto result = service.saveOrUpdate(dto);
@@ -56,6 +75,7 @@ public class AuthorController {
 	}
 
 	@DeleteMapping(value = "/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Boolean> delete(@PathVariable Long id) {
 		Boolean result = service.delete(id);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);

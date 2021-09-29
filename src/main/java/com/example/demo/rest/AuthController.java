@@ -81,6 +81,27 @@ public class AuthController {
 				new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
 
 	}
+	
+	@PostMapping("/admin/login")
+	public ResponseEntity<?> loginAdmin(@Validated @RequestBody LoginDto dto) {
+		Authentication authentication = authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
+
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		String jwt = jwtUtils.generateJwtToken(authentication);
+
+		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+		List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
+				.collect(Collectors.toList());
+		if(userDetails.getRoles().contains(new String("ROLE_ADMIN"))) {
+			return ResponseEntity.ok(
+					new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+		} else {
+			return new ResponseEntity<MessageResponse>(new MessageResponse("Truy cập bị từ chối! Tài khoản hoặc mật khẩu không chính xác!"), HttpStatus.BAD_REQUEST);
+		}
+		
+
+	}
 
 	@PostMapping("/register")
 	public ResponseEntity<?> register(@Validated @RequestBody RegisterDto dto) {
@@ -175,7 +196,7 @@ public class AuthController {
 	}
 
 	@GetMapping("/all/user")
-//	@PreAuthorize("hasRole('STAFF_BUSINESS') or hasRole('STAFF_SALE')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Page<UserDto>> getList(@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "limit", defaultValue = "10") int limit,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword) {
@@ -184,8 +205,9 @@ public class AuthController {
 		return new ResponseEntity<Page<UserDto>>(result, HttpStatus.OK);
 	}
 
+
 	@GetMapping("/customer/{id}")
-//	@PreAuthorize("hasRole('STAFF_BUSINESS') or hasRole('STAFF_SALE')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
 	public ResponseEntity<UserDto> getCustomerById(@PathVariable Long id) {
 		User user = userRepository.getById(id);
 		UserDto result = new UserDto(user);

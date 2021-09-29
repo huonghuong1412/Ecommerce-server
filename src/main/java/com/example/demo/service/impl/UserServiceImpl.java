@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 		String sqlCount = "select count(entity.id) from User as entity where (1=1) ";
 		String sql = "select new com.example.demo.dto.user.UserDto(entity) from User as entity where entity.display=1 AND (1=1)  ";
 		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
-			whereClause += " AND ( entity.firstName LIKE :text OR entity.lastName LIKE :text OR entity.email LIKE :text )";
+			whereClause += " AND ( entity.fullname LIKE :text )";
 		}
 
 		sql += whereClause + orderBy;

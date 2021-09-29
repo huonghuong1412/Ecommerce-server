@@ -30,6 +30,24 @@ public class TagServiceImpl implements TagService {
 
 		return dtos;
 	}
+	
+	@Override
+	public Page<TagDto> getListHide(Integer page, Integer limit, String sortBy) {
+		Page<Tag> list = repos.getListHide(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<TagDto> dtos = list.map(tag -> new TagDto(tag));
+
+		return dtos;
+	}
+	
+	@Override
+	public Page<TagDto> getAll(Integer page, Integer limit, String sortBy) {
+		Page<Tag> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<TagDto> dtos = list.map(tag -> new TagDto(tag));
+
+		return dtos;
+	}
 
 	@Override
 	public TagDto saveOrUpdate(TagDto dto) {
@@ -37,14 +55,15 @@ public class TagServiceImpl implements TagService {
 			Tag entity = null;
 			if (dto.getId() != null) {
 				entity = repos.getById(dto.getId());
+				entity.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 			if (entity == null) {
 				entity = new Tag();
+				entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 
 			entity.setName(dto.getName());
 			entity.setCode(Slug.makeCode(dto.getName()));
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			entity.setDisplay(1);
 			entity = repos.save(entity);
 
@@ -66,7 +85,11 @@ public class TagServiceImpl implements TagService {
 	public Boolean delete(Long id) {
 		if (id != null) {
 			Tag entity = repos.getById(id);
-			entity.setDisplay(0);
+			if(entity.getDisplay() == 1) {
+				entity.setDisplay(0);
+			} else {
+				entity.setDisplay(1);
+			}
 			entity = repos.save(entity);
 			return true;
 		}

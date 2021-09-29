@@ -17,4 +17,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 	
 	@Query("select entity from Category entity where entity.display = 1")
 	public List<Category> getList();
+	
+	@Query("select entity from Category entity where entity.display = 0")
+	public List<Category> getListHide();
 }

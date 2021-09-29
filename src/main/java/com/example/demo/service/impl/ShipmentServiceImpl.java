@@ -23,6 +23,24 @@ public class ShipmentServiceImpl implements ShipmentService {
 
 	@Override
 	public Page<ShipmentDto> getList(Integer page, Integer limit, String sortBy) {
+		Page<Shipment> list = repos.getList(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<ShipmentDto> dtos = list.map(tag -> new ShipmentDto(tag));
+
+		return dtos;
+	}
+	
+	@Override
+	public Page<ShipmentDto> getListHide(Integer page, Integer limit, String sortBy) {
+		Page<Shipment> list = repos.getListHide(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<ShipmentDto> dtos = list.map(tag -> new ShipmentDto(tag));
+
+		return dtos;
+	}
+	
+	@Override
+	public Page<ShipmentDto> getAll(Integer page, Integer limit, String sortBy) {
 		Page<Shipment> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
 
 		Page<ShipmentDto> dtos = list.map(tag -> new ShipmentDto(tag));
@@ -36,16 +54,18 @@ public class ShipmentServiceImpl implements ShipmentService {
 			Shipment entity = null;
 			if (dto.getId() != null) {
 				entity = repos.getById(dto.getId());
+				entity.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 			if (entity == null) {
 				entity = new Shipment();
+				entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			}
 
 			entity.setName(dto.getName());
 			entity.setCode(dto.getCode());
 			entity.setFee(dto.getFee());
 			entity.setType(dto.getType());
-			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
+			entity.setDisplay(1);
 
 			entity = repos.save(entity);
 
@@ -59,7 +79,13 @@ public class ShipmentServiceImpl implements ShipmentService {
 	@Override
 	public Boolean delete(Long id) {
 		if (id != null) {
-			repos.deleteById(id);
+			Shipment entity = repos.getById(id);
+			if(entity.getDisplay() == 1) {
+				entity.setDisplay(0);
+			} else {
+				entity.setDisplay(1);
+			}
+			entity = repos.save(entity);
 			return true;
 		}
 		return false;

@@ -8,6 +8,10 @@ import com.example.demo.dto.order.ShipmentDto;
 @Service
 public interface ShipmentService {
 	public Page<ShipmentDto> getList(Integer page, Integer limit, String sortBy);
+	
+	public Page<ShipmentDto> getListHide(Integer page, Integer limit, String sortBy);
+	
+	public Page<ShipmentDto> getAll(Integer page, Integer limit, String sortBy);
 
 	public ShipmentDto saveOrUpdate(ShipmentDto dto);
 	
