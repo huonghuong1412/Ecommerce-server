@@ -61,21 +61,6 @@ public class ProductController {
 		return new ResponseEntity<Page<ProductListDto>>(result, HttpStatus.OK);
 	}
 
-	// lấy toàn bộ sản phẩm trong csdl
-	@GetMapping(value = "/get/all")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Page<ProductListDto>> getAllProduct(@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "limit", defaultValue = "24") int limit,
-			@RequestParam(name = "name", defaultValue = "") String name,
-			@RequestParam(name = "sku", defaultValue = "") String sku,
-			@RequestParam(name = "category", defaultValue = "") String category,
-			@RequestParam(name = "brand", defaultValue = "") String brand,
-			@RequestParam(name = "display", defaultValue = "2") Integer display) {
-		AdvanceSearchDto dto = new AdvanceSearchDto(page, limit, name, sku, display, brand, category);
-		Page<ProductListDto> result = service.getAllProduct(dto);
-		return new ResponseEntity<Page<ProductListDto>>(result, HttpStatus.OK);
-	}
-
 	// lấy toàn bộ sản phẩm có trạng thái 1 theo danh mục
 	@GetMapping(value = "/danh-muc/{category}", name = "getByCategory")
 	public ResponseEntity<Page<ProductListDto>> searchByPageCategory(
@@ -85,11 +70,12 @@ public class ProductController {
 			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
 			@RequestParam(name = "sortValue", defaultValue = "DESC") String sortValue,
 			@RequestParam(name = "brand", defaultValue = "") String brand,
-			@PathVariable String category) {
+			@RequestParam(name = "price", defaultValue = "") String price, @PathVariable String category) {
 		SearchDto dto = new SearchDto(page, limit, keyword, category, null);
 		dto.setSortBy(sortBy);
 		dto.setSortValue(sortValue);
 		dto.setBrand(brand);
+		dto.setPrice(price);
 		Page<ProductListDto> result = service.productList(dto);
 		return new ResponseEntity<Page<ProductListDto>>(result, HttpStatus.OK);
 	}
@@ -101,14 +87,16 @@ public class ProductController {
 			@RequestParam(name = "limit", defaultValue = "24") int limit,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword,
 			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
-			@RequestParam(name = "sortValue", defaultValue = "DESC") String sortValue, 
-			@RequestParam(name = "brand", defaultValue = "") String brand,
+			@RequestParam(name = "sortValue", defaultValue = "DESC") String sortValue,
+			@RequestParam(name = "brand", defaultValue = "") String brand, 
+			@RequestParam(name = "price", defaultValue = "") String price,
 			@PathVariable String category,
 			@PathVariable String subcategory) {
 		SearchDto dto = new SearchDto(page, limit, keyword, category, subcategory);
 		dto.setSortBy(sortBy);
 		dto.setSortValue(sortValue);
 		dto.setBrand(brand);
+		dto.setPrice(price);
 		Page<ProductListDto> result = service.productList(dto);
 		return new ResponseEntity<Page<ProductListDto>>(result, HttpStatus.OK);
 	}
@@ -147,6 +135,21 @@ public class ProductController {
 	public ResponseEntity<ProductDto> getProductByIdToCreate(@PathVariable Long id) {
 		ProductDto result = service.getDetailProduct(id);
 		return new ResponseEntity<ProductDto>(result, HttpStatus.OK);
+	}
+
+	// lấy toàn bộ sản phẩm trong csdl
+	@GetMapping(value = "/get/all")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<ProductListDto>> getAllProduct(@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "limit", defaultValue = "24") int limit,
+			@RequestParam(name = "name", defaultValue = "") String name,
+			@RequestParam(name = "sku", defaultValue = "") String sku,
+			@RequestParam(name = "category", defaultValue = "") String category,
+			@RequestParam(name = "brand", defaultValue = "") String brand,
+			@RequestParam(name = "display", defaultValue = "2") Integer display) {
+		AdvanceSearchDto dto = new AdvanceSearchDto(page, limit, name, sku, display, brand, category);
+		Page<ProductListDto> result = service.getAllProduct(dto);
+		return new ResponseEntity<Page<ProductListDto>>(result, HttpStatus.OK);
 	}
 
 	// thêm sản phẩm vào csdl

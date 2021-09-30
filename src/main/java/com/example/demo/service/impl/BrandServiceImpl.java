@@ -1,7 +1,9 @@
 package com.example.demo.service.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,6 +52,20 @@ public class BrandServiceImpl implements BrandService {
 
 		Page<BrandDto> dtos = list.map(tag -> new BrandDto(tag));
 
+		return dtos;
+	}
+	
+	@Override
+	public List<BrandDto> getAllBrandByCategory(String category) {
+		List<BrandDto> dtos = new ArrayList<BrandDto>();
+		if(category != null) {
+			Category cate = categoryRepository.findOneByCode(category);
+			List<Brand> brands = repos.findAllByCategory(cate);
+			for(Brand item : brands) {
+				BrandDto dto = new BrandDto(item);
+				dtos.add(dto);
+			}
+		}
 		return dtos;
 	}
 

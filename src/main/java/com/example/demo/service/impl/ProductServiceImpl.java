@@ -93,83 +93,6 @@ public class ProductServiceImpl implements ProductService {
 	private OrderDetailRepository orderDetailRepos;
 
 	@Override
-	public Page<ProductDto> searchByPage(SearchDto dto) {
-		int pageIndex = dto.getPageIndex();
-		int pageSize = dto.getPageSize();
-		if (pageIndex > 0)
-			pageIndex -= 1;
-		else
-			pageIndex = 0;
-
-		String whereClause = "";
-		String orderBy = " ORDER BY entity.createdDate DESC";
-		String sqlCount = "select count(entity.id) from  Product as entity where (1=1) ";
-		String sql = "select new com.example.demo.dto.product.ProductDto(entity) from  Product as entity where entity.display=1 AND (1=1)  ";
-		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
-			whereClause += " AND ( entity.name LIKE :text " + "OR entity.description LIKE :text "
-					+ "OR entity.slug LIKE :text " + "OR entity.category.name LIKE :text "
-					+ "OR entity.category.code LIKE :text " + "OR entity.subcategory.name LIKE :text "
-					+ "OR entity.subcategory.code LIKE :text )";
-		}
-		
-		if (dto.getBrand() != null && StringUtils.hasText(dto.getBrand())) {
-			if (dto.getBrand().contains(",")) {
-				String[] s = dto.getBrand().split(",");
-				whereClause += " AND ( entity.brand.code = '" + s[0] + "' )";
-				for (int i = 1; i < s.length; i++) {
-					whereClause += " OR ( entity.brand.code = '" + s[i] + "' )";
-				}
-			} else {
-				whereClause += " AND ( entity.brand.code = :brand )";
-			}
-		} else {
-			whereClause += "";
-		}
-		
-		if(dto.getPrice() != null) {
-			if (dto.getPrice().toString().contains(",")) {
-				String[] s = dto.getPrice().toString().split(",");
-				Long begin = Long.parseLong(s[0]);
-				Long end = Long.parseLong(s[1]);
-				whereClause += " AND ( entity.price BETWEEN " + begin + " AND " + end + " )";
-			} else {
-				Long begin = dto.getPrice();
-				whereClause += " AND ( entity.price <= " + begin + " )";
-			}
-		} else {
-			whereClause += "";
-		}
-
-		sql += whereClause + orderBy;
-		sqlCount += whereClause;
-
-		Query q = manager.createQuery(sql, ProductDto.class);
-		Query qCount = manager.createQuery(sqlCount);
-
-		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
-			q.setParameter("text", '%' + dto.getKeyword() + '%');
-			qCount.setParameter("text", '%' + dto.getKeyword() + '%');
-		}
-		
-		if (dto.getBrand() != null && dto.getBrand().length() > 0 && dto.getBrand().contains(",") == false) {
-			q.setParameter("brand", dto.getBrand());
-			qCount.setParameter("brand", dto.getBrand());
-		}
-
-		int startPosition = pageIndex * pageSize;
-		q.setFirstResult(startPosition);
-		q.setMaxResults(pageSize);
-
-		@SuppressWarnings("unchecked")
-		List<ProductDto> entities = q.getResultList();
-
-		long count = (long) qCount.getSingleResult();
-		Pageable pageable = PageRequest.of(pageIndex, pageSize);
-		Page<ProductDto> result = new PageImpl<ProductDto>(entities, pageable, count);
-		return result;
-	}
-
-	@Override
 	public Page<ProductListDto> productList(SearchDto dto) {
 		int pageIndex = dto.getPageIndex();
 		int pageSize = dto.getPageSize();
@@ -210,7 +133,7 @@ public class ProductServiceImpl implements ProductService {
 			whereClause += "";
 		}
 		
-		if(dto.getPrice() != null) {
+		if(dto.getPrice() != null && dto.getPrice().equalsIgnoreCase("") == false) {
 			if (dto.getPrice().toString().contains(",")) {
 				String[] s = dto.getPrice().toString().split(",");
 				Long begin = Long.parseLong(s[0]);

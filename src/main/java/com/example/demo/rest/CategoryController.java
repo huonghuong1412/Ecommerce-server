@@ -32,6 +32,30 @@ public class CategoryController {
 	@Autowired
 	private CategoryService service;
 	
+	@GetMapping("")
+	public ResponseEntity<List<CategoryDto>> getAllWithSub() {
+		List<CategoryDto> result = service.getAllCategoryWithSub();
+		return new ResponseEntity<List<CategoryDto>>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/{id}")
+	public ResponseEntity<CategoryDto> getOne(@PathVariable Long id) {
+		CategoryDto result = service.getOne(id);
+		return new ResponseEntity<CategoryDto>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/get")
+	public ResponseEntity<CategoryDto> getOneByCode(@RequestParam("code") String code) {
+		CategoryDto result = service.getOneCategory(code);
+		return new ResponseEntity<CategoryDto>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/checkCode")
+	public ResponseEntity<Boolean> check(@RequestParam(value ="id", required = false) Long id, @RequestParam("code") String code) {
+		Boolean result = service.checkCode(id, code);
+		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
+	}
+	
 	@GetMapping("/all")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<List<CategoryDtoNew>> getAllAdmin(@RequestParam(name="display", defaultValue = "2") Integer display) {
@@ -44,18 +68,6 @@ public class CategoryController {
 			result = service.getAll();
 		}
 		return new ResponseEntity<List<CategoryDtoNew>>(result, HttpStatus.OK);
-	}
-	
-	@GetMapping("")
-	public ResponseEntity<List<CategoryDto>> getAllWithSub() {
-		List<CategoryDto> result = service.getAllCategoryWithSub();
-		return new ResponseEntity<List<CategoryDto>>(result, HttpStatus.OK);
-	}
-	
-	@GetMapping(value = "/{id}")
-	public ResponseEntity<CategoryDto> getOne(@PathVariable Long id) {
-		CategoryDto result = service.getOne(id);
-		return new ResponseEntity<CategoryDto>(result, HttpStatus.OK);
 	}
 	
 	@PostMapping("")
@@ -79,17 +91,4 @@ public class CategoryController {
 		Boolean result = service.deleteCategory(id);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
 	}
-	
-	@GetMapping(value = "/checkCode")
-	public ResponseEntity<Boolean> check(@RequestParam(value ="id", required = false) Long id, @RequestParam("code") String code) {
-		Boolean result = service.checkCode(id, code);
-		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
-	}
-	
-	@GetMapping(value = "/get")
-	public ResponseEntity<CategoryDto> getOneByCode(@RequestParam("code") String code) {
-		CategoryDto result = service.getOneCategory(code);
-		return new ResponseEntity<CategoryDto>(result, HttpStatus.OK);
-	}
-
 }

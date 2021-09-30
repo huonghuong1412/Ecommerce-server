@@ -15,7 +15,7 @@ import com.example.demo.dto.product.ProductListDto;
 public interface ProductService {
 
 	// Lấy các sản phẩm hiển thị lên trang chủ, có trạng thái hiển thị là 1
-	public Page<ProductDto> searchByPage(SearchDto dto);
+//	public Page<ProductDto> searchByPage(SearchDto dto);
 	
 	// Lấy các sản phẩm hiển thị lên trang chủ, có trạng thái hiển thị là 1
 	public Page<ProductListDto> productList(SearchDto dto);
