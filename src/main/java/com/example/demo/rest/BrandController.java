@@ -1,7 +1,5 @@
 package com.example.demo.rest;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -37,10 +35,10 @@ public class BrandController {
 		return new ResponseEntity<Page<BrandDto>>(result, HttpStatus.OK);
 	}
 	
-	@GetMapping("/category/{category}")
-	public ResponseEntity<List<BrandDto>> getAllByCategory(@PathVariable String category) {
-		List<BrandDto> result = service.getAllBrandByCategory(category);
-		return new ResponseEntity<List<BrandDto>>(result, HttpStatus.OK);
+	@GetMapping("/category")
+	public ResponseEntity<Page<BrandDto>> getAllByCategory(@RequestParam(name = "category") String category) {
+		Page<BrandDto> result = service.getAllBrandByCategory(category);
+		return new ResponseEntity<Page<BrandDto>>(result, HttpStatus.OK);
 	}
 	
 	@GetMapping("/all")

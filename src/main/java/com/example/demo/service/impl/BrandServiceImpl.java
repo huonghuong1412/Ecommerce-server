@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,7 @@ public class BrandServiceImpl implements BrandService {
 	}
 	
 	@Override
-	public List<BrandDto> getAllBrandByCategory(String category) {
+	public Page<BrandDto> getAllBrandByCategory(String category) {
 		List<BrandDto> dtos = new ArrayList<BrandDto>();
 		if(category != null) {
 			Category cate = categoryRepository.findOneByCode(category);
@@ -66,7 +67,7 @@ public class BrandServiceImpl implements BrandService {
 				dtos.add(dto);
 			}
 		}
-		return dtos;
+		return new PageImpl<>(dtos);
 	}
 
 	@Override

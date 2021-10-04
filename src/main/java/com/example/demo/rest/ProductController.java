@@ -51,7 +51,7 @@ public class ProductController {
 			@RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
 			@RequestParam(name = "sortValue", defaultValue = "DESC") String sortValue,
 			@RequestParam(name = "brand", defaultValue = "") String brand,
-			@RequestParam(name = "price", defaultValue = "0") String price) {
+			@RequestParam(name = "price", defaultValue = "") String price) {
 		SearchDto dto = new SearchDto(page, limit, keyword);
 		dto.setSortBy(sortBy);
 		dto.setSortValue(sortValue);

@@ -14,7 +14,6 @@ public class InventoryDetailDto extends AbstractDTO<InventoryDetailDto> {
 	private Long original_price;
 	private String note;
 	private String importDate;
-	private String updatedDate;
 
 	public InventoryDetailDto() {
 		// TODO Auto-generated constructor stub
@@ -27,18 +26,11 @@ public class InventoryDetailDto extends AbstractDTO<InventoryDetailDto> {
 		this.import_quantity = entity.getImport_quantity();
 		this.original_price = entity.getOriginal_price();
 		this.note = entity.getNote();
-//		this.importDate = entity.getImportDate();
 		try {
 			this.importDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getImportDate()).getTime()));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		try {
-			this.updatedDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getUpdatedDate()).getTime()));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		this.updatedDate = entity.getUpdatedDate();
 	}
 
 	public Long getInventoryId() {
@@ -80,13 +72,5 @@ public class InventoryDetailDto extends AbstractDTO<InventoryDetailDto> {
 	public void setImportDate(String importDate) {
 		this.importDate = importDate;
 	}
-
-	public String getUpdatedDate() {
-		return updatedDate;
-	}
-
-	public void setUpdatedDate(String updatedDate) {
-		this.updatedDate = updatedDate;
-	}
-
+	
 }

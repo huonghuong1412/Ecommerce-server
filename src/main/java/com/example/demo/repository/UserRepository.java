@@ -13,7 +13,8 @@ import com.example.demo.entity.user.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-	Optional<User> findByUsername(String username);
+	@Query("select entity from User entity where entity.email = ?1 OR entity.username = ?1")
+	Optional<User> findByUsernameOrEmail(String username);
 
 	public User findOneByUsername(String username);
 

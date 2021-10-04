@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.demo.dto.auth.MessageResponse;
 
@@ -35,9 +37,19 @@ public class UploadFileController {
 
 		List<File> files = new ArrayList<File>();
 		for (int i = 0; i < multipartFile.length; i++) {
-			File file = new File(FILE_DIRECTORY +  multipartFile[i].getOriginalFilename());
+			File file = new File(FILE_DIRECTORY + new Date().getTime() + "_" + multipartFile[i].getOriginalFilename());
 			files.add(file);
 		}
+		
+		 List<String> fileDownloadUrls = new ArrayList<String>();
+		 for(int i = 0; i < multipartFile.length; i++) {
+			 String url = ServletUriComponentsBuilder.fromCurrentContextPath()
+		                .path("/images/product/")
+		                .path(files.get(i).getName())
+		                .toUriString();
+			 fileDownloadUrls.add(url);
+		 }
+		
 		FileOutputStream fos = null;
 		
 		for(int i = 0; i<multipartFile.length; i++) {
@@ -47,7 +59,8 @@ public class UploadFileController {
 			fos.close();
 		}
 		fos.close();
-		return ResponseEntity.ok(new MessageResponse("Upload hình ảnh thành công!"));
+//		Upload hình ảnh thành công!
+		return ResponseEntity.ok(fileDownloadUrls);
 
 	}
 	

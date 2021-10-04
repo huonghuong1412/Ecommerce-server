@@ -118,7 +118,7 @@ public class ProductServiceImpl implements ProductService {
 		if (dto.getSubcategory() != null) {
 			whereClause += " AND ( entity.subcategory.code LIKE :subcategory )";
 		}
-		
+
 		if (dto.getBrand() != null && StringUtils.hasText(dto.getBrand())) {
 			if (dto.getBrand().contains(",")) {
 				String[] s = dto.getBrand().split(",");
@@ -132,17 +132,12 @@ public class ProductServiceImpl implements ProductService {
 		} else {
 			whereClause += "";
 		}
-		
-		if(dto.getPrice() != null && dto.getPrice().equalsIgnoreCase("") == false) {
-			if (dto.getPrice().toString().contains(",")) {
-				String[] s = dto.getPrice().toString().split(",");
-				Long begin = Long.parseLong(s[0]);
-				Long end = Long.parseLong(s[1]);
-				whereClause += " AND ( entity.price BETWEEN " + begin + " AND " + end + " )";
-			} else {
-				Long begin = Long.parseLong(dto.getPrice());
-				whereClause += " AND ( entity.price <= " + begin + " )";
-			}
+
+		if (dto.getPrice() != null && dto.getPrice().equalsIgnoreCase("") == false) {
+			String[] s = dto.getPrice().toString().split(",");
+			Long begin = Long.parseLong(s[0]);
+			Long end = Long.parseLong(s[1]);
+			whereClause += " AND ( entity.price BETWEEN " + begin + " AND " + end + " )";
 		} else {
 			whereClause += "";
 		}
@@ -167,7 +162,7 @@ public class ProductServiceImpl implements ProductService {
 			q.setParameter("subcategory", dto.getSubcategory());
 			qCount.setParameter("subcategory", dto.getSubcategory());
 		}
-		
+
 		if (dto.getBrand() != null && dto.getBrand().length() > 0 && dto.getBrand().contains(",") == false) {
 			q.setParameter("brand", dto.getBrand());
 			qCount.setParameter("brand", dto.getBrand());
@@ -319,7 +314,16 @@ public class ProductServiceImpl implements ProductService {
 			if (dto.getId() != null) {
 				entity = productRepos.getById(dto.getId());
 				entity.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
+				
+				List<Image> imagesProduct = imageRepos.findAllByProductId(entity.getId());
+				for(Image item : imagesProduct) {
+					imageRepos.deleteByProductId(item.getProduct().getId());
+				}
 
+				for(int i = 0; i < imageUrls.size(); i++) {
+					image = new Image(imageUrls.get(i));
+					images.add(image);
+				}
 				switch (entity.getType()) {
 				case 1:
 					book = bookRepos.findOneByProduct(entity);
@@ -342,9 +346,8 @@ public class ProductServiceImpl implements ProductService {
 				inventory.setTotal_import_item(0);
 				inventory.setCategory_code(category.getCode());
 				inventory.setProduct(entity);
-
-				for (String imageUrl : imageUrls) {
-					image = new Image(imageUrl);
+				for(int i = 0; i < imageUrls.size(); i++) {
+					image = new Image(imageUrls.get(i));
 					images.add(image);
 				}
 			}
@@ -417,12 +420,11 @@ public class ProductServiceImpl implements ProductService {
 			default:
 				break;
 			}
-			
-			entity.setTags(tags);
 
+			entity.setTags(tags);
 			entity.setImages(images);
-			for (Image item : images) {
-				item.setProduct(entity);
+			for(int i = 0; i<images.size(); i++) {
+				images.get(i).setProduct(entity);
 			}
 			entity.setBook(book);
 			entity.setTechnology(tech);
@@ -436,10 +438,6 @@ public class ProductServiceImpl implements ProductService {
 				break;
 			default:
 				break;
-			}
-
-			if (image != null) {
-				image = imageRepos.save(image);
 			}
 
 			if (inventory != null) {

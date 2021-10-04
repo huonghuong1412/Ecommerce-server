@@ -1,7 +1,5 @@
 package com.example.demo.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +13,7 @@ public interface BrandService {
 	
 	public Page<BrandDto> getAll(Integer page, Integer limit, String sortBy);
 	
-	public List<BrandDto> getAllBrandByCategory(String category);
+	public Page<BrandDto> getAllBrandByCategory(String category);
 
 	public BrandDto getOne(Long id);
 	

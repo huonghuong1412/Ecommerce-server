@@ -12,7 +12,6 @@ import com.example.demo.entity.category.Category;
 import com.example.demo.entity.category.SubCategory;
 import com.example.demo.entity.product.Brand;
 import com.example.demo.entity.product.Product;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -33,7 +32,7 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 	private Integer seller_count;
 	private Double percent_discount;
 
-	@JsonIgnore
+	@JsonInclude(value = Include.NON_NULL)
 	private Integer display;
 
 	public ProductListDto() {

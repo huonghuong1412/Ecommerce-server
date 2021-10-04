@@ -20,7 +20,11 @@ public class Slug {
         str = str.replaceAll("Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ", "U");
         str = str.replaceAll("Ỳ|Ý|Ỵ|Ỷ|Ỹ", "Y");
         str = str.replaceAll("Đ", "D");
+        str = str.replaceAll(" - ", "-");
         str = str.replaceAll(" ", "-");
+        str = str.replaceAll("/", "-");
+        str = str.replaceAll("[()]", "-");
+        str = str.replaceAll("--", "-");
         str = str.toLowerCase();
         return str + "-" + new Date().getTime();
 	}
