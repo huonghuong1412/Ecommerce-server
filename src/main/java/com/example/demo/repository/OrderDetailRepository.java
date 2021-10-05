@@ -18,7 +18,15 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
 	
 	public List<OrderDetail> getByOrderAndProduct(Order order, Product product);
 	
-	@Query("SELECT COUNT(u) FROM OrderDetail u WHERE u.product.id=?1 AND u.order.status=2")
+	@Query("SELECT sum(u.amount) FROM OrderDetail u WHERE u.product.id=?1 AND u.order.status=2")
 	public Integer countAllByProductId(Long id);
+	
+	// tính tổng 5 sản phẩm bản chạy nhất
+//	SELECT product_id, sum(amount) As MostSold 
+//	FROM tbl_order_detail, tbl_order
+//	where tbl_order.status=2
+//	AND tbl_order_detail.order_id = tbl_order.id
+//	Group By product_id
+//	ORDER BY MostSold DESC limit 5
 	
 }

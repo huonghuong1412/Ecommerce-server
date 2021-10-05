@@ -1,5 +1,6 @@
 package com.example.demo.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,20 +22,25 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.AdvanceSearchDto;
+import com.example.demo.dto.OrderResponse;
 import com.example.demo.dto.auth.MessageResponse;
 import com.example.demo.dto.order.OrderDetailHisDto;
 import com.example.demo.dto.order.OrderDto;
 import com.example.demo.dto.order.OrderHisDto;
 import com.example.demo.dto.order.OrderHisFullDto;
 import com.example.demo.dto.order.PaymentDto;
+import com.example.demo.dto.report.ReportCustomer;
+import com.example.demo.dto.report.ReportOrderDto;
 import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.order.Order;
 import com.example.demo.entity.order.OrderDetail;
 import com.example.demo.entity.order.Payment;
+import com.example.demo.entity.user.User;
 import com.example.demo.repository.InventoryRepository;
 import com.example.demo.repository.OrderDetailRepository;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaymentRepository;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.service.OrderService;
 
 @CrossOrigin(origins = "*")
@@ -56,6 +62,9 @@ public class OrderController {
 
 	@Autowired
 	private PaymentRepository paymentRepository;
+	
+	@Autowired
+	private UserRepository userRepos;
 
 	@GetMapping("/all")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -72,15 +81,80 @@ public class OrderController {
 		return new ResponseEntity<Page<OrderHisDto>>(result, HttpStatus.OK);
 	}
 
+	@GetMapping("/count")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<List<OrderResponse>> getQuantityByStatus(
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "1000") Integer limit,
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date,
+			@RequestParam(name = "status", defaultValue = "3") Integer status) {
+		AdvanceSearchDto dto = new AdvanceSearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		dto.setLast_date(last_date);
+		dto.setStatus(status);
+		Page<OrderHisDto> result = service.getAllOrder(dto);
+
+		List<OrderResponse> list = new ArrayList<OrderResponse>();
+		Integer count_complete = 0, count_shiping = 0, count_wait = 0, count_cancel = 0;
+		for (OrderHisDto item : result.toList()) {
+			if (item.getStatus_order() == 2) {
+				count_complete += 1;
+			} else if (item.getStatus_order() == 1) {
+				count_shiping += 1;
+			} else if (item.getStatus_order() == 0) {
+				count_wait += 1;
+			} else {
+				count_cancel += 1;
+			}
+		}
+		list.add(new OrderResponse("Đã hoàn thành", count_complete));
+//		list.add(new OrderResponse("Đang giao hàng", count_shiping));
+		list.add(new OrderResponse("Đang chờ xác nhận", count_wait));
+		list.add(new OrderResponse("Đã huỷ đơn", count_cancel));
+
+//		list.add(new OrderResponse("Đã hoàn thành", orderRepository.countOrderByStatus(2)));
+//		list.add(new OrderResponse("Đang giao hàng", orderRepository.countOrderByStatus(1)));
+//		list.add(new OrderResponse("Đang chờ xác nhận", orderRepository.countOrderByStatus(0)));
+//		list.add(new OrderResponse("Đã huỷ đơn", orderRepository.countOrderByStatus(-1)));
+		return new ResponseEntity<List<OrderResponse>>(list, HttpStatus.OK);
+	}
+
+	@GetMapping("/report/product")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<ReportOrderDto>> reportByProduct(
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "10") Integer limit) { // thống kê theo sản phẩm bán chạy nhất
+																				// & doanh thu
+		AdvanceSearchDto dto = new AdvanceSearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		Page<ReportOrderDto> result = service.reportOrder(dto);
+		return new ResponseEntity<Page<ReportOrderDto>>(result, HttpStatus.OK);
+	}
+
+	@GetMapping("/report/customer")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<ReportCustomer>> reportByCustomer(
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "10") Integer limit) { // thống kê theo khách hàng mua nhiều
+																				// nhất & doanh thu
+		AdvanceSearchDto dto = new AdvanceSearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		Page<ReportCustomer> result = service.reportCustomer(dto);
+		return new ResponseEntity<Page<ReportCustomer>>(result, HttpStatus.OK);
+	}
+
 	@GetMapping("/detail/{id}")
-	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public ResponseEntity<List<OrderDetailHisDto>> getDetail(@PathVariable Long id) {
 		List<OrderDetailHisDto> result = service.getDetailOrderById(id);
 		return new ResponseEntity<List<OrderDetailHisDto>>(result, HttpStatus.OK);
 	}
 
 	@GetMapping("/detail-full/{id}")
-	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public ResponseEntity<OrderHisFullDto> getDetailFull(@PathVariable Long id) {
 		OrderHisFullDto result = service.getDetailOrder(id);
 		return new ResponseEntity<OrderHisFullDto>(result, HttpStatus.OK);
@@ -93,6 +167,14 @@ public class OrderController {
 		String username = auth.getName();
 		List<OrderHisDto> result = service.getAllOrderByUser(username);
 
+		return new ResponseEntity<List<OrderHisDto>>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping("/report/customer_all")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<List<OrderHisDto>> getAllByUserToReport(@RequestParam(name="user") Long user_id) {
+		User u = userRepos.getById(user_id);
+		List<OrderHisDto> result = service.getAllOrderByUser(u.getUsername());
 		return new ResponseEntity<List<OrderHisDto>>(result, HttpStatus.OK);
 	}
 

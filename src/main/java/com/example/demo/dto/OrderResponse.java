@@ -1,8 +1,15 @@
 package com.example.demo.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 public class OrderResponse {
+	@JsonInclude(value = Include.NON_NULL)
 	private String message;
+	@JsonInclude(value = Include.NON_NULL)
 	private Long order_id;
+	@JsonInclude(value = Include.NON_NULL)
+	private Integer quantity;
 
 	public OrderResponse() {
 		super();
@@ -12,6 +19,20 @@ public class OrderResponse {
 		super();
 		this.message = message;
 		this.order_id = order_id;
+	}
+
+	public OrderResponse(String message, Integer quantity) {
+		super();
+		this.message = message;
+		this.quantity = quantity;
+	}
+
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
 	}
 
 	public String getMessage() {

@@ -30,6 +30,8 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 	private BrandDtoNew brand;
 	@JsonInclude(value = Include.NON_NULL)
 	private Integer seller_count;
+	@JsonInclude(value = Include.NON_NULL)
+	private Integer in_stock;
 	private Double percent_discount;
 
 	@JsonInclude(value = Include.NON_NULL)
@@ -44,7 +46,8 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 		this.setId(entity.getId());
 		this.type = entity.getType();
 		try {
-			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
+			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(
+					new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -56,6 +59,9 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 			this.percent_discount = CalculateDiscount.countDiscount(this.price, this.list_price);
 		} else {
 			this.percent_discount = null;
+		}
+		if (entity.getInventory() != null) {
+			this.in_stock = entity.getInventory().getQuantity_item();
 		}
 		this.mainImage = entity.getMainIamge();
 		category = new CategoryDtoNew();
@@ -177,6 +183,14 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 
 	public void setDisplay(Integer display) {
 		this.display = display;
+	}
+
+	public Integer getIn_stock() {
+		return in_stock;
+	}
+
+	public void setIn_stock(Integer in_stock) {
+		this.in_stock = in_stock;
 	}
 
 }

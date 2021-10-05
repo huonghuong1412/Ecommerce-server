@@ -1,5 +1,6 @@
 package com.example.demo.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.AdvanceSearchDto;
+import com.example.demo.dto.OrderResponse;
 import com.example.demo.dto.SearchDto;
 import com.example.demo.dto.product.ProductDto;
 import com.example.demo.dto.product.ProductDtoNew;
@@ -150,6 +152,39 @@ public class ProductController {
 		AdvanceSearchDto dto = new AdvanceSearchDto(page, limit, name, sku, display, brand, category);
 		Page<ProductListDto> result = service.getAllProduct(dto);
 		return new ResponseEntity<Page<ProductListDto>>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/count")
+	public ResponseEntity<List<OrderResponse>> countByType(@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "limit", defaultValue = "1000") int limit,
+			@RequestParam(name = "name", defaultValue = "") String name,
+			@RequestParam(name = "sku", defaultValue = "") String sku,
+			@RequestParam(name = "category", defaultValue = "") String category,
+			@RequestParam(name = "brand", defaultValue = "") String brand,
+			@RequestParam(name = "display", defaultValue = "2") Integer display) {
+		AdvanceSearchDto dto = new AdvanceSearchDto(page, limit, name, sku, display, brand, category);
+		Page<ProductListDto> result = service.getAllProduct(dto);
+		List<OrderResponse> list = new ArrayList<OrderResponse>();
+		Integer count_onsale = 0, count_hide = 0, count_inventory = 0;
+		Integer sum_sold = 0;
+		for(ProductListDto item : result.toList()) {
+			sum_sold += item.getSeller_count();
+		}
+		for(ProductListDto item : result.toList()) {
+			if(item.getDisplay() == 1) {
+				count_onsale += 1;
+			} else if(item.getDisplay() == 0) {
+				count_hide += 1;
+			}
+			if(item.getIn_stock() == 0) {
+				count_inventory += 1;
+			}
+		}
+		list.add(new OrderResponse("Đang bán", count_onsale));
+		list.add(new OrderResponse("Đã ẩn", count_hide));
+		list.add(new OrderResponse("Hết hàng", count_inventory));
+		list.add(new OrderResponse("Đã bán", sum_sold));
+		return new ResponseEntity<List<OrderResponse>>(list, HttpStatus.OK);
 	}
 
 	// thêm sản phẩm vào csdl

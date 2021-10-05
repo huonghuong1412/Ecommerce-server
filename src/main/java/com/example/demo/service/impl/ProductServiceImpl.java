@@ -174,10 +174,14 @@ public class ProductServiceImpl implements ProductService {
 
 		@SuppressWarnings("unchecked")
 		List<ProductListDto> entities = q.getResultList();
-
+		Integer seller_count = 0;
 		for (ProductListDto item : entities) {
-			Integer seller_count = orderDetailRepos.countAllByProductId(item.getId());
-			item.setSeller_count(seller_count);
+			if(orderDetailRepos.countAllByProductId(item.getId()) != null) {
+				seller_count += orderDetailRepos.countAllByProductId(item.getId());
+			} else {
+				seller_count = 0;
+			}
+ 			item.setSeller_count(seller_count);
 		}
 
 		long count = (long) qCount.getSingleResult();
@@ -269,11 +273,16 @@ public class ProductServiceImpl implements ProductService {
 
 		@SuppressWarnings("unchecked")
 		List<ProductListDto> entities = q.getResultList();
-
+		Integer seller_count = 0;
 		for (ProductListDto item : entities) {
-			Integer seller_count = orderDetailRepos.countAllByProductId(item.getId());
-			item.setSeller_count(seller_count);
+			if(orderDetailRepos.countAllByProductId(item.getId()) != null) {
+				seller_count = orderDetailRepos.countAllByProductId(item.getId());
+			} else {
+				seller_count = 0;
+			}
+ 			item.setSeller_count(seller_count);
 		}
+
 
 		long count = (long) qCount.getSingleResult();
 		Pageable pageable = PageRequest.of(pageIndex, pageSize);

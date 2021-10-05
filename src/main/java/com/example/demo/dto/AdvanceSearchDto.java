@@ -17,6 +17,13 @@ public class AdvanceSearchDto {
 		super();
 	}
 
+	public AdvanceSearchDto(int pageIndex, int pageSize, Integer status) {
+		super();
+		this.pageIndex = pageIndex;
+		this.pageSize = pageSize;
+		this.status = status;
+	}
+
 	public AdvanceSearchDto(int pageIndex, int pageSize, String name, String sku, Integer display, String brand,
 			String category) {
 		super();
