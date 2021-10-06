@@ -28,7 +28,7 @@ public class OrderHisDto {
 	public OrderHisDto(Order entity) {
 		this.setId(entity.getId());
 		try {
-			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(
+			this.createdDate = new SimpleDateFormat("dd/MM/yyyy hh:mm").format(
 					new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block

@@ -22,8 +22,6 @@ import com.example.demo.dto.order.OrderDto;
 import com.example.demo.dto.order.OrderHisDto;
 import com.example.demo.dto.order.OrderHisFullDto;
 import com.example.demo.dto.order.PaymentDto;
-import com.example.demo.dto.report.ReportCustomer;
-import com.example.demo.dto.report.ReportOrderDto;
 import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.order.Order;
 import com.example.demo.entity.order.OrderDetail;
@@ -265,103 +263,6 @@ public class OrderServiceImpl implements OrderService {
 			}
 		}
 		return count_seller;
-	}
-
-	@Override
-	public Page<ReportOrderDto> reportOrder(AdvanceSearchDto dto) {
-//		SELECT product_id, sum(amount) As MostSold 
-//		FROM tbl_order_detail, tbl_order
-//		where tbl_order.status=2
-//		AND tbl_order_detail.order_id = tbl_order.id
-//		Group By product_id
-//		ORDER BY MostSold DESC limit 5
-
-//		SELECT p.name as product_name, o.id as order_id, SUM(s.amount) as Quantity 
-//		FROM tbl_order_detail s
-//		INNER JOIN tbl_product p ON s.product_id = p.id 
-//		INNER JOIN tbl_order o ON o.status = 2 and o.id = s.order_id
-//		GROUP BY s.product_id 
-//		ORDER BY Quantity DESC limit 5
-
-		int pageIndex = dto.getPageIndex();
-		int pageSize = dto.getPageSize();
-		if (pageIndex > 0)
-			pageIndex -= 1;
-		else
-			pageIndex = 0;
-		String whereClause = "";
-		String sqlCount = "select count(*) from OrderDetail as s " + "INNER JOIN Product p ON s.product.id = p.id "
-				+ "INNER JOIN Order o ON o.status = 2 and o.id = s.order.id " + "GROUP BY s.product.id";
-		String sql = "select new com.example.demo.dto.report.ReportOrderDto(p.id as id, p.name as product_name, "
-				+ "p.sku as product_sku, p.category.name as product_category, p.brand.name as product_brand, "
-				+ " o.id as order_id, " + " SUM(s.amount) as quantity_sold, "
-				+ " SUM(s.amount * s.price) as total_price)" + " from OrderDetail as s "
-				+ " INNER JOIN Product p ON s.product.id = p.id"
-				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id"
-				+ " GROUP BY s.product.id ORDER BY quantity_sold DESC";
-		sql += whereClause;
-
-		Query q = manager.createQuery(sql, ReportOrderDto.class);
-		Query qCount = manager.createQuery(sqlCount);
-		q.setMaxResults(pageSize);
-
-		int startPosition = pageIndex * pageSize;
-		q.setFirstResult(startPosition);
-		q.setMaxResults(pageSize);
-		long count = (long) qCount.getResultList().size();
-
-		@SuppressWarnings("unchecked")
-		List<ReportOrderDto> entities = q.getResultList();
-
-		Pageable pageable = PageRequest.of(pageIndex, pageSize);
-
-		Page<ReportOrderDto> result = new PageImpl<ReportOrderDto>(entities, pageable, count);
-		return result;
-	}
-
-	@Override
-	public Page<ReportCustomer> reportCustomer(AdvanceSearchDto dto) {
-
-//		SELECT u.fullname, u.phone, o.id as order_id, SUM(s.amount) as Quantity, SUM(s.amount * s.price) as total_price 
-//		FROM tbl_order_detail s
-//		INNER JOIN tbl_order o ON o.status = 2 and o.id = s.order_id
-//		INNER JOIN tbl_user u ON u.id = o.user_id
-//		GROUP BY o.user_id
-//		ORDER BY Quantity DESC
-//		limit 5
-
-		int pageIndex = dto.getPageIndex();
-		int pageSize = dto.getPageSize();
-		if (pageIndex > 0)
-			pageIndex -= 1;
-		else
-			pageIndex = 0;
-		String whereClause = "";
-		String sqlCount = "select count(*) from OrderDetail as s "
-				+ "INNER JOIN Order o ON o.status = 2 and o.id = s.order.id " + "INNER JOIN User u ON u.id = o.user.id "
-				+ "GROUP BY o.user.id";
-		String sql = "select new com.example.demo.dto.report.ReportCustomer(u.id as id, u.fullname as csutomer_name, "
-				+ "u.phone as customer_phone," + " o.id as order_id, " + " SUM(s.amount) as quantity_buy, "
-				+ " SUM(s.amount * s.price) as total_price)" + " from OrderDetail as s "
-				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id" + " INNER JOIN User u ON u.id = o.user.id"
-				+ " GROUP BY o.user.id ORDER BY quantity_buy DESC";
-		sql += whereClause;
-
-		Query q = manager.createQuery(sql, ReportCustomer.class);
-		Query qCount = manager.createQuery(sqlCount);
-		q.setMaxResults(pageSize);
-
-		int startPosition = pageIndex * pageSize;
-		q.setFirstResult(startPosition);
-		q.setMaxResults(pageSize);
-
-		@SuppressWarnings("unchecked")
-		List<ReportCustomer> entities = q.getResultList();
-		long count = (long) qCount.getResultList().size();
-		Pageable pageable = PageRequest.of(pageIndex, pageSize);
-
-		Page<ReportCustomer> result = new PageImpl<ReportCustomer>(entities, pageable, count);
-		return result;
 	}
 
 }

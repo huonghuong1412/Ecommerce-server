@@ -10,8 +10,6 @@ import com.example.demo.dto.order.OrderDetailHisDto;
 import com.example.demo.dto.order.OrderDto;
 import com.example.demo.dto.order.OrderHisDto;
 import com.example.demo.dto.order.OrderHisFullDto;
-import com.example.demo.dto.report.ReportCustomer;
-import com.example.demo.dto.report.ReportOrderDto;
 
 @Service
 public interface OrderService {
@@ -22,10 +20,6 @@ public interface OrderService {
 	public List<OrderDetailHisDto> getDetailOrderById(Long id);
 	
 	public List<OrderHisDto> getAllOrderByUser(String username);
-	
-	public Page<ReportOrderDto> reportOrder(AdvanceSearchDto dto);
-	
-	public Page<ReportCustomer> reportCustomer(AdvanceSearchDto dto);
 	
 	public OrderHisFullDto getDetailOrder(Long id);
 	
