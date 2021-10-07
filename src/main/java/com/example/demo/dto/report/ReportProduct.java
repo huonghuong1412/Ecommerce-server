@@ -6,7 +6,6 @@ public class ReportProduct {
 	private String status_order_name;
 	private Integer quantity;
 	private Long total_price; // tong tien don hang/san pham
-	private Long total_revenue; // doanh thu
 	private String create_time;
 
 	public ReportProduct() {
@@ -68,14 +67,6 @@ public class ReportProduct {
 
 	public void setCreate_time(String create_time) {
 		this.create_time = create_time;
-	}
-
-	public Long getTotal_revenue() {
-		return total_revenue;
-	}
-
-	public void setTotal_revenue(Long total_revenue) {
-		this.total_revenue = total_revenue;
 	}
 
 }

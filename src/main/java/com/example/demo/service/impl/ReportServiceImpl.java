@@ -211,16 +211,12 @@ public class ReportServiceImpl implements ReportService {
 		for (ReportProduct item : entities) {
 			if (item.getStatus() == -1) {
 				item.setStatus_order_name("Đã huỷ đơn");
-				item.setTotal_revenue(0L);
 			} else if (item.getStatus() == 0) {
 				item.setStatus_order_name("Đang chờ xác nhận");
-				item.setTotal_revenue(0L);
 			} else if (item.getStatus() == 1) {
 				item.setStatus_order_name("Đang giao hàng");
-				item.setTotal_revenue(0L);
 			} else if (item.getStatus() == 2) {
 				item.setStatus_order_name("Đã hoàn thành");
-				item.setTotal_revenue(item.getTotal_price());
 			}
 			try {
 				item.setCreate_time(new SimpleDateFormat("dd/MM/yyyy hh:mm").format(new Date(

@@ -11,6 +11,9 @@ public class OrderResponse {
 	@JsonInclude(value = Include.NON_NULL)
 	private Integer quantity;
 
+	@JsonInclude(value = Include.NON_NULL)
+	private Long revenue;
+
 	public OrderResponse() {
 		super();
 	}
@@ -19,6 +22,13 @@ public class OrderResponse {
 		super();
 		this.message = message;
 		this.order_id = order_id;
+	}
+
+	public OrderResponse(String message, Long order_id, Long revenue) {
+		super();
+		this.message = message;
+		this.order_id = order_id;
+		this.revenue = revenue;
 	}
 
 	public OrderResponse(String message, Integer quantity) {
@@ -49,6 +59,14 @@ public class OrderResponse {
 
 	public void setOrder_id(Long order_id) {
 		this.order_id = order_id;
+	}
+
+	public Long getRevenue() {
+		return revenue;
+	}
+
+	public void setRevenue(Long revenue) {
+		this.revenue = revenue;
 	}
 
 }

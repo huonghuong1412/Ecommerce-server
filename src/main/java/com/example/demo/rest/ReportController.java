@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,16 +16,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.common.CalculateDiscount;
 import com.example.demo.dto.AdvanceSearchDto;
 import com.example.demo.dto.OrderResponse;
+import com.example.demo.dto.SearchDto;
 import com.example.demo.dto.order.OrderHisDto;
 import com.example.demo.dto.product.ProductListDto;
+import com.example.demo.dto.report.ReportComment;
 import com.example.demo.dto.report.ReportCustomer;
 import com.example.demo.dto.report.ReportOrderDto;
 import com.example.demo.dto.report.ReportProduct;
 import com.example.demo.dto.report.ReportProductInventory;
+import com.example.demo.dto.user.CommentDto;
 import com.example.demo.entity.user.User;
+import com.example.demo.repository.InventoryDetailRepository;
+import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.CommentService;
 import com.example.demo.service.OrderService;
 import com.example.demo.service.ProductService;
 import com.example.demo.service.ReportService;
@@ -45,11 +53,20 @@ public class ReportController {
 	private ProductService productService;
 
 	@Autowired
+	private CommentService commentService;
+
+	@Autowired
 	private UserRepository userRepos;
+	
+	@Autowired
+	private OrderRepository orderRepos;
+	
+	@Autowired
+	private InventoryDetailRepository inventoryDetailRepos;
 
 	// đếm số lượng đơn hàng theo trạng thái đơn hàng
 	@GetMapping("/order/count")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<List<OrderResponse>> getQuantityByStatus(
 			@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "1000") Integer limit,
@@ -75,15 +92,35 @@ public class ReportController {
 				count_cancel += 1;
 			}
 		}
-		list.add(new OrderResponse("Đã hoàn thành", count_complete));
-		list.add(new OrderResponse("Đang giao hàng", count_shiping));
-		list.add(new OrderResponse("Đang chờ xác nhận", count_wait));
-		list.add(new OrderResponse("Đã huỷ đơn", count_cancel));
+		list.add(new OrderResponse("Đã hoàn thành", count_complete > 0 ? count_complete : 0));
+		list.add(new OrderResponse("Đang giao hàng", count_shiping > 0 ? count_shiping : 0));
+		list.add(new OrderResponse("Đang chờ xác nhận", count_wait > 0 ? count_wait : 0));
+		list.add(new OrderResponse("Đã huỷ đơn", count_cancel > 0 ? count_cancel : 0));
+//		list.add(new OrderResponse("Tỉ lệ huỷ đơn",
+//				(int)Math.round(CalculateDiscount.calPercent(count_cancel, result.getTotalElements()))));
 
 //		list.add(new OrderResponse("Đã hoàn thành", orderRepository.countOrderByStatus(2)));
 //		list.add(new OrderResponse("Đang giao hàng", orderRepository.countOrderByStatus(1)));
 //		list.add(new OrderResponse("Đang chờ xác nhận", orderRepository.countOrderByStatus(0)));
 //		list.add(new OrderResponse("Đã huỷ đơn", orderRepository.countOrderByStatus(-1)));
+		return new ResponseEntity<List<OrderResponse>>(list, HttpStatus.OK);
+	}
+
+	// thống kê doanh thu theo ngày
+	@GetMapping("/revenue")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<List<OrderResponse>> reportRevenue(@RequestParam(name = "last_date", defaultValue = "1000000000") Integer last_date) {
+		List<OrderResponse> list = new ArrayList<>();
+		Long totalRevenue = orderRepos.totalRevenueFromOrder(last_date);
+		Long totalPriceImport = inventoryDetailRepos.getTotalPriceImport();
+		if(totalRevenue!= null) {
+			totalRevenue = orderRepos.totalRevenueFromOrder(last_date);
+		} else {
+			totalRevenue = 0L;
+		}
+		list.add(new OrderResponse("Doanh thu", null, totalRevenue));
+		list.add(new OrderResponse("Tổng nhập", null, totalPriceImport));
+		list.add(new OrderResponse("Lợi nhuận", null, totalRevenue - totalPriceImport));
 		return new ResponseEntity<List<OrderResponse>>(list, HttpStatus.OK);
 	}
 
@@ -94,8 +131,9 @@ public class ReportController {
 			@RequestParam(name = "product") Long product_id,
 			@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
-			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) { // thống kê các lần bán hàng của sản
-																				// phẩm
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) { // thống kê các lần bán hàng của
+																						// sản
+		// phẩm
 		AdvanceSearchDto dto = new AdvanceSearchDto();
 		dto.setPageIndex(page);
 		dto.setPageSize(limit);
@@ -153,8 +191,9 @@ public class ReportController {
 	public ResponseEntity<Page<ReportOrderDto>> reportByProduct(
 			@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
-			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) { // thống kê theo sản phẩm bán chạy nhất
-																				// & doanh thu
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) { // thống kê theo sản phẩm bán
+																						// chạy nhất
+		// & doanh thu
 		AdvanceSearchDto dto = new AdvanceSearchDto();
 		dto.setPageIndex(page);
 		dto.setPageSize(limit);
@@ -169,8 +208,9 @@ public class ReportController {
 	public ResponseEntity<Page<ReportCustomer>> reportByCustomer(
 			@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
-			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) { // thống kê theo khách hàng mua nhiều
-																				// nhất & doanh thu
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) { // thống kê theo khách hàng mua
+																						// nhiều
+		// nhất & doanh thu
 		AdvanceSearchDto dto = new AdvanceSearchDto();
 		dto.setPageIndex(page);
 		dto.setPageSize(limit);
@@ -179,17 +219,53 @@ public class ReportController {
 		return new ResponseEntity<Page<ReportCustomer>>(result, HttpStatus.OK);
 	}
 
-	
 	// thống kê danh sách sản phẩm tồn kho
 	@GetMapping("/inventory/out-stock")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Page<ReportProductInventory>> reportProductOutOfStock(
 			@RequestParam(name = "page", defaultValue = "0") Integer page,
-			@RequestParam(name = "limit", defaultValue = "10") Integer limit) { 
+			@RequestParam(name = "limit", defaultValue = "10") Integer limit) {
 		AdvanceSearchDto dto = new AdvanceSearchDto();
 		dto.setPageIndex(page);
 		dto.setPageSize(limit);
 		Page<ReportProductInventory> result = reportService.reportProductOutOfStock(dto);
 		return new ResponseEntity<Page<ReportProductInventory>>(result, HttpStatus.OK);
+	}
+
+	// thống kê bình luận
+	@GetMapping("/comment")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<ReportComment>> reportComment(
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "1000") Integer limit) {
+		SearchDto dto = new SearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		Page<CommentDto> result = commentService.getAllComments(dto);
+		List<CommentDto> resultList = result.toList();
+		List<ReportComment> list = new ArrayList<>();
+		Integer count_5star = 0, count_4star = 0, count_3star = 0, count_2star = 0, count_1star = 0;
+		for (CommentDto item : resultList) {
+			if (item.getRating() == 5) {
+				count_5star += 1;
+			} else if (item.getRating() == 4) {
+				count_4star += 1;
+			} else if (item.getRating() == 3) {
+				count_3star += 1;
+			} else if (item.getRating() == 2) {
+				count_2star += 1;
+			} else {
+				count_1star += 1;
+			}
+		}
+		Long total = result.getTotalElements();
+
+		list.add(new ReportComment(count_5star, CalculateDiscount.calPercent(count_5star, total), "5"));
+		list.add(new ReportComment(count_4star, CalculateDiscount.calPercent(count_4star, total), "4"));
+		list.add(new ReportComment(count_3star, CalculateDiscount.calPercent(count_3star, total), "3"));
+		list.add(new ReportComment(count_2star, CalculateDiscount.calPercent(count_2star, total), "2"));
+		list.add(new ReportComment(count_1star, CalculateDiscount.calPercent(count_1star, total), "1"));
+
+		return new ResponseEntity<Page<ReportComment>>(new PageImpl<>(list), HttpStatus.OK);
 	}
 }
