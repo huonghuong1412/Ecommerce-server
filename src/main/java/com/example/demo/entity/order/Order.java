@@ -25,19 +25,18 @@ public class Order extends BaseEntity {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "store_id")
-//	private Store store;
-
 	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
 	private Payment payment;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "shipment_id")
-	private Shipment shipment;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "shipment_id")
+//	private Shipment shipment;
 
 	@Column(name = "total_price")
 	private Long total_price;
+
+	@Column(name = "ship_fee")
+	private Long ship_fee;
 
 	@Column(name = "total_item")
 	private Integer total_item;
@@ -45,11 +44,17 @@ public class Order extends BaseEntity {
 	@Column(name = "order_info")
 	private String orderInfo;
 
+	@Column(name = "order_code")
+	private String order_code;
+
 	@Column(name = "address")
 	private String address;
 
-	@Column(name = "user_fullname")
-	private String user_fullname;
+	@Column(name = "ward_code")
+	private String ward_code;			// mã phường/xã để giao hàng
+
+	@Column(name = "district_id")
+	private Integer district_id;		// mã quận huyện giao hàng
 
 	@Column(name = "phone")
 	private String phone;
@@ -72,14 +77,6 @@ public class Order extends BaseEntity {
 	public void setUser(User user) {
 		this.user = user;
 	}
-
-//	public Store getStore() {
-//		return store;
-//	}
-//
-//	public void setStore(Store store) {
-//		this.store = store;
-//	}
 
 	public Long getTotal_price() {
 		return total_price;
@@ -121,12 +118,20 @@ public class Order extends BaseEntity {
 		this.address = address;
 	}
 
-	public String getUser_fullname() {
-		return user_fullname;
+	public String getWard_code() {
+		return ward_code;
 	}
 
-	public void setUser_fullname(String user_fullname) {
-		this.user_fullname = user_fullname;
+	public void setWard_code(String ward_code) {
+		this.ward_code = ward_code;
+	}
+
+	public Integer getDistrict_id() {
+		return district_id;
+	}
+
+	public void setDistrict_id(Integer district_id) {
+		this.district_id = district_id;
 	}
 
 	public String getPhone() {
@@ -153,12 +158,28 @@ public class Order extends BaseEntity {
 		this.payment = payment;
 	}
 
-	public Shipment getShipment() {
-		return shipment;
+	public Long getShip_fee() {
+		return ship_fee;
 	}
 
-	public void setShipment(Shipment shipment) {
-		this.shipment = shipment;
+	public void setShip_fee(Long ship_fee) {
+		this.ship_fee = ship_fee;
 	}
+
+	public String getOrder_code() {
+		return order_code;
+	}
+
+	public void setOrder_code(String order_code) {
+		this.order_code = order_code;
+	}
+
+//	public Shipment getShipment() {
+//		return shipment;
+//	}
+//
+//	public void setShipment(Shipment shipment) {
+//		this.shipment = shipment;
+//	}
 
 }

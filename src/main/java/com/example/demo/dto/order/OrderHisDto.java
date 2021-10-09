@@ -8,12 +8,16 @@ import com.example.demo.entity.order.Order;
 
 public class OrderHisDto {
 	private Long id;
+	private String order_code;
 	private String description;
 	private String createdDate;
 	private Long total_price;
+	private Long ship_fee;
 	private Integer total_item;
 	private String orderInfo;
 	private String address;
+	private String ward_code;
+	private Integer district_id;
 	private String username;
 	private String user_fullname;
 	private String phone;
@@ -27,6 +31,7 @@ public class OrderHisDto {
 
 	public OrderHisDto(Order entity) {
 		this.setId(entity.getId());
+		this.order_code = entity.getOrder_code();
 		try {
 			this.createdDate = new SimpleDateFormat("dd/MM/yyyy hh:mm").format(
 					new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
@@ -35,9 +40,12 @@ public class OrderHisDto {
 			e.printStackTrace();
 		}
 		this.total_price = entity.getTotal_price();
+		this.ship_fee = entity.getShip_fee();
 		this.total_item = entity.getTotal_item();
 		this.orderInfo = entity.getOrderInfo();
 		this.address = entity.getAddress();
+		this.district_id = entity.getDistrict_id();
+		this.ward_code = entity.getWard_code();
 		this.phone = entity.getPhone();
 		this.username = entity.getUser().getUsername();
 		this.user_fullname = entity.getUser().getFullname();
@@ -89,6 +97,14 @@ public class OrderHisDto {
 		this.id = id;
 	}
 
+	public String getOrder_code() {
+		return order_code;
+	}
+
+	public void setOrder_code(String order_code) {
+		this.order_code = order_code;
+	}
+
 	public String getDescription() {
 		return description;
 	}
@@ -111,6 +127,14 @@ public class OrderHisDto {
 
 	public void setTotal_price(Long total_price) {
 		this.total_price = total_price;
+	}
+
+	public Long getShip_fee() {
+		return ship_fee;
+	}
+
+	public void setShip_fee(Long ship_fee) {
+		this.ship_fee = ship_fee;
 	}
 
 	public Integer getTotal_item() {
@@ -191,6 +215,22 @@ public class OrderHisDto {
 
 	public void setStatus_payment_name(String status_payment_name) {
 		this.status_payment_name = status_payment_name;
+	}
+
+	public String getWard_code() {
+		return ward_code;
+	}
+
+	public void setWard_code(String ward_code) {
+		this.ward_code = ward_code;
+	}
+
+	public Integer getDistrict_id() {
+		return district_id;
+	}
+
+	public void setDistrict_id(Integer district_id) {
+		this.district_id = district_id;
 	}
 
 }

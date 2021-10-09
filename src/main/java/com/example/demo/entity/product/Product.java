@@ -8,8 +8,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -18,7 +16,6 @@ import javax.persistence.Table;
 import com.example.demo.entity.BaseEntity;
 import com.example.demo.entity.category.Category;
 import com.example.demo.entity.category.SubCategory;
-import com.example.demo.entity.category.Tag;
 import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.order.OrderDetail;
 import com.example.demo.entity.user.Comment;
@@ -50,6 +47,18 @@ public class Product extends BaseEntity {
 
 	@Column(name = "main_image")
 	private String mainIamge;
+
+	@Column(name = "weight")
+	private Integer weight; // -- Bắt buộc, khối lượng đóng gói
+
+	@Column(name = "length")
+	private Integer length; // -- Bắt buộc, chiều dài khi đóng gói
+
+	@Column(name = "width")
+	private Integer width; // -- Bắt buộc, chiều rộng khi đóng gói
+
+	@Column(name = "height")
+	private Integer height; // -- Bắt buộc, chiều cao khi đóng gói
 
 	@Column(name = "display")
 	private Integer display; // 1 : show, 0: hidden
@@ -91,10 +100,6 @@ public class Product extends BaseEntity {
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 	private List<Comment> comments;
-
-	@ManyToMany(cascade = CascadeType.PERSIST)
-	@JoinTable(name = "tbl_product_tag", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-	private List<Tag> tags;
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderDetail> orderDetails = new ArrayList<>();
@@ -164,6 +169,38 @@ public class Product extends BaseEntity {
 
 	public void setMainIamge(String mainIamge) {
 		this.mainIamge = mainIamge;
+	}
+
+	public Integer getWeight() {
+		return weight;
+	}
+
+	public void setWeight(Integer weight) {
+		this.weight = weight;
+	}
+
+	public Integer getLength() {
+		return length;
+	}
+
+	public void setLength(Integer length) {
+		this.length = length;
+	}
+
+	public Integer getWidth() {
+		return width;
+	}
+
+	public void setWidth(Integer width) {
+		this.width = width;
+	}
+
+	public Integer getHeight() {
+		return height;
+	}
+
+	public void setHeight(Integer height) {
+		this.height = height;
 	}
 
 	public List<Image> getImages() {
@@ -244,14 +281,6 @@ public class Product extends BaseEntity {
 
 	public void setBrand(Brand brand) {
 		this.brand = brand;
-	}
-
-	public List<Tag> getTags() {
-		return tags;
-	}
-
-	public void setTags(List<Tag> tags) {
-		this.tags = tags;
 	}
 
 	public List<OrderDetail> getOrderDetails() {

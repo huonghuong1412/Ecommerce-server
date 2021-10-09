@@ -15,8 +15,11 @@ public class UserDto extends AbstractDTO<UserDto> {
 	private UserAddressDto address;
 
 	private String city;
+	private Integer city_id;
 	private String district;
+	private Integer district_id;
 	private String ward;
+	private String ward_id;
 	private String house;
 
 	public UserDto() {
@@ -38,6 +41,9 @@ public class UserDto extends AbstractDTO<UserDto> {
 			this.district = this.address.getDistrict();
 			this.ward = this.address.getWard();
 			this.house = this.address.getHouse();
+			this.city_id = this.address.getCity_id();
+			this.district_id = this.address.getDistrict_id();
+			this.ward_id = this.address.getWard_id();
 		}
 	}
 
@@ -119,6 +125,30 @@ public class UserDto extends AbstractDTO<UserDto> {
 
 	public void setHouse(String house) {
 		this.house = house;
+	}
+
+	public Integer getCity_id() {
+		return city_id;
+	}
+
+	public void setCity_id(Integer city_id) {
+		this.city_id = city_id;
+	}
+
+	public Integer getDistrict_id() {
+		return district_id;
+	}
+
+	public void setDistrict_id(Integer district_id) {
+		this.district_id = district_id;
+	}
+
+	public String getWard_id() {
+		return ward_id;
+	}
+
+	public void setWard_id(String ward_id) {
+		this.ward_id = ward_id;
 	}
 
 }

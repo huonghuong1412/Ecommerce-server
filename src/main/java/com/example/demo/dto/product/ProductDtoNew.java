@@ -9,10 +9,8 @@ import com.example.demo.common.CalculateDiscount;
 import com.example.demo.dto.AbstractDTO;
 import com.example.demo.dto.category.CategoryDtoNew;
 import com.example.demo.dto.category.SubcategoryDtoNew;
-import com.example.demo.dto.category.TagDto;
 import com.example.demo.entity.category.Category;
 import com.example.demo.entity.category.SubCategory;
-import com.example.demo.entity.category.Tag;
 import com.example.demo.entity.product.Author;
 import com.example.demo.entity.product.Brand;
 import com.example.demo.entity.product.Image;
@@ -50,6 +48,11 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 	@JsonInclude(value = Include.NON_NULL)
 	private String mainImage;
 
+	private Integer weight;
+	private Integer length;
+	private Integer width;
+	private Integer height;
+
 	@JsonInclude(value = Include.NON_NULL)
 	private Integer in_stock;
 
@@ -70,9 +73,6 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 
 	@JsonInclude(value = Include.NON_EMPTY)
 	private List<ProductSpecify> product_specs;
-
-	@JsonInclude(value = Include.NON_EMPTY)
-	private List<TagDto> tags;
 
 	// brand
 	@JsonInclude(value = Include.NON_NULL)
@@ -114,6 +114,10 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 		}
 
 		this.mainImage = entity.getMainIamge();
+		this.weight = entity.getWeight();
+		this.length = entity.getLength();
+		this.width = entity.getWidth();
+		this.height = entity.getHeight();
 
 		if (entity.getInventory() != null) {
 			this.in_stock = entity.getInventory().getQuantity_item();
@@ -135,12 +139,6 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 			images.add(dto.getUrl());
 		}
 		images.add(0, this.mainImage);
-
-		this.tags = new ArrayList<TagDto>();
-		for (Tag tag : entity.getTags()) {
-			TagDto dto = new TagDto(tag);
-			this.tags.add(dto);
-		}
 
 		this.product_specs = new ArrayList<>();
 
@@ -274,6 +272,38 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 		this.mainImage = mainImage;
 	}
 
+	public Integer getWeight() {
+		return weight;
+	}
+
+	public void setWeight(Integer weight) {
+		this.weight = weight;
+	}
+
+	public Integer getLength() {
+		return length;
+	}
+
+	public void setLength(Integer length) {
+		this.length = length;
+	}
+
+	public Integer getWidth() {
+		return width;
+	}
+
+	public void setWidth(Integer width) {
+		this.width = width;
+	}
+
+	public Integer getHeight() {
+		return height;
+	}
+
+	public void setHeight(Integer height) {
+		this.height = height;
+	}
+
 	public List<String> getImages() {
 		return images;
 	}
@@ -296,14 +326,6 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 
 	public void setSubcategory(SubcategoryDtoNew subcategory) {
 		this.subcategory = subcategory;
-	}
-
-	public List<TagDto> getTags() {
-		return tags;
-	}
-
-	public void setTags(List<TagDto> tags) {
-		this.tags = tags;
 	}
 
 	@JsonIgnore

@@ -6,13 +6,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.demo.dto.AbstractDTO;
-import com.example.demo.dto.category.TagDto;
-import com.example.demo.entity.category.Tag;
 import com.example.demo.entity.product.Author;
 import com.example.demo.entity.product.Image;
 import com.example.demo.entity.product.Product;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class ProductDto extends AbstractDTO<ProductDto> {
 	private Integer type; // loai san phamr
@@ -23,12 +19,13 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 	private Long price;
 	private Long list_price;
 	private String mainImage;
+	private Integer weight;
+	private Integer length;
+	private Integer width;
+	private Integer height;
 	private List<String> images;
 	private String category;
 	private String subcategory;
-
-	@JsonInclude(value = Include.NON_NULL)
-	private List<String> tags;
 
 	// book
 	private Integer publishingYear;
@@ -80,23 +77,20 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 		this.price = entity.getPrice();
 		this.list_price = entity.getList_price();
 		this.mainImage = entity.getMainIamge();
-
+		this.weight = entity.getWeight();
+		this.length = entity.getLength();
+		this.width = entity.getWidth();
+		this.height = entity.getHeight();
 		this.category = entity.getCategory().getCode();
 		this.subcategory = entity.getSubcategory().getCode();
 		this.brand = entity.getBrand().getCode();
-
-		this.tags = new ArrayList<String>();
-		for (Tag tag : entity.getTags()) {
-			TagDto dto = new TagDto(tag);
-			this.tags.add(dto.getCode());
-		}
 
 		images = new ArrayList<>();
 		for (Image image : entity.getImages()) {
 			ImageDto dto = new ImageDto(image);
 			images.add(dto.getUrl());
 		}
-		
+
 		switch (this.type) {
 		case 1:
 			// sach
@@ -201,12 +195,36 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 		this.mainImage = mainImage;
 	}
 
-	public List<String> getTags() {
-		return tags;
+	public Integer getWeight() {
+		return weight;
 	}
 
-	public void setTags(List<String> tags) {
-		this.tags = tags;
+	public void setWeight(Integer weight) {
+		this.weight = weight;
+	}
+
+	public Integer getLength() {
+		return length;
+	}
+
+	public void setLength(Integer length) {
+		this.length = length;
+	}
+
+	public Integer getWidth() {
+		return width;
+	}
+
+	public void setWidth(Integer width) {
+		this.width = width;
+	}
+
+	public Integer getHeight() {
+		return height;
+	}
+
+	public void setHeight(Integer height) {
+		this.height = height;
 	}
 
 	public List<String> getImages() {

@@ -7,20 +7,25 @@ import java.util.Date;
 import com.example.demo.entity.order.Order;
 
 public class OrderHisInfoDto {
-
 	private String createdDate;
 	private Long total_price;
 	private Integer total_item;
 	private String orderInfo;
 	private String address;
-
+	private Integer weight;
+	private Integer length;
+	private Integer width;
+	private Integer height;
+	private Long ship_fee;
+	private String ward_code;
+	private Integer district_id;
 	private Integer status_order;
 	private String status_order_name;
 	private Integer status_payment;
 	private String status_payment_name;
 
-	private String shipment_name;
-	private Double shipment_fee;
+//	private String shipment_name;
+//	private Double shipment_fee;
 
 	private String payment_method;
 
@@ -38,9 +43,12 @@ public class OrderHisInfoDto {
 			e.printStackTrace();
 		}
 		this.total_price = entity.getTotal_price();
+		this.ship_fee = entity.getShip_fee();
 		this.total_item = entity.getTotal_item();
 		this.orderInfo = entity.getOrderInfo();
 		this.address = entity.getAddress();
+		this.ward_code = entity.getWard_code();
+		this.district_id = entity.getDistrict_id();
 		this.status_order = entity.getStatus();
 		this.status_payment = entity.getPayment().getStatus();
 		switch (this.status_order) {
@@ -80,8 +88,8 @@ public class OrderHisInfoDto {
 		}
 
 		this.payment_method = entity.getPayment().getMethod().getName();
-		this.shipment_name = entity.getShipment().getName();
-		this.shipment_fee = entity.getShipment().getFee();
+//		this.shipment_name = entity.getShipment().getName();
+//		this.shipment_fee = entity.getShipment().getFee();
 	}
 
 	public String getAddress() {
@@ -164,20 +172,60 @@ public class OrderHisInfoDto {
 		this.payment_method = payment_method;
 	}
 
-	public String getShipment_name() {
-		return shipment_name;
+	public Integer getWeight() {
+		return weight;
 	}
 
-	public void setShipment_name(String shipment_name) {
-		this.shipment_name = shipment_name;
+	public void setWeight(Integer weight) {
+		this.weight = weight;
 	}
 
-	public Double getShipment_fee() {
-		return shipment_fee;
+	public Integer getLength() {
+		return length;
 	}
 
-	public void setShipment_fee(Double shipment_fee) {
-		this.shipment_fee = shipment_fee;
+	public void setLength(Integer length) {
+		this.length = length;
+	}
+
+	public Integer getWidth() {
+		return width;
+	}
+
+	public void setWidth(Integer width) {
+		this.width = width;
+	}
+
+	public Integer getHeight() {
+		return height;
+	}
+
+	public void setHeight(Integer height) {
+		this.height = height;
+	}
+
+	public Long getShip_fee() {
+		return ship_fee;
+	}
+
+	public void setShip_fee(Long ship_fee) {
+		this.ship_fee = ship_fee;
+	}
+
+	public String getWard_code() {
+		return ward_code;
+	}
+
+	public void setWard_code(String ward_code) {
+		this.ward_code = ward_code;
+	}
+
+	public Integer getDistrict_id() {
+		return district_id;
+	}
+
+	public void setDistrict_id(Integer district_id) {
+		this.district_id = district_id;
 	}
 
 }

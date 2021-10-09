@@ -120,9 +120,11 @@ public class OrderController {
 		Order order = orderRepository.getById(id);
 		Payment payment = paymentRepository.findOneByOrderId(order.getId());
 		if (order.getStatus() == 2) {
-			return ResponseEntity.ok(new MessageResponse("Bạn đã xác nhận đơn hàng này rồi!"));
+			return new ResponseEntity<MessageResponse>(new MessageResponse("Bạn đã xác nhận đơn hàng này rồi!"),
+					HttpStatus.BAD_REQUEST);
 		} else if (order.getStatus() == -1) {
-			return ResponseEntity.ok(new MessageResponse("Đơn hàng này đã bị huỷ!"));
+			return new ResponseEntity<MessageResponse>(new MessageResponse("Đơn hàng này đã bị huỷ!"),
+					HttpStatus.BAD_REQUEST);
 		} else {
 			order.setStatus(2);
 //			List<OrderDetail> orderDetails = orderDetailRepository.getAllByOrderId(order.getId());
@@ -150,17 +152,20 @@ public class OrderController {
 	// đang giao hàng
 	@PutMapping("/is-shipping/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> shipping(@PathVariable Long id) {
+	public ResponseEntity<MessageResponse> shipping(@PathVariable Long id) {
 		Order order = orderRepository.getById(id);
 
 		Payment payment = paymentRepository.findOneByOrderId(order.getId());
 
 		if (order.getStatus() == 1) {
-			return ResponseEntity.ok(new MessageResponse("Đơn hàng đang được giao!"));
+			return new ResponseEntity<MessageResponse>(
+					new MessageResponse("Đơn hàng đang giao, không cần xác nhận lại!"), HttpStatus.BAD_REQUEST);
 		} else if (order.getStatus() == -1) {
-			return ResponseEntity.ok(new MessageResponse("Đơn hàng này đã bị huỷ!"));
+			return new ResponseEntity<MessageResponse>(new MessageResponse("Đơn hàng này đã bị huỷ!"),
+					HttpStatus.BAD_REQUEST);
 		} else if (order.getStatus() == 2) {
-			return ResponseEntity.ok(new MessageResponse("Đơn hàng này đã được xác nhận!"));
+			return new ResponseEntity<MessageResponse>(new MessageResponse("Đơn hàng này đã được xác nhận!"),
+					HttpStatus.BAD_REQUEST);
 		} else {
 			order.setStatus(1);
 		}
@@ -177,25 +182,46 @@ public class OrderController {
 
 	// huỷ đơn hàng
 	@PutMapping("/cancel/{id}")
-	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ADMIN')")
-	public ResponseEntity<?> cancel(@PathVariable Long id) {
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+	public ResponseEntity<MessageResponse> cancel(@PathVariable Long id) {
 		Order order = orderRepository.getById(id);
 		Payment payment = paymentRepository.findOneByOrderId(order.getId());
-
-		if (order.getStatus() == -1) {
-			return ResponseEntity.ok(new MessageResponse("Bạn đã huỷ đơn hàng này rồi!"));
-		} else if (order.getStatus() == 2) {
-			return ResponseEntity.ok(new MessageResponse("Đơn hàng này đã được xác nhận, không thể huỷ!"));
-		} else if (order.getStatus() == 1) {
-			return ResponseEntity.ok(new MessageResponse("Đơn hàng này đang được giao, không thể huỷ!"));
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+			if (order.getStatus() == -1) {
+				return new ResponseEntity<MessageResponse>(new MessageResponse("Bạn đã huỷ đơn hàng này rồi!"),
+						HttpStatus.BAD_REQUEST);
+			} else if (order.getStatus() == 2) {
+				return new ResponseEntity<MessageResponse>(
+						new MessageResponse("Đơn hàng này đã được xác nhận, không thể huỷ!"), HttpStatus.BAD_REQUEST);
+			} else if (order.getStatus() == 1) {
+				return new ResponseEntity<MessageResponse>(
+						new MessageResponse("Đơn hàng này đang được giao, không thể huỷ!"), HttpStatus.BAD_REQUEST);
+			} else {
+				order.setStatus(-1);
+				List<OrderDetail> orderDetails = orderDetailRepository.getAllByOrderId(order.getId());
+				for (OrderDetail i : orderDetails) {
+					if (inventoryRepos.existsByProductId(i.getProduct().getId())) {
+						Inventory inventory = inventoryRepos.getOneByProductId(i.getProduct().getId());
+						inventory.setQuantity_item(inventory.getQuantity_item() + i.getAmount());
+						inventoryRepos.save(inventory);
+					}
+				}
+			}
 		} else {
-			order.setStatus(-1);
-			List<OrderDetail> orderDetails = orderDetailRepository.getAllByOrderId(order.getId());
-			for (OrderDetail i : orderDetails) {
-				if (inventoryRepos.existsByProductId(i.getProduct().getId())) {
-					Inventory inventory = inventoryRepos.getOneByProductId(i.getProduct().getId());
-					inventory.setQuantity_item(inventory.getQuantity_item() + i.getAmount());
-					inventoryRepos.save(inventory);
+			if (order.getStatus() == -1) {
+				return ResponseEntity.ok(new MessageResponse("Bạn đã huỷ đơn hàng này rồi!"));
+			} else if (order.getStatus() == 2) {
+				return ResponseEntity.ok(new MessageResponse("Đơn hàng này đã được xác nhận, không thể huỷ!"));
+			} else {
+				order.setStatus(-1);
+				List<OrderDetail> orderDetails = orderDetailRepository.getAllByOrderId(order.getId());
+				for (OrderDetail i : orderDetails) {
+					if (inventoryRepos.existsByProductId(i.getProduct().getId())) {
+						Inventory inventory = inventoryRepos.getOneByProductId(i.getProduct().getId());
+						inventory.setQuantity_item(inventory.getQuantity_item() + i.getAmount());
+						inventoryRepos.save(inventory);
+					}
 				}
 			}
 		}
@@ -224,6 +250,16 @@ public class OrderController {
 		payment.setTradingCode(dto.getTradingCode());
 		paymentRepository.save(payment);
 		return new ResponseEntity<MessageResponse>(new MessageResponse("Đặt hàng thành công!"), HttpStatus.OK);
+	}
+
+	// đang giao hàng
+	@PutMapping("/update-order-code/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<MessageResponse> updateOrderCodeGHN(@PathVariable Long id, @RequestBody String order_code) {
+		Order order = orderRepository.getById(id);
+		order.setOrder_code(order_code);
+		orderRepository.save(order);
+		return ResponseEntity.ok(new MessageResponse("SUCCESS"));
 	}
 
 }

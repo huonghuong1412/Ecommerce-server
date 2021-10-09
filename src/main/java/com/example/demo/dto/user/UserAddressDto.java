@@ -8,8 +8,11 @@ public class UserAddressDto extends AbstractDTO<UserAddressDto> {
 	private String username;
 	private String phone;
 	private String city;
+	private Integer city_id;
 	private String district;
+	private Integer district_id;
 	private String ward;
+	private String ward_id;
 	private String house;
 
 	public UserAddressDto() {
@@ -25,6 +28,9 @@ public class UserAddressDto extends AbstractDTO<UserAddressDto> {
 		this.district = entity.getDistrict();
 		this.ward = entity.getWard();
 		this.house = entity.getHouse();
+		this.city_id = entity.getCity_id();
+		this.district_id = entity.getDistrict_id();
+		this.ward_id = entity.getWard_id();
 	}
 
 	public String getUsername() {
@@ -73,6 +79,30 @@ public class UserAddressDto extends AbstractDTO<UserAddressDto> {
 
 	public void setHouse(String house) {
 		this.house = house;
+	}
+
+	public Integer getCity_id() {
+		return city_id;
+	}
+
+	public void setCity_id(Integer city_id) {
+		this.city_id = city_id;
+	}
+
+	public Integer getDistrict_id() {
+		return district_id;
+	}
+
+	public void setDistrict_id(Integer district_id) {
+		this.district_id = district_id;
+	}
+
+	public String getWard_id() {
+		return ward_id;
+	}
+
+	public void setWard_id(String ward_id) {
+		this.ward_id = ward_id;
 	}
 
 }

@@ -16,11 +16,20 @@ public class Address extends BaseEntity {
 	@Column(name = "city")
 	private String city;
 
+	@Column(name = "city_id")
+	private Integer city_id;
+
 	@Column(name = "district")
 	private String district;
 
+	@Column(name = "district_id")
+	private Integer district_id;
+
 	@Column(name = "ward")
 	private String ward;
+
+	@Column(name = "ward_id")
+	private String ward_id;;
 
 	@Column(name = "house")
 	private String house;
@@ -39,6 +48,42 @@ public class Address extends BaseEntity {
 		this.district = district;
 		this.ward = ward;
 		this.house = house;
+	}
+
+	public Address(String city, Integer city_id, String district, Integer district_id, String ward, String ward_id,
+			String house) {
+		super();
+		this.city = city;
+		this.city_id = city_id;
+		this.district = district;
+		this.district_id = district_id;
+		this.ward = ward;
+		this.ward_id = ward_id;
+		this.house = house;
+	}
+
+	public Integer getCity_id() {
+		return city_id;
+	}
+
+	public void setCity_id(Integer city_id) {
+		this.city_id = city_id;
+	}
+
+	public Integer getDistrict_id() {
+		return district_id;
+	}
+
+	public void setDistrict_id(Integer district_id) {
+		this.district_id = district_id;
+	}
+
+	public String getWard_id() {
+		return ward_id;
+	}
+
+	public void setWard_id(String ward_id) {
+		this.ward_id = ward_id;
 	}
 
 	public String getCity() {

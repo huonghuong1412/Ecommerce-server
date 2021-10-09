@@ -173,6 +173,19 @@ public class CartServiceImpl implements CartService {
 			User user = userRepos.findOneByUsername(username);
 			Cart cart = cartRepos.getOneByUser(user);
 			CartDto dto = new CartDto(cart);
+			List<CartDetailDto> details = dto.getCart_details();
+			Integer total_weight = 0, total_length = 0, total_width=0, total_height=0;
+			for(CartDetailDto item : details) {
+				Product p = productRepos.getById(item.getProduct_id());
+				total_weight += p.getWeight();
+				total_length += p.getLength();
+				total_width += p.getWidth();
+				total_height += p.getHeight();
+			}
+			dto.setWeight(total_weight);
+			dto.setLength(total_length);
+			dto.setWidth(total_width);
+			dto.setHeight(total_height);
 			return dto;
 		}
 		return null;

@@ -15,13 +15,17 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 	private String createdDate;
 	private String username;
 	private Long total_price;
+	private Long ship_fee;
 	private Integer total_item;
 	private String orderInfo;
+	private String order_code; // mã đơn hàng trên giaohannhanh
 	private String address;
+	private String ward_code;
+	private Integer district_id;
 	private String phone;
 	private Integer status_order;
 	private Integer status_payment;
-	private String shipment;
+//	private String shipment;
 	private PaymentDto payment;
 	private List<OrderDetailDto> order_details;
 
@@ -31,20 +35,25 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 	public OrderDto(Order entity) {
 		this.setId(entity.getId());
 		try {
-			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
+			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(
+					new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.total_price = entity.getTotal_price();
+		this.ship_fee = entity.getShip_fee();
 		this.total_item = entity.getTotal_item();
 		this.username = entity.getUser().getUsername();
+		this.order_code = entity.getOrder_code();
 		this.orderInfo = entity.getOrderInfo();
 		this.status_order = entity.getStatus();
 		this.status_payment = entity.getPayment().getStatus();
 		this.address = entity.getAddress();
+		this.ward_code = entity.getWard_code();
+		this.district_id = entity.getDistrict_id();
 		this.phone = entity.getPhone();
-		this.shipment = entity.getShipment().getCode();
+//		this.shipment = entity.getShipment().getCode();
 
 		if (payment != null) {
 			Payment pay = entity.getPayment();
@@ -98,6 +107,14 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 		this.orderInfo = orderInfo;
 	}
 
+	public String getOrder_code() {
+		return order_code;
+	}
+
+	public void setOrder_code(String order_code) {
+		this.order_code = order_code;
+	}
+
 	public String getAddress() {
 		return address;
 	}
@@ -106,12 +123,36 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 		this.address = address;
 	}
 
+	public String getWard_code() {
+		return ward_code;
+	}
+
+	public void setWard_code(String ward_code) {
+		this.ward_code = ward_code;
+	}
+
+	public Integer getDistrict_id() {
+		return district_id;
+	}
+
+	public void setDistrict_id(Integer district_id) {
+		this.district_id = district_id;
+	}
+
 	public Long getTotal_price() {
 		return total_price;
 	}
 
 	public void setTotal_price(Long total_price) {
 		this.total_price = total_price;
+	}
+
+	public Long getShip_fee() {
+		return ship_fee;
+	}
+
+	public void setShip_fee(Long ship_fee) {
+		this.ship_fee = ship_fee;
 	}
 
 	public Integer getTotal_item() {
@@ -146,12 +187,12 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 		this.status_payment = status_payment;
 	}
 
-	public String getShipment() {
-		return shipment;
-	}
-
-	public void setShipment(String shipment) {
-		this.shipment = shipment;
-	}
+//	public String getShipment() {
+//		return shipment;
+//	}
+//
+//	public void setShipment(String shipment) {
+//		this.shipment = shipment;
+//	}
 
 }

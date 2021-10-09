@@ -27,7 +27,6 @@ import com.example.demo.dto.product.ProductDtoNew;
 import com.example.demo.dto.product.ProductListDto;
 import com.example.demo.entity.category.Category;
 import com.example.demo.entity.category.SubCategory;
-import com.example.demo.entity.category.Tag;
 import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.product.Author;
 import com.example.demo.entity.product.Book;
@@ -46,7 +45,6 @@ import com.example.demo.repository.OrderDetailRepository;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.PublisherRepository;
 import com.example.demo.repository.SubCategoryRepository;
-import com.example.demo.repository.TagRepository;
 import com.example.demo.repository.TechnologyRepository;
 import com.example.demo.service.ProductService;
 
@@ -70,10 +68,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private SubCategoryRepository subcategoryRepos;
-
-	@Autowired
-	private TagRepository tagRepos;
-
+	
 	@Autowired
 	private ImageRepository imageRepos;
 
@@ -300,7 +295,6 @@ public class ProductServiceImpl implements ProductService {
 			Author author = null;
 			Image image = null;
 			Publisher publisher = null;
-			Tag tag = null;
 			Inventory inventory = null;
 
 			Category category = categoryRepos.findOneByCode(dto.getCategory());
@@ -312,9 +306,6 @@ public class ProductServiceImpl implements ProductService {
 				authorCodes = dto.getAuthorCodes();
 			}
 			Set<Author> authors = new HashSet<>();
-
-			List<String> tagCodes = dto.getTags();
-			List<Tag> tags = new ArrayList<Tag>();
 
 			// 1 - n product - image
 			List<String> imageUrls = dto.getImages();
@@ -364,6 +355,10 @@ public class ProductServiceImpl implements ProductService {
 			entity.setType(dto.getType());
 			entity.setName(dto.getName());
 			entity.setMainIamge(dto.getMainImage());
+			entity.setWeight(dto.getWeight());
+			entity.setLength(dto.getLength());
+			entity.setWidth(dto.getWidth());
+			entity.setHeight(dto.getHeight());
 			entity.setPrice(dto.getPrice());
 			entity.setList_price(dto.getList_price());
 			entity.setSku(dto.getSku());
@@ -375,15 +370,6 @@ public class ProductServiceImpl implements ProductService {
 			entity.setCategory(category);
 			entity.setSubcategory(subcategory);
 			entity.setBrand(brand);
-
-			if (tagCodes != null) {
-				for (String tagCode : tagCodes) {
-					tag = tagRepos.getOneByCode(tagCode);
-					if (tag != null) {
-						tags.add(tag);
-					}
-				}
-			}
 
 			switch (dto.getType()) {
 			case 1:
@@ -430,7 +416,6 @@ public class ProductServiceImpl implements ProductService {
 				break;
 			}
 
-			entity.setTags(tags);
 			entity.setImages(images);
 			for(int i = 0; i<images.size(); i++) {
 				images.get(i).setProduct(entity);

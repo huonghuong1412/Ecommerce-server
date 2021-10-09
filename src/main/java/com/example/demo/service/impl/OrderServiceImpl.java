@@ -21,13 +21,13 @@ import com.example.demo.dto.order.OrderDetailHisDto;
 import com.example.demo.dto.order.OrderDto;
 import com.example.demo.dto.order.OrderHisDto;
 import com.example.demo.dto.order.OrderHisFullDto;
+import com.example.demo.dto.order.OrderHisInfoDto;
 import com.example.demo.dto.order.PaymentDto;
 import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.order.Order;
 import com.example.demo.entity.order.OrderDetail;
 import com.example.demo.entity.order.Payment;
 import com.example.demo.entity.order.PaymentMethod;
-import com.example.demo.entity.order.Shipment;
 import com.example.demo.entity.product.Product;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.InventoryRepository;
@@ -36,7 +36,6 @@ import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaymentMethodRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.ProductRepository;
-import com.example.demo.repository.ShipmentRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.OrderService;
 
@@ -61,8 +60,8 @@ public class OrderServiceImpl implements OrderService {
 	@Autowired
 	private PaymentRepository paymentRepos;
 
-	@Autowired
-	private ShipmentRepository shipmentRepos;
+//	@Autowired
+//	private ShipmentRepository shipmentRepos;
 
 	@Autowired
 	private PaymentMethodRepository paymentMethodRepos;
@@ -163,17 +162,21 @@ public class OrderServiceImpl implements OrderService {
 			PaymentDto paymentDto = dto.getPayment();
 			PaymentMethod payMethod = paymentMethodRepos.findOneByCode(paymentDto.getMethod_code());
 
-			String shipCode = dto.getShipment();
-			Shipment ship = shipmentRepos.findOneByCode(shipCode);
+//			String shipCode = dto.getShipment();
+//			Shipment ship = shipmentRepos.findOneByCode(shipCode);
 
 			Order order = new Order();
 			order.setOrderInfo(dto.getOrderInfo());
+			order.setOrder_code(dto.getOrder_code());
 			order.setStatus(0);
 			order.setAddress(dto.getAddress());
+			order.setDistrict_id(dto.getDistrict_id());
+			order.setWard_code(dto.getWard_code());
 			order.setPhone(dto.getPhone());
-			order.setTotal_price(dto.getTotal_price());
+			order.setTotal_price(dto.getTotal_price() - dto.getShip_fee());
+			order.setShip_fee(dto.getShip_fee());
 			order.setTotal_item(dto.getTotal_item());
-			order.setShipment(ship);
+//			order.setShipment(ship);
 			order.setUser(user);
 
 			payment.setBankName(paymentDto.getBankName());
@@ -247,6 +250,20 @@ public class OrderServiceImpl implements OrderService {
 		if (id != null) {
 			Order order = orderRepository.getById(id);
 			OrderHisFullDto dto = new OrderHisFullDto(order);
+			OrderHisInfoDto orderInfoDto = dto.getOrder_info();
+			List<OrderDetailHisDto> list = dto.getOrder_details();
+			Integer total_weight = 0, total_length = 0, total_width = 0, total_height = 0;
+			for(OrderDetailHisDto item : list) {
+				Product p = productRepository.getById(item.getProduct_id());
+				total_weight += p.getWeight();
+				total_length += p.getLength();
+				total_width += p.getWidth();
+				total_height += p.getHeight();
+			}
+			orderInfoDto.setWeight(total_weight);
+			orderInfoDto.setLength(total_length);
+			orderInfoDto.setWidth(total_width);
+			orderInfoDto.setHeight(total_height);
 			return dto;
 		}
 		return null;

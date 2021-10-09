@@ -15,6 +15,11 @@ public class CartDto extends AbstractDTO<CartDto> {
 	private Long total_price = 0L;
 	private List<CartDetailDto> cart_details;
 	private String mesage;
+	// total kich thuoc & khoi luong
+	private Integer weight;
+	private Integer length;
+	private Integer width;
+	private Integer height;
 
 	public CartDto() {
 		// TODO Auto-generated constructor stub
@@ -34,7 +39,7 @@ public class CartDto extends AbstractDTO<CartDto> {
 			}
 		}
 		this.items_quantity = this.cart_details.size();
-		
+
 	}
 
 	public String getUsername() {
@@ -85,6 +90,36 @@ public class CartDto extends AbstractDTO<CartDto> {
 		this.mesage = mesage;
 	}
 
-	
-	
+	public Integer getWeight() {
+		return weight;
+	}
+
+	public void setWeight(Integer weight) {
+		this.weight = weight;
+	}
+
+	public Integer getLength() {
+		return length;
+	}
+
+	public void setLength(Integer length) {
+		this.length = length;
+	}
+
+	public Integer getWidth() {
+		return width;
+	}
+
+	public void setWidth(Integer width) {
+		this.width = width;
+	}
+
+	public Integer getHeight() {
+		return height;
+	}
+
+	public void setHeight(Integer height) {
+		this.height = height;
+	}
+
 }
