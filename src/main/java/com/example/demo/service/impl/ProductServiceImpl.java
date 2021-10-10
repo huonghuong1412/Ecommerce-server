@@ -397,19 +397,24 @@ public class ProductServiceImpl implements ProductService {
 				tech.setSizeWeight(dto.getSizeWeight());
 				tech.setMaterial(dto.getMaterial());
 				tech.setReleaseTime(dto.getReleaseTime());
-
+				tech.setScreen_size(dto.getScreen_size());
+				tech.setCamera(dto.getCamera());
+				tech.setDisplay_resolution(dto.getDisplay_resolution());
+				tech.setChip(dto.getChip());
+				
 				// phone
 				tech.setBehindCamera(dto.getBehindCamera());
-				tech.setChip(dto.getChip());
 				tech.setFrontCamera(dto.getFrontCamera());
 				tech.setInternalMemory(dto.getInternalMemory());
 				tech.setSim(dto.getSim());
+				tech.setNumber_sim(dto.getNumber_sim());
+				tech.setAccessory(dto.getAccessory());
+				
 				// laptop
 				tech.setCard(dto.getCard());
 				tech.setCpu(dto.getCpu());
 				tech.setHardWare(dto.getHardWare());
-				tech.setSpecial(dto.getSpecial());
-
+				tech.setBus(dto.getBus());
 				tech.setProduct(entity);
 				break;
 			default:

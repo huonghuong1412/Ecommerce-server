@@ -165,26 +165,75 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 			this.technology = new TechDto();
 			if (this.technology != null) {
 				Technology item = entity.getTechnology();
-				this.product_specs.add(new ProductSpecify("Màn hình", item.getScreen()));
-				this.product_specs.add(new ProductSpecify("Hệ điều hành", item.getOperatorSystem()));
-				this.product_specs.add(new ProductSpecify("RAM", item.getRam()));
-				this.product_specs.add(new ProductSpecify("PIN", item.getPin()));
-				this.product_specs.add(new ProductSpecify("Thiết kế", item.getDesign()));
-				this.product_specs.add(new ProductSpecify("Trọng lượng & Kích thước", item.getSizeWeight()));
-				this.product_specs.add(new ProductSpecify("Thành phần", item.getMaterial()));
-				this.product_specs.add(new ProductSpecify("Thời điểm ra mắt", item.getReleaseTime()));
-				if (this.category.getCode().equalsIgnoreCase("dien-thoai")) {
-					this.product_specs.add(new ProductSpecify("Camera trước", item.getFrontCamera()));
-					this.product_specs.add(new ProductSpecify("Camera sau", item.getBehindCamera()));
+				if(item.getScreen() != null) {
+					this.product_specs.add(new ProductSpecify("Màn hình", item.getScreen()));
+				}
+				if(item.getScreen_size() != null) {
+					this.product_specs.add(new ProductSpecify("Kích thước Màn hình", item.getScreen_size()));
+				}
+				if(item.getOperatorSystem() != null) {
+					this.product_specs.add(new ProductSpecify("Hệ điều hành", item.getOperatorSystem()));
+				}
+				if(item.getRam() != null) {
+					this.product_specs.add(new ProductSpecify("RAM", item.getRam()));
+				}
+				if(item.getPin() != null) {
+					this.product_specs.add(new ProductSpecify("PIN", item.getPin()));
+				}
+				if(item.getChip() != null) {
 					this.product_specs.add(new ProductSpecify("Chip", item.getChip()));
-					this.product_specs.add(new ProductSpecify("Bộ nhớ trong", item.getInternalMemory()));
-					this.product_specs.add(new ProductSpecify("SIM", item.getSim()));
+				}
+				if(item.getCamera() != null) {
+					this.product_specs.add(new ProductSpecify("Camera", item.getCamera()));
+				}
+				if(item.getDisplay_resolution() != null) {
+					this.product_specs.add(new ProductSpecify("Độ phân giải", item.getDisplay_resolution()));
+				}
+				if(item.getDesign() != null) {
+					this.product_specs.add(new ProductSpecify("Thiết kế", item.getDesign()));
+				}
+				if(item.getSizeWeight() != null) {
+					this.product_specs.add(new ProductSpecify("Trọng lượng & Kích thước", item.getSizeWeight()));
+				}
+				if(item.getMaterial() != null) {
+					this.product_specs.add(new ProductSpecify("Thành phần", item.getMaterial()));
+				}
+				if(item.getReleaseTime() != null) {
+					this.product_specs.add(new ProductSpecify("Thời điểm ra mắt", item.getReleaseTime()));
+				}
+				if (this.category.getCode().equalsIgnoreCase("dien-thoai") || this.category.getCode().equalsIgnoreCase("may-tinh-bang")) {
+					if(item.getFrontCamera() != null) {
+						this.product_specs.add(new ProductSpecify("Camera trước", item.getFrontCamera()));
+					}
+					if(item.getBehindCamera() != null) {
+						this.product_specs.add(new ProductSpecify("Camera sau", item.getBehindCamera()));
+					}
+					if(item.getInternalMemory() != null) {
+						this.product_specs.add(new ProductSpecify("Bộ nhớ trong", item.getInternalMemory()));
+					}
+					if(item.getSim() != null) {
+						this.product_specs.add(new ProductSpecify("Công nghệ SIM", item.getSim()));
+					}
+					if(item.getNumber_sim() != null) {
+						this.product_specs.add(new ProductSpecify("Số SIM", item.getNumber_sim().toString()));
+					}
+					if(item.getAccessory() != null) {
+						this.product_specs.add(new ProductSpecify("Phụ kiện đi kèm", item.getAccessory()));
+					}
 				}
 				if (this.category.getCode().equalsIgnoreCase("laptop")) {
-					this.product_specs.add(new ProductSpecify("CPU", item.getCpu()));
-					this.product_specs.add(new ProductSpecify("Phần cứng", item.getHardWare()));
-					this.product_specs.add(new ProductSpecify("Card màn hình", item.getCard()));
-					this.product_specs.add(new ProductSpecify("Đặc biệt", item.getSpecial()));
+					if(item.getCpu() != null) {
+						this.product_specs.add(new ProductSpecify("CPU", item.getCpu()));
+					}
+					if(item.getBus() != null) {
+						this.product_specs.add(new ProductSpecify("BUS", item.getBus()));
+					}
+					if(item.getHardWare() != null) {
+						this.product_specs.add(new ProductSpecify("Phần cứng", item.getHardWare()));
+					}
+					if(item.getCard() != null) {
+						this.product_specs.add(new ProductSpecify("Card màn hình", item.getCard()));
+					}
 				}
 
 			}
@@ -401,5 +450,6 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 	public void setProduct_specs(List<ProductSpecify> product_specs) {
 		this.product_specs = product_specs;
 	}
+	
 
 }

@@ -30,7 +30,7 @@ public class CartController {
 
 	// get all info cart
 	@GetMapping("/items")
-	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public ResponseEntity<CartDto> getCartDetail() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();
@@ -40,7 +40,7 @@ public class CartController {
 
 	// get quantity & total price cart
 	@GetMapping("/info")
-	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public ResponseEntity<CartResponse> getCartInfo() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();
@@ -53,7 +53,7 @@ public class CartController {
 
 	// get quantity & total price cart
 	@PostMapping("/items/check_quantity")
-	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public ResponseEntity<CartResponse> checkQuantityItemInCart(@RequestBody CartDto dto) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();
@@ -63,7 +63,7 @@ public class CartController {
 	}
 
 	@PostMapping("/items")
-	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public ResponseEntity<CartResponse> create(@RequestBody CartDto dto) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();
@@ -74,7 +74,7 @@ public class CartController {
 
 	// cartid/quantity
 	@PutMapping("/items/update")
-	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public ResponseEntity<CartResponse> updateQuantity(@RequestBody CartDto dto) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();
@@ -85,7 +85,7 @@ public class CartController {
 
 	// cartid/quantity
 	@DeleteMapping("/items/remove")
-	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public ResponseEntity<CartResponse> deleteItem(@RequestParam Long product_id) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();
@@ -95,7 +95,7 @@ public class CartController {
 
 	// cartid/quantity
 	@DeleteMapping("/items/remove_all")
-	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public ResponseEntity<Boolean> deleteAllItem() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();

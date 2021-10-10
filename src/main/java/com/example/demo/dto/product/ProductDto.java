@@ -38,26 +38,31 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 
 	// electric
 	private String screen;
+	private String screen_size;
 	private String operatorSystem;
 	private String ram;
 	private String pin;
+	private String chip;
 	private String design;
 	private String sizeWeight;
+	private String display_resolution;
+	private String camera;
 	private String material;
 	private String releaseTime;
 
 	// phone
 	private String frontCamera;
 	private String behindCamera;
-	private String chip;
 	private String internalMemory;
 	private String sim;
+	private Integer number_sim;
+	private String accessory;
 
 	// laptop
 	private String cpu;
 	private String hardWare;
 	private String card;
-	private String special;
+	private String bus;
 
 	// brand
 	private String brand;
@@ -106,24 +111,29 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 		case 2:
 			// electric
 			this.screen = entity.getTechnology().getScreen();
+			this.screen_size = entity.getTechnology().getScreen_size();
 			this.operatorSystem = entity.getTechnology().getOperatorSystem();
 			this.ram = entity.getTechnology().getRam();
 			this.pin = entity.getTechnology().getPin();
+			this.chip = entity.getTechnology().getChip();
 			this.design = entity.getTechnology().getDesign();
+			this.display_resolution = entity.getTechnology().getDisplay_resolution();
+			this.camera = entity.getTechnology().getCamera();
 			this.sizeWeight = entity.getTechnology().getSizeWeight();
 			this.material = entity.getTechnology().getMaterial();
 			this.releaseTime = entity.getTechnology().getReleaseTime();
 			// phone
 			this.frontCamera = entity.getTechnology().getFrontCamera();
 			this.behindCamera = entity.getTechnology().getBehindCamera();
-			this.chip = entity.getTechnology().getChip();
 			this.internalMemory = entity.getTechnology().getInternalMemory();
 			this.sim = entity.getTechnology().getSim();
+			this.accessory = entity.getTechnology().getAccessory();
+			this.number_sim = entity.getTechnology().getNumber_sim();
 
 			this.cpu = entity.getTechnology().getCpu();
 			this.hardWare = entity.getTechnology().getHardWare();
 			this.card = entity.getTechnology().getCard();
-			this.special = entity.getTechnology().getSpecial();
+			this.bus = entity.getTechnology().getBus();
 			break;
 		default:
 			break;
@@ -419,12 +429,52 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 		this.card = card;
 	}
 
-	public String getSpecial() {
-		return special;
+	public String getScreen_size() {
+		return screen_size;
 	}
 
-	public void setSpecial(String special) {
-		this.special = special;
+	public void setScreen_size(String screen_size) {
+		this.screen_size = screen_size;
+	}
+
+	public String getDisplay_resolution() {
+		return display_resolution;
+	}
+
+	public void setDisplay_resolution(String display_resolution) {
+		this.display_resolution = display_resolution;
+	}
+
+	public String getCamera() {
+		return camera;
+	}
+
+	public void setCamera(String camera) {
+		this.camera = camera;
+	}
+
+	public Integer getNumber_sim() {
+		return number_sim;
+	}
+
+	public void setNumber_sim(Integer number_sim) {
+		this.number_sim = number_sim;
+	}
+
+	public String getAccessory() {
+		return accessory;
+	}
+
+	public void setAccessory(String accessory) {
+		this.accessory = accessory;
+	}
+
+	public String getBus() {
+		return bus;
+	}
+
+	public void setBus(String bus) {
+		this.bus = bus;
 	}
 
 }

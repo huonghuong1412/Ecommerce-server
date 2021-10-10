@@ -24,7 +24,6 @@ public class TechDto {
 	private String cpu;
 	private String hardWare;
 	private String card;
-	private String special;
 
 	public TechDto() {
 		// TODO Auto-generated constructor stub
@@ -50,7 +49,6 @@ public class TechDto {
 		this.cpu = entity.getCpu();
 		this.hardWare = entity.getHardWare();
 		this.card = entity.getCard();
-		this.special = entity.getSpecial();
 	}
 
 	public String getScreen() {
@@ -179,14 +177,6 @@ public class TechDto {
 
 	public void setCard(String card) {
 		this.card = card;
-	}
-
-	public String getSpecial() {
-		return special;
-	}
-
-	public void setSpecial(String special) {
-		this.special = special;
 	}
 
 }

@@ -1,8 +1,14 @@
 package com.example.demo.dto.product;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 public class ProductSpecify {
 
+	@JsonInclude(value = Include.NON_NULL)
 	private String attributeName;
+	
+	@JsonInclude(value = Include.NON_NULL)
 	private String attributeValue;
 
 	public ProductSpecify() {

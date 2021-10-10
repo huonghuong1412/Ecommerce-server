@@ -19,6 +19,9 @@ public class Technology extends BaseEntity {
 	@Column(name = "screen") // 3
 	private String screen;
 
+	@Column(name = "screen_size") // 3
+	private String screen_size;
+
 	@Column(name = "operator_system") // 3
 	private String operatorSystem;
 
@@ -28,11 +31,20 @@ public class Technology extends BaseEntity {
 	@Column(name = "pin") // 3
 	private String pin;
 
+	@Column(name = "chip")
+	private String chip;
+
 	@Column(name = "design") // 3
 	private String design;
 
 	@Column(name = "size_weight") // 3
 	private String sizeWeight;
+
+	@Column(name = "display_resolution")
+	private String display_resolution;
+
+	@Column(name = "camera")
+	private String camera;
 
 	@Column(name = "material") // 3
 	private String material;
@@ -48,14 +60,17 @@ public class Technology extends BaseEntity {
 	@Column(name = "behind_camera")
 	private String behindCamera;
 
-	@Column(name = "chip")
-	private String chip;
-
 	@Column(name = "internal_memory")
 	private String internalMemory;
 
 	@Column(name = "sim")
 	private String sim;
+
+	@Column(name = "accessory")
+	private String accessory;
+
+	@Column(name = "number_sim")
+	private Integer number_sim;
 
 //	----------------	LAPTOP	--------------------
 
@@ -68,8 +83,8 @@ public class Technology extends BaseEntity {
 	@Column(name = "card")
 	private String card;
 
-	@Column(name = "special")
-	private String special;
+	@Column(name = "bus")
+	private String bus;
 
 	public Technology() {
 		// TODO Auto-generated constructor stub
@@ -203,12 +218,52 @@ public class Technology extends BaseEntity {
 		this.card = card;
 	}
 
-	public String getSpecial() {
-		return special;
+	public String getScreen_size() {
+		return screen_size;
 	}
 
-	public void setSpecial(String special) {
-		this.special = special;
+	public void setScreen_size(String screen_size) {
+		this.screen_size = screen_size;
+	}
+
+	public String getDisplay_resolution() {
+		return display_resolution;
+	}
+
+	public void setDisplay_resolution(String display_resolution) {
+		this.display_resolution = display_resolution;
+	}
+
+	public String getCamera() {
+		return camera;
+	}
+
+	public void setCamera(String camera) {
+		this.camera = camera;
+	}
+
+	public Integer getNumber_sim() {
+		return number_sim;
+	}
+
+	public void setNumber_sim(Integer number_sim) {
+		this.number_sim = number_sim;
+	}
+
+	public String getBus() {
+		return bus;
+	}
+
+	public void setBus(String bus) {
+		this.bus = bus;
+	}
+
+	public String getAccessory() {
+		return accessory;
+	}
+
+	public void setAccessory(String accessory) {
+		this.accessory = accessory;
 	}
 
 	public Product getProduct() {
