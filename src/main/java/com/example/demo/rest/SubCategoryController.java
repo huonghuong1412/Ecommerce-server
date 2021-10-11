@@ -33,7 +33,7 @@ public class SubCategoryController {
 	
 	@GetMapping("")
 	public ResponseEntity<Page<SubCategoryDto>> getAll(@RequestParam(name = "page", defaultValue = "0") Integer page,
-			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "limit", defaultValue = "24") Integer limit,
 			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
 		Page<SubCategoryDto> result = service.getList(page, limit, sortBy);
 		return new ResponseEntity<Page<SubCategoryDto>>(result, HttpStatus.OK);
@@ -42,7 +42,7 @@ public class SubCategoryController {
 	@GetMapping("/all")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Page<SubCategoryDto>> getAllAdmin(@RequestParam(name = "page", defaultValue = "0") Integer page,
-			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "limit", defaultValue = "24") Integer limit,
 			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy, @RequestParam(name="display", defaultValue = "2") Integer display) {
 		Page<SubCategoryDto> result = null;
 		if(display == 1) {

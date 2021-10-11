@@ -29,7 +29,7 @@ public class PublisherController {
 
 	@GetMapping("")
 	public ResponseEntity<Page<PublisherDto>> getAll(@RequestParam(name = "page", defaultValue = "0") Integer page,
-			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "limit", defaultValue = "24") Integer limit,
 			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
 		Page<PublisherDto> result = service.getList(page, limit, sortBy);
 		return new ResponseEntity<Page<PublisherDto>>(result, HttpStatus.OK);
@@ -38,7 +38,7 @@ public class PublisherController {
 	@GetMapping("/all")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Page<PublisherDto>> getAllAdmin(@RequestParam(name = "page", defaultValue = "0") Integer page,
-			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "limit", defaultValue = "24") Integer limit,
 			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy, @RequestParam(name="display", defaultValue = "2") Integer display) {
 		Page<PublisherDto> result = null;
 		if(display == 1) {

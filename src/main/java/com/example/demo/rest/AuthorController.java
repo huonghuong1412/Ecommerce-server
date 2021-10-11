@@ -31,7 +31,7 @@ public class AuthorController {
 
 	@GetMapping("")
 	public ResponseEntity<Page<AuthorDto>> getAll(@RequestParam(name = "page", defaultValue = "0") Integer page,
-			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "limit", defaultValue = "24") Integer limit,
 			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
 		Page<AuthorDto> result = service.getList(page, limit, sortBy);
 		return new ResponseEntity<Page<AuthorDto>>(result, HttpStatus.OK);
@@ -40,7 +40,7 @@ public class AuthorController {
 	@GetMapping("/all")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Page<AuthorDto>> getAllAdmin(@RequestParam(name = "page", defaultValue = "0") Integer page,
-			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "limit", defaultValue = "24") Integer limit,
 			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy, @RequestParam(name="display", defaultValue = "2") Integer display) {
 		Page<AuthorDto> result = null;
 		if(display == 1) {

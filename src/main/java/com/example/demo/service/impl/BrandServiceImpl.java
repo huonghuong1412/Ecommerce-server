@@ -1,23 +1,18 @@
 package com.example.demo.service.impl;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.example.demo.dto.product.BrandDto;
-import com.example.demo.entity.category.Category;
 import com.example.demo.entity.product.Brand;
 import com.example.demo.repository.BrandRepository;
-import com.example.demo.repository.CategoryRepository;
 import com.example.demo.service.BrandService;
 
 @Service
@@ -25,9 +20,6 @@ public class BrandServiceImpl implements BrandService {
 
 	@Autowired
 	private BrandRepository repos;
-
-	@Autowired
-	private CategoryRepository categoryRepository;
 
 	@Override
 	public Page<BrandDto> getList(Integer page, Integer limit, String sortBy) {
@@ -55,26 +47,10 @@ public class BrandServiceImpl implements BrandService {
 
 		return dtos;
 	}
-	
-	@Override
-	public Page<BrandDto> getAllBrandByCategory(String category) {
-		List<BrandDto> dtos = new ArrayList<BrandDto>();
-		if(category != null) {
-			Category cate = categoryRepository.findOneByCode(category);
-			List<Brand> brands = repos.findAllByCategory(cate);
-			for(Brand item : brands) {
-				BrandDto dto = new BrandDto(item);
-				dtos.add(dto);
-			}
-		}
-		return new PageImpl<>(dtos);
-	}
 
 	@Override
 	public BrandDto saveOrUpdate(BrandDto dto) {
 		if (dto != null) {
-			Category category = categoryRepository.findOneByCode(dto.getCategoryCode());
-
 			Brand entity = null;
 			if (dto.getId() != null) {
 				entity = repos.getById(dto.getId());
@@ -88,7 +64,6 @@ public class BrandServiceImpl implements BrandService {
 			entity.setName(dto.getName());
 			entity.setCode(dto.getCode());
 			entity.setMadeIn(dto.getMadeIn());
-			entity.setCategory(category);
 			entity.setDisplay(1);
 
 			entity = repos.save(entity);

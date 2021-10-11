@@ -12,7 +12,6 @@ public class BrandDto extends AbstractDTO<BrandDto> {
 	private String name;
 	private String code;
 	private String madeIn;
-	private String categoryCode;
 	private Integer display;
 	private String createdDate;
 
@@ -26,7 +25,6 @@ public class BrandDto extends AbstractDTO<BrandDto> {
 		this.name = entity.getName();
 		this.code = entity.getCode();
 		this.madeIn = entity.getMadeIn();
-		this.categoryCode = entity.getCategory().getCode();
 		this.display = entity.getDisplay();
 		try {
 			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(
@@ -58,14 +56,6 @@ public class BrandDto extends AbstractDTO<BrandDto> {
 
 	public void setMadeIn(String madeIn) {
 		this.madeIn = madeIn;
-	}
-
-	public String getCategoryCode() {
-		return categoryCode;
-	}
-
-	public void setCategoryCode(String categoryCode) {
-		this.categoryCode = categoryCode;
 	}
 
 	public Integer getDisplay() {

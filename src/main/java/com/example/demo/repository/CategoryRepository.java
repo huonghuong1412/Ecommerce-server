@@ -1,7 +1,7 @@
 package com.example.demo.repository;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,8 +16,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 	Long checkCode(String code, Long id);
 	
 	@Query("select entity from Category entity where entity.display = 1")
-	public List<Category> getList();
+	public Page<Category> getList(Pageable pageable);
 	
 	@Query("select entity from Category entity where entity.display = 0")
-	public List<Category> getListHide();
+	public Page<Category> getListHide(Pageable pageable);
 }

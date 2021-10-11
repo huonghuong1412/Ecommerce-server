@@ -1,10 +1,10 @@
 package com.example.demo.rest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,52 +31,57 @@ public class CategoryController {
 	@Qualifier("categoryServiceImpl")
 	@Autowired
 	private CategoryService service;
-	
+
 	@GetMapping("")
 	public ResponseEntity<List<CategoryDto>> getAllWithSub() {
 		List<CategoryDto> result = service.getAllCategoryWithSub();
 		return new ResponseEntity<List<CategoryDto>>(result, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<CategoryDto> getOne(@PathVariable Long id) {
 		CategoryDto result = service.getOne(id);
 		return new ResponseEntity<CategoryDto>(result, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(value = "/get")
 	public ResponseEntity<CategoryDto> getOneByCode(@RequestParam("code") String code) {
 		CategoryDto result = service.getOneCategory(code);
 		return new ResponseEntity<CategoryDto>(result, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(value = "/checkCode")
-	public ResponseEntity<Boolean> check(@RequestParam(value ="id", required = false) Long id, @RequestParam("code") String code) {
+	public ResponseEntity<Boolean> check(@RequestParam(value = "id", required = false) Long id,
+			@RequestParam("code") String code) {
 		Boolean result = service.checkCode(id, code);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/all")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<List<CategoryDtoNew>> getAllAdmin(@RequestParam(name="display", defaultValue = "2") Integer display) {
-		List<CategoryDtoNew> result = new ArrayList<CategoryDtoNew>();
-		if(display == 1) {
-			result = service.getList();
-		} else if(display == 0) {
-			result = service.getListHide();
+	public ResponseEntity<Page<CategoryDtoNew>> getAllAdmin(
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "24") Integer limit,
+			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
+			@RequestParam(name = "display", defaultValue = "2") Integer display) {
+		Page<CategoryDtoNew> result = null;
+		if (display == 1) {
+			result = service.getList(page, limit, sortBy);
+		} else if (display == 0) {
+			result = service.getListHide(page, limit, sortBy);
 		} else {
-			result = service.getAll();
+			result = service.getAll(page, limit, sortBy);
 		}
-		return new ResponseEntity<List<CategoryDtoNew>>(result, HttpStatus.OK);
+		return new ResponseEntity<Page<CategoryDtoNew>>(result, HttpStatus.OK);
 	}
-	
+
 	@PostMapping("")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<CategoryDto> create(@RequestBody CategoryDto dto) {
 		CategoryDto result = service.saveOrUpdate(dto);
 		return new ResponseEntity<CategoryDto>(result, HttpStatus.OK);
 	}
-	
+
 	@PutMapping(value = "/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<CategoryDto> update(@RequestBody CategoryDto dto, @PathVariable Long id) {

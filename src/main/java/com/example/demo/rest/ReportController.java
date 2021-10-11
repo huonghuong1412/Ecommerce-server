@@ -118,9 +118,18 @@ public class ReportController {
 		} else {
 			totalRevenue = 0L;
 		}
+		if(totalPriceImport!= null) {
+			totalPriceImport = inventoryDetailRepos.getTotalPriceImport();
+		} else {
+			totalPriceImport = 0L;
+		}
 		list.add(new OrderResponse("Doanh thu", null, totalRevenue));
 		list.add(new OrderResponse("Tổng nhập", null, totalPriceImport));
-		list.add(new OrderResponse("Lợi nhuận", null, totalRevenue - totalPriceImport));
+		if(totalRevenue != null && totalPriceImport != null) {
+			list.add(new OrderResponse("Lợi nhuận", null, totalRevenue - totalPriceImport));
+		} else {
+			list.add(new OrderResponse("Lợi nhuận", null, 0L));
+		}
 		return new ResponseEntity<List<OrderResponse>>(list, HttpStatus.OK);
 	}
 

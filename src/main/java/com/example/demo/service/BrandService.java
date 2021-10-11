@@ -12,8 +12,6 @@ public interface BrandService {
 	public Page<BrandDto> getListHide(Integer page, Integer limit, String sortBy);
 	
 	public Page<BrandDto> getAll(Integer page, Integer limit, String sortBy);
-	
-	public Page<BrandDto> getAllBrandByCategory(String category);
 
 	public BrandDto getOne(Long id);
 	

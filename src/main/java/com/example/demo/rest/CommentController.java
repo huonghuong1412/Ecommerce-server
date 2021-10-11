@@ -85,7 +85,7 @@ public class CommentController {
 	@GetMapping(value = "/all")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Page<CommentDto>> getAll(@RequestParam(name = "page", defaultValue = "1") int page,
-			@RequestParam(name = "limit", defaultValue = "10") int limit,
+			@RequestParam(name = "limit", defaultValue = "24") int limit,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword) {
 		SearchDto dto = new SearchDto(page, limit, keyword);
 		Page<CommentDto> result = service.getAllComments(dto);

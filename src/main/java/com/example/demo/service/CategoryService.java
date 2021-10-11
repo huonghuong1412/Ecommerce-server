@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.category.CategoryDto;
@@ -11,11 +12,11 @@ import com.example.demo.dto.category.CategoryDtoNew;
 public interface CategoryService {
 
 	// admin
-	public List<CategoryDtoNew> getList();
+	public Page<CategoryDtoNew> getList(Integer page, Integer limit, String sortBy);
 
-	public List<CategoryDtoNew> getListHide();
+	public Page<CategoryDtoNew> getListHide(Integer page, Integer limit, String sortBy);
 
-	public List<CategoryDtoNew> getAll();
+	public Page<CategoryDtoNew> getAll(Integer page, Integer limit, String sortBy);
 	
 	// user
 

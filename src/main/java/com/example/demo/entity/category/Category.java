@@ -10,7 +10,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.example.demo.entity.BaseEntity;
-import com.example.demo.entity.product.Brand;
 import com.example.demo.entity.product.Product;
 
 @Entity
@@ -28,9 +27,6 @@ public class Category extends BaseEntity {
 
 	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<SubCategory> subcategories = new ArrayList<>();
-
-	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Brand> brands = new ArrayList<>();
 
 	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Product> products = new ArrayList<>();
@@ -57,14 +53,6 @@ public class Category extends BaseEntity {
 
 	public void setDisplay(Integer display) {
 		this.display = display;
-	}
-
-	public List<Brand> getBrands() {
-		return brands;
-	}
-
-	public void setBrands(List<Brand> brands) {
-		this.brands = brands;
 	}
 
 	public List<SubCategory> getSubcategories() {

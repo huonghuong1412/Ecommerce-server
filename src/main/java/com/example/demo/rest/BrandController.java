@@ -29,22 +29,16 @@ public class BrandController {
 
 	@GetMapping("")
 	public ResponseEntity<Page<BrandDto>> getAll(@RequestParam(name = "page", defaultValue = "0") Integer page,
-			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "limit", defaultValue = "24") Integer limit,
 			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
 		Page<BrandDto> result = service.getList(page, limit, sortBy);
-		return new ResponseEntity<Page<BrandDto>>(result, HttpStatus.OK);
-	}
-	
-	@GetMapping("/category")
-	public ResponseEntity<Page<BrandDto>> getAllByCategory(@RequestParam(name = "category") String category) {
-		Page<BrandDto> result = service.getAllBrandByCategory(category);
 		return new ResponseEntity<Page<BrandDto>>(result, HttpStatus.OK);
 	}
 	
 	@GetMapping("/all")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Page<BrandDto>> getAllAdmin(@RequestParam(name = "page", defaultValue = "0") Integer page,
-			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "limit", defaultValue = "24") Integer limit,
 			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy, @RequestParam(name="display", defaultValue = "2") Integer display) {
 		Page<BrandDto> result = null;
 		if(display == 1) {

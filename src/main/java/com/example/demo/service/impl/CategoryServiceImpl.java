@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -27,35 +30,44 @@ public class CategoryServiceImpl implements CategoryService {
 	private SubCategoryRepository subRepos;
 
 	@Override
-	public List<CategoryDtoNew> getList() {
-		List<Category> list = repos.getList();
-		List<CategoryDtoNew> dtos = new ArrayList<>();
-		for (Category entity : list) {
-			CategoryDtoNew dto = new CategoryDtoNew(entity);
-			dtos.add(dto);
-		}
+	public Page<CategoryDtoNew> getList(Integer page, Integer limit, String sortBy) {
+//		List<Category> list = repos.getList();
+//		List<CategoryDtoNew> dtos = new ArrayList<>();
+//		for (Category entity : list) {
+//			CategoryDtoNew dto = new CategoryDtoNew(entity);
+//			dtos.add(dto);
+//		}
+		Page<Category> list = repos.getList(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<CategoryDtoNew> dtos = list.map(tag -> new CategoryDtoNew(tag));
 		return dtos;
 	}
 
 	@Override
-	public List<CategoryDtoNew> getListHide() {
-		List<Category> list = repos.getListHide();
-		List<CategoryDtoNew> dtos = new ArrayList<>();
-		for (Category entity : list) {
-			CategoryDtoNew dto = new CategoryDtoNew(entity);
-			dtos.add(dto);
-		}
+	public Page<CategoryDtoNew> getListHide(Integer page, Integer limit, String sortBy) {
+//		List<Category> list = repos.getListHide();
+//		List<CategoryDtoNew> dtos = new ArrayList<>();
+//		for (Category entity : list) {
+//			CategoryDtoNew dto = new CategoryDtoNew(entity);
+//			dtos.add(dto);
+//		}
+		Page<Category> list = repos.getListHide(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<CategoryDtoNew> dtos = list.map(tag -> new CategoryDtoNew(tag));
 		return dtos;
 	}
 
 	@Override
-	public List<CategoryDtoNew> getAll() {
-		List<Category> list = repos.findAll();
-		List<CategoryDtoNew> dtos = new ArrayList<>();
-		for (Category entity : list) {
-			CategoryDtoNew dto = new CategoryDtoNew(entity);
-			dtos.add(dto);
-		}
+	public Page<CategoryDtoNew> getAll(Integer page, Integer limit, String sortBy) {
+//		List<Category> list = repos.findAll();
+//		List<CategoryDtoNew> dtos = new ArrayList<>();
+//		for (Category entity : list) {
+//			CategoryDtoNew dto = new CategoryDtoNew(entity);
+//			dtos.add(dto);
+//		}
+		Page<Category> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<CategoryDtoNew> dtos = list.map(tag -> new CategoryDtoNew(tag));
 		return dtos;
 	}
 
@@ -66,7 +78,8 @@ public class CategoryServiceImpl implements CategoryService {
 
 		List<SubCategory> listSub = new ArrayList<>();
 
-		List<Category> entities = repos.getList();
+		Page<Category> listEntity = repos.getList(null);
+		List<Category> entities = listEntity.toList();
 		for (Category entity : entities) {
 			SubCategory subDto = subRepos.findOneByCode(entity.getCode());
 			listSub.add(subDto);
@@ -105,7 +118,7 @@ public class CategoryServiceImpl implements CategoryService {
 	public Boolean deleteCategory(Long id) {
 		if (id != null) {
 			Category entity = repos.getById(id);
-			if(entity.getDisplay() == 1) {
+			if (entity.getDisplay() == 1) {
 				entity.setDisplay(0);
 			} else {
 				entity.setDisplay(1);
@@ -139,7 +152,7 @@ public class CategoryServiceImpl implements CategoryService {
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public CategoryDto getOne(Long id) {
 		Category category = repos.getById(id);
