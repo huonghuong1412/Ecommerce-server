@@ -5,25 +5,29 @@ import com.example.demo.entity.product.Technology;
 public class TechDto {
 
 	private String screen;
+	private String screen_size;
 	private String operatorSystem;
 	private String ram;
 	private String pin;
+	private String chip;
 	private String design;
-	private String sizeWeight;
-	private String material;
 	private String releaseTime;
+	private String display_resolution;
+	private String camera;
 
 	// phone
 	private String frontCamera;
 	private String behindCamera;
-	private String chip;
 	private String internalMemory;
 	private String sim;
+	private Integer number_sim;
+	private String accessory;
 
 	// laptop
 	private String cpu;
 	private String hardWare;
 	private String card;
+	private String bus;
 
 	public TechDto() {
 		// TODO Auto-generated constructor stub
@@ -32,23 +36,27 @@ public class TechDto {
 	public TechDto(Technology entity) {
 		// electric
 		this.screen = entity.getScreen();
+		this.screen_size = entity.getScreen_size();
 		this.operatorSystem = entity.getOperatorSystem();
 		this.ram = entity.getRam();
 		this.pin = entity.getPin();
 		this.design = entity.getDesign();
-		this.sizeWeight = entity.getSizeWeight();
-		this.material = entity.getMaterial();
 		this.releaseTime = entity.getReleaseTime();
-		// phone
+		this.display_resolution = entity.getDisplay_resolution();
+		this.chip = entity.getChip();
+
+		// phone, tablet
 		this.frontCamera = entity.getFrontCamera();
 		this.behindCamera = entity.getBehindCamera();
-		this.chip = entity.getChip();
 		this.internalMemory = entity.getInternalMemory();
 		this.sim = entity.getSim();
+		this.number_sim = entity.getNumber_sim();
 
+		// laptop
 		this.cpu = entity.getCpu();
 		this.hardWare = entity.getHardWare();
 		this.card = entity.getCard();
+		this.bus = entity.getBus();
 	}
 
 	public String getScreen() {
@@ -89,22 +97,6 @@ public class TechDto {
 
 	public void setDesign(String design) {
 		this.design = design;
-	}
-
-	public String getSizeWeight() {
-		return sizeWeight;
-	}
-
-	public void setSizeWeight(String sizeWeight) {
-		this.sizeWeight = sizeWeight;
-	}
-
-	public String getMaterial() {
-		return material;
-	}
-
-	public void setMaterial(String material) {
-		this.material = material;
 	}
 
 	public String getReleaseTime() {
@@ -177,6 +169,54 @@ public class TechDto {
 
 	public void setCard(String card) {
 		this.card = card;
+	}
+
+	public String getScreen_size() {
+		return screen_size;
+	}
+
+	public void setScreen_size(String screen_size) {
+		this.screen_size = screen_size;
+	}
+
+	public String getDisplay_resolution() {
+		return display_resolution;
+	}
+
+	public void setDisplay_resolution(String display_resolution) {
+		this.display_resolution = display_resolution;
+	}
+
+	public String getCamera() {
+		return camera;
+	}
+
+	public void setCamera(String camera) {
+		this.camera = camera;
+	}
+
+	public Integer getNumber_sim() {
+		return number_sim;
+	}
+
+	public void setNumber_sim(Integer number_sim) {
+		this.number_sim = number_sim;
+	}
+
+	public String getAccessory() {
+		return accessory;
+	}
+
+	public void setAccessory(String accessory) {
+		this.accessory = accessory;
+	}
+
+	public String getBus() {
+		return bus;
+	}
+
+	public void setBus(String bus) {
+		this.bus = bus;
 	}
 
 }

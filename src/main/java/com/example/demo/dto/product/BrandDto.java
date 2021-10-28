@@ -19,6 +19,12 @@ public class BrandDto extends AbstractDTO<BrandDto> {
 		// TODO Auto-generated constructor stub
 	}
 
+	public BrandDto(String name, String code) {
+		super();
+		this.name = name;
+		this.code = code;
+	}
+
 	public BrandDto(Brand entity) {
 		super();
 		this.setId(entity.getId());

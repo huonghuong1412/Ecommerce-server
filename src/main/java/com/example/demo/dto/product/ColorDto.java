@@ -5,24 +5,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.example.demo.dto.AbstractDTO;
-import com.example.demo.entity.product.Author;
+import com.example.demo.entity.product.Color;
 
-public class AuthorDto extends AbstractDTO<AuthorDto> {
+public class ColorDto extends AbstractDTO<ColorDto> {
 
 	private String name;
-	private String code;
 	private Integer display;
 	private String createdDate;
 
-	public AuthorDto() {
+	public ColorDto() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public AuthorDto(Author entity) {
+	public ColorDto(Color entity) {
 		super();
 		this.setId(entity.getId());
 		this.name = entity.getName();
-		this.code = entity.getCode();
 		this.display = entity.getDisplay();
 		try {
 			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(
@@ -38,14 +36,6 @@ public class AuthorDto extends AbstractDTO<AuthorDto> {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
 	}
 
 	public Integer getDisplay() {

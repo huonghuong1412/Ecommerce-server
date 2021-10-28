@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class ProductListDto extends AbstractDTO<ProductListDto> {
 
-	private Integer type;
 	private String createdDate;
 	private String name;
 	private String slug;
@@ -44,7 +43,6 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 	public ProductListDto(Product entity) {
 		super();
 		this.setId(entity.getId());
-		this.type = entity.getType();
 		try {
 			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(
 					new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
@@ -60,9 +58,9 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 		} else {
 			this.percent_discount = null;
 		}
-		if (entity.getInventory() != null) {
-			this.in_stock = entity.getInventory().getQuantity_item();
-		}
+//		if (entity.getInventory() != null) {
+//			this.in_stock = entity.getInventory().getQuantity_item();
+//		}
 		this.mainImage = entity.getMainIamge();
 		category = new CategoryDtoNew();
 		if (category != null) {
@@ -79,14 +77,6 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 		Brand brandEntity = entity.getBrand();
 		this.brand = new BrandDtoNew(brandEntity);
 		this.display = entity.getDisplay();
-	}
-
-	public Integer getType() {
-		return type;
-	}
-
-	public void setType(Integer type) {
-		this.type = type;
 	}
 
 	public String getCreatedDate() {

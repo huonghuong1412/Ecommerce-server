@@ -44,7 +44,7 @@ public class CartController {
 	public ResponseEntity<CartResponse> getCartInfo() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();
-
+		
 		Integer items_quantity = service.getQuantityProductByUser(username);
 		Integer items_count = service.getQuantityItemByUser(username);
 		return new ResponseEntity<CartResponse>(new CartResponse("SUCCESS", items_count, items_quantity),

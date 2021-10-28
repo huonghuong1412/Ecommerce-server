@@ -16,6 +16,7 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 	private String username;
 	private Long total_price;
 	private Long ship_fee;
+	private Integer ship_type;
 	private Integer total_item;
 	private String orderInfo;
 	private String order_code; // mã đơn hàng trên giaohannhanh
@@ -43,6 +44,7 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 		}
 		this.total_price = entity.getTotal_price();
 		this.ship_fee = entity.getShip_fee();
+		this.ship_type = entity.getShip_type();
 		this.total_item = entity.getTotal_item();
 		this.username = entity.getUser().getUsername();
 		this.order_code = entity.getOrder_code();
@@ -153,6 +155,14 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 
 	public void setShip_fee(Long ship_fee) {
 		this.ship_fee = ship_fee;
+	}
+
+	public Integer getShip_type() {
+		return ship_type;
+	}
+
+	public void setShip_type(Integer ship_type) {
+		this.ship_type = ship_type;
 	}
 
 	public Integer getTotal_item() {

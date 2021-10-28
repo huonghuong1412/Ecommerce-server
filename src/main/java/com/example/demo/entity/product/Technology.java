@@ -37,17 +37,11 @@ public class Technology extends BaseEntity {
 	@Column(name = "design") // 3
 	private String design;
 
-	@Column(name = "size_weight") // 3
-	private String sizeWeight;
-
 	@Column(name = "display_resolution")
 	private String display_resolution;
 
 	@Column(name = "camera")
 	private String camera;
-
-	@Column(name = "material") // 3
-	private String material;
 
 	@Column(name = "release_time") // 3
 	private String releaseTime;
@@ -128,22 +122,6 @@ public class Technology extends BaseEntity {
 
 	public void setDesign(String design) {
 		this.design = design;
-	}
-
-	public String getSizeWeight() {
-		return sizeWeight;
-	}
-
-	public void setSizeWeight(String sizeWeight) {
-		this.sizeWeight = sizeWeight;
-	}
-
-	public String getMaterial() {
-		return material;
-	}
-
-	public void setMaterial(String material) {
-		this.material = material;
 	}
 
 	public String getReleaseTime() {

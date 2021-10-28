@@ -3,9 +3,7 @@ package com.example.demo.service.impl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -19,33 +17,37 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.example.demo.common.CalculateDiscount;
 import com.example.demo.common.Slug;
 import com.example.demo.dto.AdvanceSearchDto;
 import com.example.demo.dto.SearchDto;
 import com.example.demo.dto.product.ProductDto;
 import com.example.demo.dto.product.ProductDtoNew;
 import com.example.demo.dto.product.ProductListDto;
+import com.example.demo.dto.product.ProductTopSale;
 import com.example.demo.entity.category.Category;
 import com.example.demo.entity.category.SubCategory;
 import com.example.demo.entity.inventory.Inventory;
-import com.example.demo.entity.product.Author;
-import com.example.demo.entity.product.Book;
 import com.example.demo.entity.product.Brand;
+import com.example.demo.entity.product.Camera;
+import com.example.demo.entity.product.Color;
 import com.example.demo.entity.product.Image;
 import com.example.demo.entity.product.Product;
-import com.example.demo.entity.product.Publisher;
 import com.example.demo.entity.product.Technology;
-import com.example.demo.repository.AuthorRepository;
-import com.example.demo.repository.BookRepository;
+import com.example.demo.entity.product.Tivi;
+import com.example.demo.entity.product.Wash;
 import com.example.demo.repository.BrandRepository;
+import com.example.demo.repository.CameraRepository;
 import com.example.demo.repository.CategoryRepository;
+import com.example.demo.repository.ColorRepository;
 import com.example.demo.repository.ImageRepository;
 import com.example.demo.repository.InventoryRepository;
 import com.example.demo.repository.OrderDetailRepository;
 import com.example.demo.repository.ProductRepository;
-import com.example.demo.repository.PublisherRepository;
 import com.example.demo.repository.SubCategoryRepository;
 import com.example.demo.repository.TechnologyRepository;
+import com.example.demo.repository.TiviRepository;
+import com.example.demo.repository.WashRepository;
 import com.example.demo.service.ProductService;
 
 @Service
@@ -58,17 +60,11 @@ public class ProductServiceImpl implements ProductService {
 	private ProductRepository productRepos;
 
 	@Autowired
-	private AuthorRepository authorRepos;
-
-	@Autowired
-	private PublisherRepository publisherRepos;
-
-	@Autowired
 	private CategoryRepository categoryRepos;
 
 	@Autowired
 	private SubCategoryRepository subcategoryRepos;
-	
+
 	@Autowired
 	private ImageRepository imageRepos;
 
@@ -76,16 +72,25 @@ public class ProductServiceImpl implements ProductService {
 	private BrandRepository brandRepos;
 
 	@Autowired
-	private BookRepository bookRepos;
+	private TechnologyRepository techRepos;
 
 	@Autowired
-	private TechnologyRepository techRepos;
+	private CameraRepository cameraRepos;
+
+	@Autowired
+	private TiviRepository tiviRepos;
+
+	@Autowired
+	private WashRepository washRepos;
 
 	@Autowired
 	private InventoryRepository inventoryRepos;
 
 	@Autowired
 	private OrderDetailRepository orderDetailRepos;
+	
+	@Autowired
+	private ColorRepository colorRepos;
 
 	@Override
 	public Page<ProductListDto> productList(SearchDto dto) {
@@ -171,12 +176,13 @@ public class ProductServiceImpl implements ProductService {
 		List<ProductListDto> entities = q.getResultList();
 		Integer seller_count = 0;
 		for (ProductListDto item : entities) {
-			if(orderDetailRepos.countAllByProductId(item.getId()) != null) {
+			if (orderDetailRepos.countAllByProductId(item.getId()) != null) {
 				seller_count += orderDetailRepos.countAllByProductId(item.getId());
 			} else {
 				seller_count = 0;
 			}
- 			item.setSeller_count(seller_count);
+			item.setSeller_count(seller_count);
+			seller_count = 0;
 		}
 
 		long count = (long) qCount.getSingleResult();
@@ -270,14 +276,13 @@ public class ProductServiceImpl implements ProductService {
 		List<ProductListDto> entities = q.getResultList();
 		Integer seller_count = 0;
 		for (ProductListDto item : entities) {
-			if(orderDetailRepos.countAllByProductId(item.getId()) != null) {
+			if (orderDetailRepos.countAllByProductId(item.getId()) != null) {
 				seller_count = orderDetailRepos.countAllByProductId(item.getId());
 			} else {
 				seller_count = 0;
 			}
- 			item.setSeller_count(seller_count);
+			item.setSeller_count(seller_count);
 		}
-
 
 		long count = (long) qCount.getSingleResult();
 		Pageable pageable = PageRequest.of(pageIndex, pageSize);
@@ -290,22 +295,16 @@ public class ProductServiceImpl implements ProductService {
 		if (dto != null) {
 
 			Product entity = null;
-			Book book = null;
 			Technology tech = null;
-			Author author = null;
+			Camera camera = null;
+			Tivi tivi = null;
+			Wash wash = null;
 			Image image = null;
-			Publisher publisher = null;
 			Inventory inventory = null;
 
 			Category category = categoryRepos.findOneByCode(dto.getCategory());
 			SubCategory subcategory = subcategoryRepos.findOneByCode(dto.getSubcategory());
 			Brand brand = brandRepos.findOneByCode(dto.getBrand());
-
-			Set<String> authorCodes = new HashSet<String>();
-			if (dto.getType() == 1 && dto.getAuthorCodes() != null) {
-				authorCodes = dto.getAuthorCodes();
-			}
-			Set<Author> authors = new HashSet<>();
 
 			// 1 - n product - image
 			List<String> imageUrls = dto.getImages();
@@ -314,44 +313,52 @@ public class ProductServiceImpl implements ProductService {
 			if (dto.getId() != null) {
 				entity = productRepos.getById(dto.getId());
 				entity.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
-				
+
 				List<Image> imagesProduct = imageRepos.findAllByProductId(entity.getId());
-				for(Image item : imagesProduct) {
+				for (Image item : imagesProduct) {
 					imageRepos.deleteByProductId(item.getProduct().getId());
 				}
 
-				for(int i = 0; i < imageUrls.size(); i++) {
+				for (int i = 0; i < imageUrls.size(); i++) {
 					image = new Image(imageUrls.get(i));
 					images.add(image);
 				}
 				switch (entity.getType()) {
 				case 1:
-					book = bookRepos.findOneByProduct(entity);
+					tech = techRepos.findOneByProduct(entity);
 					break;
 				case 2:
-					tech = techRepos.findOneByProduct(entity);
+					camera = cameraRepos.findOneByProduct(entity);
+					break;
+				case 3:
+					tivi = tiviRepos.findOneByProduct(entity);
+					break;
+				case 4:
+					wash = washRepos.findOneByProduct(entity);
 					break;
 				default:
 					break;
 				}
+
 			}
 			if (entity == null) {
 				entity = new Product();
 				entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 				entity.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
-				book = new Book();
 				tech = new Technology();
+				camera = new Camera();
+				tivi = new Tivi();
+				wash = new Wash();
 				inventory = new Inventory();
 				inventory.setQuantity_item(0);
 				inventory.setTotal_import_item(0);
 				inventory.setCategory_code(category.getCode());
 				inventory.setProduct(entity);
-				for(int i = 0; i < imageUrls.size(); i++) {
+				for (int i = 0; i < imageUrls.size(); i++) {
 					image = new Image(imageUrls.get(i));
 					images.add(image);
 				}
 			}
-
 			entity.setType(dto.getType());
 			entity.setName(dto.getName());
 			entity.setMainIamge(dto.getMainImage());
@@ -364,6 +371,8 @@ public class ProductServiceImpl implements ProductService {
 			entity.setSku(dto.getSku());
 			entity.setSlug(Slug.makeSlug(dto.getName()));
 			entity.setDescription(dto.getDescription());
+			entity.setSizeWeight(dto.getSizeWeight());
+			entity.setMaterial(dto.getMaterial());
 			entity.setDisplay(1);
 			// price
 
@@ -374,34 +383,18 @@ public class ProductServiceImpl implements ProductService {
 			switch (dto.getType()) {
 			case 1:
 				// book
-				publisher = publisherRepos.findOneByCode(dto.getPublisher());
-				for (String authorCode : authorCodes) {
-					author = authorRepos.findOneByCode(authorCode);
-					if (author != null) {
-						authors.add(author);
-					}
-				}
-				book.setPublishingYear(dto.getPublishingYear());
-				book.setNumberOfPages(dto.getNumberOfPages());
-				book.setAuthors(authors);
-				book.setPublisher(publisher);
-				book.setProduct(entity);
-				break;
-			case 2:
 				// electric
 				tech.setScreen(dto.getScreen());
 				tech.setOperatorSystem(dto.getOperatorSystem());
 				tech.setRam(dto.getRam());
 				tech.setPin(dto.getPin());
 				tech.setDesign(dto.getDesign());
-				tech.setSizeWeight(dto.getSizeWeight());
-				tech.setMaterial(dto.getMaterial());
 				tech.setReleaseTime(dto.getReleaseTime());
 				tech.setScreen_size(dto.getScreen_size());
 				tech.setCamera(dto.getCamera());
 				tech.setDisplay_resolution(dto.getDisplay_resolution());
 				tech.setChip(dto.getChip());
-				
+
 				// phone
 				tech.setBehindCamera(dto.getBehindCamera());
 				tech.setFrontCamera(dto.getFrontCamera());
@@ -409,7 +402,7 @@ public class ProductServiceImpl implements ProductService {
 				tech.setSim(dto.getSim());
 				tech.setNumber_sim(dto.getNumber_sim());
 				tech.setAccessory(dto.getAccessory());
-				
+
 				// laptop
 				tech.setCard(dto.getCard());
 				tech.setCpu(dto.getCpu());
@@ -417,23 +410,67 @@ public class ProductServiceImpl implements ProductService {
 				tech.setBus(dto.getBus());
 				tech.setProduct(entity);
 				break;
+			case 2:
+				camera.setModel(dto.getModel());
+				camera.setImage_processing(dto.getImage_processing());
+				camera.setImage_quality(dto.getImage_quality());
+				camera.setVideo_quality(dto.getVideo_quality());
+				camera.setMemory_card(dto.getMemory_card());
+				camera.setScreen_camera(dto.getScreen_camera());
+				camera.setScreen_size_camera(dto.getScreen_size_camera());
+				camera.setShutter_speed(dto.getShutter_speed());
+				camera.setProduct(entity);
+				break;
+			case 3:
+				tivi.setYear(dto.getYear());
+				tivi.setDisplay_resolution_tv(dto.getDisplay_resolution_tv());
+				tivi.setType_tv(dto.getType_tv());
+				tivi.setApp_avaiable(dto.getApp_avaiable());
+				tivi.setUsb(dto.getUsb());
+				tivi.setIs3D(dto.getIs3D());
+				tivi.setSpeaker(dto.getSpeaker());
+				tivi.setTechlonogy_sound(dto.getTechlonogy_sound());
+				tivi.setComponent_video(dto.getComponent_video());
+				tivi.setHdmi(dto.getHdmi());
+				tivi.setControl_by_phone(dto.getControl_by_phone());
+				tivi.setImage_processing_tv(dto.getImage_processing_tv());
+				tivi.setProduct(entity);
+				break;
+			case 4:
+				wash.setWash_weight(dto.getWash_weight());
+				wash.setWash_mode(dto.getWash_mode());
+				wash.setIs_fast(dto.getIs_fast());
+				wash.setWash_tub(dto.getWash_tub());
+				wash.setIs_inverter(dto.getIs_inverter());
+				wash.setType_engine(dto.getType_engine());
+				wash.setProduct(entity);
+				break;
 			default:
 				break;
 			}
 
 			entity.setImages(images);
-			for(int i = 0; i<images.size(); i++) {
+			for (int i = 0; i < images.size(); i++) {
 				images.get(i).setProduct(entity);
 			}
-			entity.setBook(book);
-			entity.setTechnology(tech);
+			
 			entity = productRepos.save(entity);
 			switch (dto.getType()) {
 			case 1:
-				book = bookRepos.save(book);
+				entity.setTechnology(tech);
+				tech = techRepos.save(tech);
 				break;
 			case 2:
-				tech = techRepos.save(tech);
+				entity.setCamera(camera);
+				camera = cameraRepos.save(camera);
+				break;
+			case 3:
+				entity.setTivi(tivi);
+				tivi = tiviRepos.save(tivi);
+				break;
+			case 4:
+				entity.setWash(wash);
+				wash = washRepos.save(wash);
 				break;
 			default:
 				break;
@@ -466,9 +503,18 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public ProductDtoNew getProductById(Long id) {
+	public ProductDtoNew getProductById(Long id, String color) {
 		Product product = productRepos.getById(id);
+//		List<E> list = product.getInventories();
+		Color c = null;
+		if(color != null &&color.equalsIgnoreCase("") == false) {
+			c = colorRepos.findOneByName(color);
+		} else {
+			c = colorRepos.findOneByName(product.getInventories().get(0).getColor().getName());
+		}
+		Inventory inv = inventoryRepos.getOneByProductAndColor(product, c);
 		ProductDtoNew dto = new ProductDtoNew(product);
+		dto.setIn_stock(inv.getQuantity_item());
 		return dto;
 	}
 
@@ -484,8 +530,8 @@ public class ProductServiceImpl implements ProductService {
 		Brand brand = brandRepos.findOneByCode(brandCode);
 		Page<Product> list = productRepos.findAllByBrand(brand,
 				PageRequest.of(page, limit, Sort.by(sortBy).descending()));
-		Page<ProductListDto> dtoPage = list.map(item -> new ProductListDto(item));
-		return dtoPage;
+		Page<ProductListDto> dtos = list.map(item -> new ProductListDto(item));
+		return dtos;
 	}
 
 	@Override
@@ -500,7 +546,64 @@ public class ProductServiceImpl implements ProductService {
 				dtos.add(dto);
 			}
 		}
+		Integer seller_count = 0;
+		for (ProductListDto item : dtos) {
+			if (orderDetailRepos.countAllByProductId(item.getId()) != null) {
+				seller_count += orderDetailRepos.countAllByProductId(item.getId());
+			} else {
+				seller_count = 0;
+			}
+			item.setSeller_count(seller_count);
+			seller_count = 0;
+		}
 		return dtos;
+	}
+
+	@Override
+	public Page<ProductTopSale> topSaleProduct(SearchDto dto) {
+		int pageIndex = dto.getPageIndex();
+		int pageSize = dto.getPageSize();
+		if (pageIndex > 0)
+			pageIndex -= 1;
+		else
+			pageIndex = 0;
+		String groupOrderClause = " GROUP BY s.product.id ORDER BY quantity_sold DESC";
+		String sqlCount = "select count(*) from OrderDetail as s " + "INNER JOIN Product p ON s.product.id = p.id "
+				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id " + "GROUP BY s.product.id ";
+		String sql = "select new com.example.demo.dto.product.ProductTopSale(p.id as id, p.name as name, "
+				+ "p.slug as slug, p.price as price, p.list_price as list_price, p.mainIamge as mainImage, p.brand.name as brandName, p.brand.madeIn as brandMadeIn, "
+				+ " SUM(s.amount) as quantity_sold) " + " from OrderDetail as s "
+				+ " INNER JOIN Product p ON s.product.id = p.id"
+				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id "
+				+ " AND (TIMESTAMPDIFF(DAY, o.createdDate, NOW()) <= 30 )";
+		sql += groupOrderClause;
+		
+//		System.out.println(sql);
+
+		Query q = manager.createQuery(sql, ProductTopSale.class);
+		Query qCount = manager.createQuery(sqlCount);
+		q.setMaxResults(pageSize);
+
+		int startPosition = pageIndex * pageSize;
+		q.setFirstResult(startPosition);
+		q.setMaxResults(pageSize);
+		long count = (long) qCount.getResultList().size();
+
+		@SuppressWarnings("unchecked")
+		List<ProductTopSale> entities = q.getResultList();
+		
+		for(ProductTopSale item : entities) {
+			if (item.getPrice() != null && item.getList_price() != null) {
+				item.setPercent_discount(CalculateDiscount.countDiscount(item.getPrice(), item.getList_price()));
+			} else {
+				item.setPercent_discount(null);
+			}
+		}
+
+		Pageable pageable = PageRequest.of(pageIndex, pageSize);
+
+		Page<ProductTopSale> result = new PageImpl<ProductTopSale>(entities, pageable, count);
+		return result;
 	}
 
 }

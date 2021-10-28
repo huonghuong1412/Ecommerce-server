@@ -7,6 +7,7 @@ import com.example.demo.entity.product.Product;
 public class OrderDetailDto {
 
 	private Long product_id;
+	private String color;
 	private String product_name;
 	private Integer amount;
 	private Long price;
@@ -18,19 +19,21 @@ public class OrderDetailDto {
 
 	public OrderDetailDto(OrderDetail orderDetail) {
 		this.product_id = orderDetail.getProduct().getId();
+		this.color = orderDetail.getColor();
 		this.product_name = orderDetail.getProduct().getName();
 		this.amount = orderDetail.getAmount();
 		this.price = orderDetail.getPrice();
 		this.total_price = orderDetail.getTotal_price();
 	}
 
-	public OrderDetail toEntity(Order order, Product product) {
+	public OrderDetail toEntity(Order order, Product product, String color) {
 		OrderDetail o = new OrderDetail();
 		o.setAmount(this.getAmount());
 		o.setPrice(this.getPrice());
 		o.setTotal_price(this.getTotal_price());
 		o.setOrder(order);
 		o.setProduct(product);
+		o.setColor(color);
 		return o;
 	}
 
@@ -80,6 +83,14 @@ public class OrderDetailDto {
 
 	public void setOrder_id(Long order_id) {
 		this.order_id = order_id;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
 	}
 
 }

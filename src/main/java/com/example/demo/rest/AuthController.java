@@ -34,6 +34,7 @@ import com.example.demo.dto.auth.LoginDto;
 import com.example.demo.dto.auth.MessageResponse;
 import com.example.demo.dto.auth.RegisterDto;
 import com.example.demo.dto.user.UserDto;
+import com.example.demo.entity.order.Cart;
 import com.example.demo.entity.user.Address;
 import com.example.demo.entity.user.Role;
 import com.example.demo.entity.user.User;
@@ -120,6 +121,10 @@ public class AuthController {
 
 		User user = new User(dto.getPhone(), dto.getEmail(), dto.getUsername(), encoder.encode(dto.getPassword()),
 				dto.getDateOfBirth(), dto.getFullName(), address);
+		
+		Cart cart = new Cart();
+		cart.setUser(user);
+		user.setCart(cart);
 
 		address.setUser(user);
 

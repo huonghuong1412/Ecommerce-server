@@ -27,7 +27,6 @@ public class InventoryDtoNew extends AbstractDTO<InventoryDtoNew> {
 		this.productName = entity.getProduct().getName();
 		this.productMainImage = entity.getProduct().getMainIamge();
 		this.category_code = entity.getCategory_code();
-
 	}
 
 	public Integer getTotal_import_item() {

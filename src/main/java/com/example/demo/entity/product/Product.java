@@ -24,7 +24,7 @@ import com.example.demo.entity.user.Comment;
 @Table(name = "tbl_product")
 public class Product extends BaseEntity {
 
-	@Column(name = "type") // book: 1, food: 2, electric: 3, laptop: 3-1, phone: 3-2
+	@Column(name = "type")
 	private Integer type;
 
 	@Column(name = "name") // 1, 2, 3
@@ -47,6 +47,12 @@ public class Product extends BaseEntity {
 
 	@Column(name = "main_image")
 	private String mainIamge;
+
+	@Column(name = "material") // 3
+	private String material;
+
+	@Column(name = "size_weight") // khối lượng, kích thước sản phẩm
+	private String sizeWeight;
 
 	@Column(name = "weight")
 	private Integer weight; // -- Bắt buộc, khối lượng đóng gói
@@ -75,15 +81,25 @@ public class Product extends BaseEntity {
 //	@JoinColumn(name = "store_id") // 1, 2, 3
 //	private Store store;
 
-//	----------------	BOOK	--------------------
-
-	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Book book;
-
 //	----------------	ELECTRIC	--------------------
 
 	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Technology technology;
+
+//	----------------	Camera	--------------------
+
+	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Camera camera;
+
+//	----------------	tivi	--------------------
+
+	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Tivi tivi;
+
+//	----------------	Wash	--------------------
+
+	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Wash wash;
 
 //	----------------	BRAND	--------------------
 
@@ -92,8 +108,8 @@ public class Product extends BaseEntity {
 	private Brand brand;
 
 //	----------------	INVENTORY	--------------------
-	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Inventory inventory;
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Inventory> inventories;
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 	private List<Image> images; // 1, 2, 3
@@ -105,6 +121,7 @@ public class Product extends BaseEntity {
 	private List<OrderDetail> orderDetails = new ArrayList<>();
 
 	public Product() {
+		super();
 	}
 
 	public Integer getType() {
@@ -169,6 +186,22 @@ public class Product extends BaseEntity {
 
 	public void setMainIamge(String mainIamge) {
 		this.mainIamge = mainIamge;
+	}
+
+	public String getMaterial() {
+		return material;
+	}
+
+	public void setMaterial(String material) {
+		this.material = material;
+	}
+
+	public String getSizeWeight() {
+		return sizeWeight;
+	}
+
+	public void setSizeWeight(String sizeWeight) {
+		this.sizeWeight = sizeWeight;
 	}
 
 	public Integer getWeight() {
@@ -251,14 +284,6 @@ public class Product extends BaseEntity {
 		this.comments = comments;
 	}
 
-	public Book getBook() {
-		return book;
-	}
-
-	public void setBook(Book book) {
-		this.book = book;
-	}
-
 	public Technology getTechnology() {
 		return technology;
 	}
@@ -267,12 +292,36 @@ public class Product extends BaseEntity {
 		this.technology = technology;
 	}
 
-	public Inventory getInventory() {
-		return inventory;
+	public Camera getCamera() {
+		return camera;
 	}
 
-	public void setInventory(Inventory inventory) {
-		this.inventory = inventory;
+	public void setCamera(Camera camera) {
+		this.camera = camera;
+	}
+
+	public Tivi getTivi() {
+		return tivi;
+	}
+
+	public void setTivi(Tivi tivi) {
+		this.tivi = tivi;
+	}
+
+	public Wash getWash() {
+		return wash;
+	}
+
+	public void setWash(Wash wash) {
+		this.wash = wash;
+	}
+
+	public List<Inventory> getInventories() {
+		return inventories;
+	}
+
+	public void setInventories(List<Inventory> inventories) {
+		this.inventories = inventories;
 	}
 
 	public Brand getBrand() {

@@ -2,6 +2,10 @@ package com.example.demo.service.impl;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +24,9 @@ public class BrandServiceImpl implements BrandService {
 
 	@Autowired
 	private BrandRepository repos;
+	
+	@Autowired
+	private EntityManager manager;
 
 	@Override
 	public Page<BrandDto> getList(Integer page, Integer limit, String sortBy) {
@@ -111,6 +118,31 @@ public class BrandServiceImpl implements BrandService {
 		Brand brand = repos.findOneByCode(code);
 		BrandDto dto = new BrandDto(brand);
 		return dto;
+	}
+
+	@Override
+	public List<BrandDto> getListByCategory(String category) {
+//		select * from tbl_brand as b
+//		inner join tbl_product as p on p.brand_id = b.id
+//		inner join tbl_category as c on c.id = p.category_id and c.code = "laptop"
+//		group by p.brand_id
+		String sql = "select new com.example.demo.dto.product.BrandDto(b.name, b.code)" + " from Brand as b "
+				+ " INNER JOIN Product as p ON p.brand.id = b.id "
+				+ " INNER JOIN Category as c ON c.id = p.category.id ";
+		String whereClause = " where (1=1)";
+		if (category != null && StringUtils.hasText(category)) {
+			whereClause += " AND ( c.code = :category )";
+		}
+		sql += whereClause + " group by p.brand.id";
+		
+		Query q = manager.createQuery(sql, BrandDto.class);
+		if (category != null && StringUtils.hasText(category)) {
+			q.setParameter("category", category);
+		}
+
+		@SuppressWarnings("unchecked")
+		List<BrandDto> entities = q.getResultList();
+		return entities;
 	}
 
 }

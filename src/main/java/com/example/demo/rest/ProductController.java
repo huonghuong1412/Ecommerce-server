@@ -24,6 +24,7 @@ import com.example.demo.dto.SearchDto;
 import com.example.demo.dto.product.ProductDto;
 import com.example.demo.dto.product.ProductDtoNew;
 import com.example.demo.dto.product.ProductListDto;
+import com.example.demo.dto.product.ProductTopSale;
 import com.example.demo.service.CommentService;
 import com.example.demo.service.OrderService;
 import com.example.demo.service.ProductService;
@@ -121,8 +122,8 @@ public class ProductController {
 
 	// lấy thông tin sản phẩm theo id
 	@GetMapping(value = "/san-pham/{id}", name = "getProductByID")
-	public ResponseEntity<ProductDtoNew> getProduct(@PathVariable Long id) {
-		ProductDtoNew result = service.getProductById(id);
+	public ResponseEntity<ProductDtoNew> getProduct(@PathVariable Long id, @RequestParam(name="color", defaultValue = "") String color) {
+		ProductDtoNew result = service.getProductById(id, color);
 		Integer seller_count = orderService.getQuantityProductSeller(id);
 		Integer comment_count = commentservice.countAllCommentByProduct(id);
 		result.setSeller_count(seller_count);
@@ -135,6 +136,18 @@ public class ProductController {
 	public ResponseEntity<ProductDto> getProductByIdToCreate(@PathVariable Long id) {
 		ProductDto result = service.getDetailProduct(id);
 		return new ResponseEntity<ProductDto>(result, HttpStatus.OK);
+	}
+	
+	// danh sách sản phẩm bán chạy
+	@GetMapping("/top_sale")
+	public ResponseEntity<Page<ProductTopSale>> topSaleProduct(
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "12") Integer limit) { // ds sản phẩm bán chạy nhất
+		SearchDto dto = new SearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		Page<ProductTopSale> result = service.topSaleProduct(dto);
+		return new ResponseEntity<Page<ProductTopSale>>(result, HttpStatus.OK);
 	}
 
 	// lấy toàn bộ sản phẩm trong csdl

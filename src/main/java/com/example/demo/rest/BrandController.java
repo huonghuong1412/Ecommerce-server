@@ -1,5 +1,7 @@
 package com.example.demo.rest;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -34,23 +36,30 @@ public class BrandController {
 		Page<BrandDto> result = service.getList(page, limit, sortBy);
 		return new ResponseEntity<Page<BrandDto>>(result, HttpStatus.OK);
 	}
-	
+
+	@GetMapping("/category")
+	public ResponseEntity<List<BrandDto>> getByCategory(@RequestParam(name = "category", defaultValue = "") String category) {
+		List<BrandDto> result = service.getListByCategory(category);
+		return new ResponseEntity<List<BrandDto>>(result, HttpStatus.OK);
+	}
+
 	@GetMapping("/all")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Page<BrandDto>> getAllAdmin(@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "24") Integer limit,
-			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy, @RequestParam(name="display", defaultValue = "2") Integer display) {
+			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
+			@RequestParam(name = "display", defaultValue = "2") Integer display) {
 		Page<BrandDto> result = null;
-		if(display == 1) {
+		if (display == 1) {
 			result = service.getList(page, limit, sortBy);
-		} else if(display == 0) {
+		} else if (display == 0) {
 			result = service.getListHide(page, limit, sortBy);
 		} else {
 			result = service.getAll(page, limit, sortBy);
 		}
 		return new ResponseEntity<Page<BrandDto>>(result, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<BrandDto> getOne(@PathVariable Long id) {
 		BrandDto result = service.getOne(id);
@@ -85,7 +94,7 @@ public class BrandController {
 		Boolean result = service.checkCode(id, code);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(value = "/get-one/{code}")
 	public ResponseEntity<BrandDto> getByCode(@PathVariable String code) {
 		BrandDto result = service.getOneByCode(code);

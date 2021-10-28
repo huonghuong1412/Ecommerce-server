@@ -1,17 +1,14 @@
 package com.example.demo.dto.product;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.example.demo.dto.AbstractDTO;
-import com.example.demo.entity.product.Author;
 import com.example.demo.entity.product.Image;
 import com.example.demo.entity.product.Product;
 
 public class ProductDto extends AbstractDTO<ProductDto> {
-	private Integer type; // loai san phamr
+	private Integer type;
 	private String name;
 	private String sku;
 	private String slug;
@@ -26,15 +23,8 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 	private List<String> images;
 	private String category;
 	private String subcategory;
-
-	// book
-	private Integer publishingYear;
-
-	private Integer numberOfPages;
-
-	private Set<String> authorCodes;
-
-	private String publisher;
+	private String sizeWeight;
+	private String material;
 
 	// electric
 	private String screen;
@@ -44,10 +34,8 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 	private String pin;
 	private String chip;
 	private String design;
-	private String sizeWeight;
 	private String display_resolution;
 	private String camera;
-	private String material;
 	private String releaseTime;
 
 	// phone
@@ -63,6 +51,37 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 	private String hardWare;
 	private String card;
 	private String bus;
+
+	// camera
+	private String model;
+	private String image_processing;
+	private String image_quality;
+	private String video_quality;
+	private String memory_card;
+	private String screen_camera;
+	private String screen_size_camera;
+	private String shutter_speed;
+	// tivi
+	private String year;
+	private String display_resolution_tv;
+	private Integer type_tv;
+	private String app_avaiable;
+	private String usb;
+	private Integer is3D;
+	private Integer speaker;
+	private String techlonogy_sound;
+	private String component_video;
+	private String hdmi;
+	private String control_by_phone;
+	private String image_processing_tv;
+
+	// may giat - wash
+	private String wash_weight;
+	private String wash_mode;
+	private Integer is_fast;
+	private String wash_tub;
+	private Integer is_inverter;
+	private String type_engine;
 
 	// brand
 	private String brand;
@@ -82,6 +101,8 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 		this.price = entity.getPrice();
 		this.list_price = entity.getList_price();
 		this.mainImage = entity.getMainIamge();
+		this.sizeWeight = entity.getSizeWeight();
+		this.material = entity.getMaterial();
 		this.weight = entity.getWeight();
 		this.length = entity.getLength();
 		this.width = entity.getWidth();
@@ -98,17 +119,7 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 
 		switch (this.type) {
 		case 1:
-			// sach
-			this.publishingYear = entity.getBook().getPublishingYear();
-			this.numberOfPages = entity.getBook().getNumberOfPages();
-			authorCodes = new HashSet<>();
-			for (Author author : entity.getBook().getAuthors()) {
-				AuthorDto dto = new AuthorDto(author);
-				authorCodes.add(dto.getCode());
-			}
-			this.publisher = entity.getBook().getPublisher().getCode();
-			break;
-		case 2:
+			// laptop + phone + tablet
 			// electric
 			this.screen = entity.getTechnology().getScreen();
 			this.screen_size = entity.getTechnology().getScreen_size();
@@ -119,8 +130,6 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 			this.design = entity.getTechnology().getDesign();
 			this.display_resolution = entity.getTechnology().getDisplay_resolution();
 			this.camera = entity.getTechnology().getCamera();
-			this.sizeWeight = entity.getTechnology().getSizeWeight();
-			this.material = entity.getTechnology().getMaterial();
 			this.releaseTime = entity.getTechnology().getReleaseTime();
 			// phone
 			this.frontCamera = entity.getTechnology().getFrontCamera();
@@ -129,11 +138,47 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 			this.sim = entity.getTechnology().getSim();
 			this.accessory = entity.getTechnology().getAccessory();
 			this.number_sim = entity.getTechnology().getNumber_sim();
-
+			// laptop
 			this.cpu = entity.getTechnology().getCpu();
 			this.hardWare = entity.getTechnology().getHardWare();
 			this.card = entity.getTechnology().getCard();
 			this.bus = entity.getTechnology().getBus();
+			break;
+		case 2:
+			// camera
+			this.model = entity.getCamera().getModel();
+			this.image_processing = entity.getCamera().getImage_processing();
+			this.image_quality = entity.getCamera().getImage_quality();
+			this.video_quality = entity.getCamera().getVideo_quality();
+			this.memory_card = entity.getCamera().getMemory_card();
+			this.screen_camera = entity.getCamera().getScreen_camera();
+			this.screen_size_camera = entity.getCamera().getScreen_size_camera();
+			this.shutter_speed = entity.getCamera().getShutter_speed();
+			break;
+
+		case 3:
+			// tivi
+			this.year = entity.getTivi().getYear();
+			this.display_resolution_tv = entity.getTivi().getDisplay_resolution_tv();
+			this.type_tv = entity.getTivi().getType_tv();
+			this.app_avaiable = entity.getTivi().getApp_avaiable();
+			this.usb = entity.getTivi().getUsb();
+			this.is3D = entity.getTivi().getIs3D();
+			this.speaker = entity.getTivi().getSpeaker();
+			this.techlonogy_sound = entity.getTivi().getTechlonogy_sound();
+			this.component_video = entity.getTivi().getComponent_video();
+			this.hdmi = entity.getTivi().getHdmi();
+			this.control_by_phone = entity.getTivi().getControl_by_phone();
+			this.image_processing_tv = entity.getTivi().getImage_processing_tv();
+			break;
+		case 4:
+			// wash
+			this.wash_weight = entity.getWash().getWash_weight();
+			this.wash_mode = entity.getWash().getWash_mode();
+			this.is_fast = entity.getWash().getIs_fast();
+			this.wash_tub = entity.getWash().getWash_tub();
+			this.is_inverter = entity.getWash().getIs_inverter();
+			this.type_engine = entity.getWash().getType_engine();
 			break;
 		default:
 			break;
@@ -267,38 +312,6 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 
 	public void setBrand(String brand) {
 		this.brand = brand;
-	}
-
-	public Integer getPublishingYear() {
-		return publishingYear;
-	}
-
-	public void setPublishingYear(Integer publishingYear) {
-		this.publishingYear = publishingYear;
-	}
-
-	public Integer getNumberOfPages() {
-		return numberOfPages;
-	}
-
-	public void setNumberOfPages(Integer numberOfPages) {
-		this.numberOfPages = numberOfPages;
-	}
-
-	public Set<String> getAuthorCodes() {
-		return authorCodes;
-	}
-
-	public void setAuthorCodes(Set<String> authorCodes) {
-		this.authorCodes = authorCodes;
-	}
-
-	public String getPublisher() {
-		return publisher;
-	}
-
-	public void setPublisher(String publisher) {
-		this.publisher = publisher;
 	}
 
 	public String getScreen() {
@@ -475,6 +488,214 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 
 	public void setBus(String bus) {
 		this.bus = bus;
+	}
+
+	public String getWash_weight() {
+		return wash_weight;
+	}
+
+	public void setWash_weight(String wash_weight) {
+		this.wash_weight = wash_weight;
+	}
+
+	public String getWash_mode() {
+		return wash_mode;
+	}
+
+	public void setWash_mode(String wash_mode) {
+		this.wash_mode = wash_mode;
+	}
+
+	public Integer getIs_fast() {
+		return is_fast;
+	}
+
+	public void setIs_fast(Integer is_fast) {
+		this.is_fast = is_fast;
+	}
+
+	public String getWash_tub() {
+		return wash_tub;
+	}
+
+	public void setWash_tub(String wash_tub) {
+		this.wash_tub = wash_tub;
+	}
+
+	public Integer getIs_inverter() {
+		return is_inverter;
+	}
+
+	public void setIs_inverter(Integer is_inverter) {
+		this.is_inverter = is_inverter;
+	}
+
+	public String getImage_processing() {
+		return image_processing;
+	}
+
+	public void setImage_processing(String image_processing) {
+		this.image_processing = image_processing;
+	}
+
+	public String getImage_quality() {
+		return image_quality;
+	}
+
+	public void setImage_quality(String image_quality) {
+		this.image_quality = image_quality;
+	}
+
+	public String getVideo_quality() {
+		return video_quality;
+	}
+
+	public void setVideo_quality(String video_quality) {
+		this.video_quality = video_quality;
+	}
+
+	public String getMemory_card() {
+		return memory_card;
+	}
+
+	public void setMemory_card(String memory_card) {
+		this.memory_card = memory_card;
+	}
+
+	public String getScreen_camera() {
+		return screen_camera;
+	}
+
+	public void setScreen_camera(String screen_camera) {
+		this.screen_camera = screen_camera;
+	}
+
+	public String getScreen_size_camera() {
+		return screen_size_camera;
+	}
+
+	public void setScreen_size_camera(String screen_size_camera) {
+		this.screen_size_camera = screen_size_camera;
+	}
+
+	public String getShutter_speed() {
+		return shutter_speed;
+	}
+
+	public void setShutter_speed(String shutter_speed) {
+		this.shutter_speed = shutter_speed;
+	}
+
+	public String getYear() {
+		return year;
+	}
+
+	public void setYear(String year) {
+		this.year = year;
+	}
+
+	public String getDisplay_resolution_tv() {
+		return display_resolution_tv;
+	}
+
+	public void setDisplay_resolution_tv(String display_resolution_tv) {
+		this.display_resolution_tv = display_resolution_tv;
+	}
+
+	public Integer getType_tv() {
+		return type_tv;
+	}
+
+	public void setType_tv(Integer type_tv) {
+		this.type_tv = type_tv;
+	}
+
+	public String getApp_avaiable() {
+		return app_avaiable;
+	}
+
+	public void setApp_avaiable(String app_avaiable) {
+		this.app_avaiable = app_avaiable;
+	}
+
+	public String getUsb() {
+		return usb;
+	}
+
+	public void setUsb(String usb) {
+		this.usb = usb;
+	}
+
+	public Integer getIs3D() {
+		return is3D;
+	}
+
+	public void setIs3D(Integer is3d) {
+		is3D = is3d;
+	}
+
+	public Integer getSpeaker() {
+		return speaker;
+	}
+
+	public void setSpeaker(Integer speaker) {
+		this.speaker = speaker;
+	}
+
+	public String getTechlonogy_sound() {
+		return techlonogy_sound;
+	}
+
+	public void setTechlonogy_sound(String techlonogy_sound) {
+		this.techlonogy_sound = techlonogy_sound;
+	}
+
+	public String getComponent_video() {
+		return component_video;
+	}
+
+	public void setComponent_video(String component_video) {
+		this.component_video = component_video;
+	}
+
+	public String getHdmi() {
+		return hdmi;
+	}
+
+	public void setHdmi(String hdmi) {
+		this.hdmi = hdmi;
+	}
+
+	public String getImage_processing_tv() {
+		return image_processing_tv;
+	}
+
+	public void setImage_processing_tv(String image_processing_tv) {
+		this.image_processing_tv = image_processing_tv;
+	}
+
+	public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
+	}
+
+	public String getControl_by_phone() {
+		return control_by_phone;
+	}
+
+	public void setControl_by_phone(String control_by_phone) {
+		this.control_by_phone = control_by_phone;
+	}
+
+	public String getType_engine() {
+		return type_engine;
+	}
+
+	public void setType_engine(String type_engine) {
+		this.type_engine = type_engine;
 	}
 
 }

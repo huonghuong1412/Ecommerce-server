@@ -16,6 +16,7 @@ public class InventoryDto extends AbstractDTO<InventoryDto> {
 	@JsonInclude(value = Include.NON_NULL)
 	private Integer quantity_item;
 	private Long productId;
+	private String color;
 	private String category_code;
 
 	private List<InventoryDetailDto> inventory_details;
@@ -30,6 +31,7 @@ public class InventoryDto extends AbstractDTO<InventoryDto> {
 		this.total_import_item = entity.getTotal_import_item();
 		this.quantity_item = entity.getQuantity_item();
 		this.productId = entity.getProduct().getId();
+		this.color = entity.getColor().getName();
 		this.category_code = entity.getCategory_code();
 		this.inventory_details = new ArrayList<>();
 		if (inventory_details != null) {
@@ -63,6 +65,14 @@ public class InventoryDto extends AbstractDTO<InventoryDto> {
 
 	public void setProductId(Long productId) {
 		this.productId = productId;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
 	}
 
 	public String getCategory_code() {

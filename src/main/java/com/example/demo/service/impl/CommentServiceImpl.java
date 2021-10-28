@@ -92,8 +92,10 @@ public class CommentServiceImpl implements CommentService {
 		Product product = productRepos.getById(productId);
 		List<Comment> entities = repos.findAllByProduct(product);
 		for (Comment entity : entities) {
-			CommentDto dto = new CommentDto(entity);
-			list.add(dto);
+			if(entity.getDisplay() == 1) {
+				CommentDto dto = new CommentDto(entity);
+				list.add(dto);
+			}
 		}
 
 		return list;

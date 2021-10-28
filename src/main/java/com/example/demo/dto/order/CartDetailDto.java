@@ -13,6 +13,7 @@ public class CartDetailDto extends AbstractDTO<CartDetailDto> {
 
 	private Long cart_id;
 	private Long product_id;
+	private String color;
 	private Integer quantity;
 
 	// info product
@@ -36,6 +37,7 @@ public class CartDetailDto extends AbstractDTO<CartDetailDto> {
 		// TODO Auto-generated constructor stub
 		this.setId(entity.getId());
 		this.product_id = entity.getProduct().getId();
+		this.color = entity.getColor();
 		this.quantity = entity.getQuantity();
 		this.cart_id = entity.getCart().getId();
 		this.type = entity.getProduct().getType();
@@ -43,9 +45,9 @@ public class CartDetailDto extends AbstractDTO<CartDetailDto> {
 		this.slug = entity.getProduct().getSlug();
 		this.price = entity.getProduct().getPrice();
 		this.list_price = entity.getProduct().getList_price();
-		if (entity.getProduct().getInventory() != null) {
-			this.in_stock = entity.getProduct().getInventory().getQuantity_item();
-		}
+//		if (entity.getProduct().getInventory() != null) {
+//			this.in_stock = entity.getProduct().getInventory().getQuantity_item();
+//		}
 		this.mainImage = entity.getProduct().getMainIamge();
 		category = new CategoryDtoNew();
 		if (category != null) {
@@ -71,6 +73,14 @@ public class CartDetailDto extends AbstractDTO<CartDetailDto> {
 
 	public void setProduct_id(Long product_id) {
 		this.product_id = product_id;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
 	}
 
 	public Integer getQuantity() {

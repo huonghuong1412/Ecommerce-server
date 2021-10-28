@@ -14,21 +14,18 @@
 //@Table(name = "tbl_shipment")
 //public class Shipment extends BaseEntity {
 //
-//	@OneToMany(mappedBy = "shipment", cascade = CascadeType.ALL, orphanRemoval = true)
-//	private List<Order> orders;
+////	@OneToMany(mappedBy = "shipment", cascade = CascadeType.ALL, orphanRemoval = true)
+////	private List<Order> orders;
 //
-//	@Column(name = "type")
+//	@Column(name = "type")		// 1 giao hàng nhanh, 2 shop tự giao
 //	private Integer type;
 //
 //	@Column(name = "name")
-//	private String name; // 1 giao hang nhanh, 2 giao hang tiet kiem
+//	private String name; // 1 giao hang nhanh, 2 shop tự giao (giao hàng tiết kiệm)
 //
 //	@Column(name = "code")
 //	private String code;
-//
-//	@Column(name = "fee")
-//	private Double fee;
-//
+//	
 //	@Column(name = "display")
 //	private Integer display; // 1 : show, 0: hidden
 //
@@ -42,14 +39,14 @@
 //		this.fee = fee;
 //	}
 //
-//	public Shipment(List<Order> orders, Integer type, String name, String code, Double fee) {
-//		super();
-//		this.orders = orders;
-//		this.type = type;
-//		this.name = name;
-//		this.code = code;
-//		this.fee = fee;
-//	}
+////	public Shipment(List<Order> orders, Integer type, String name, String code, Double fee) {
+////		super();
+////		this.orders = orders;
+////		this.type = type;
+////		this.name = name;
+////		this.code = code;
+////		this.fee = fee;
+////	}
 //
 //	public Integer getType() {
 //		return type;
@@ -75,14 +72,6 @@
 //		this.code = code;
 //	}
 //
-//	public Double getFee() {
-//		return fee;
-//	}
-//
-//	public void setFee(Double fee) {
-//		this.fee = fee;
-//	}
-//
 //	public Integer getDisplay() {
 //		return display;
 //	}
@@ -91,12 +80,12 @@
 //		this.display = display;
 //	}
 //
-//	public List<Order> getOrders() {
-//		return orders;
-//	}
-//
-//	public void setOrders(List<Order> orders) {
-//		this.orders = orders;
-//	}
+////	public List<Order> getOrders() {
+////		return orders;
+////	}
+////
+////	public void setOrders(List<Order> orders) {
+////		this.orders = orders;
+////	}
 //
 //}

@@ -38,6 +38,9 @@ public class Order extends BaseEntity {
 	@Column(name = "ship_fee")
 	private Long ship_fee;
 
+	@Column(name = "ship_type") // 1 giao hàng nhanh, 2 shop tự giao
+	private Integer ship_type;
+
 	@Column(name = "total_item")
 	private Integer total_item;
 
@@ -51,10 +54,10 @@ public class Order extends BaseEntity {
 	private String address;
 
 	@Column(name = "ward_code")
-	private String ward_code;			// mã phường/xã để giao hàng
+	private String ward_code; // mã phường/xã để giao hàng
 
 	@Column(name = "district_id")
-	private Integer district_id;		// mã quận huyện giao hàng
+	private Integer district_id; // mã quận huyện giao hàng
 
 	@Column(name = "phone")
 	private String phone;
@@ -164,6 +167,14 @@ public class Order extends BaseEntity {
 
 	public void setShip_fee(Long ship_fee) {
 		this.ship_fee = ship_fee;
+	}
+
+	public Integer getShip_type() {
+		return ship_type;
+	}
+
+	public void setShip_type(Integer ship_type) {
+		this.ship_type = ship_type;
 	}
 
 	public String getOrder_code() {

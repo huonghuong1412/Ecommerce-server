@@ -5,12 +5,14 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.example.demo.entity.BaseEntity;
+import com.example.demo.entity.product.Color;
 import com.example.demo.entity.product.Product;
 
 @Entity
@@ -23,9 +25,13 @@ public class Inventory extends BaseEntity {
 	@Column(name = "total_item")
 	private Integer quantity_item;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id") // Liên kết với nhau qua khóa ngoại person_id
 	private Product product;
+
+	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "color_id") // Liên kết với nhau qua khóa ngoại person_id
+	private Color color;
 
 	@Column(name = "category_code")
 	private String category_code;
@@ -75,6 +81,14 @@ public class Inventory extends BaseEntity {
 
 	public void setInventory_details(List<InventoryDetail> inventory_details) {
 		this.inventory_details = inventory_details;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
 	}
 
 }

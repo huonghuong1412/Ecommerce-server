@@ -28,8 +28,10 @@ import com.example.demo.entity.order.Order;
 import com.example.demo.entity.order.OrderDetail;
 import com.example.demo.entity.order.Payment;
 import com.example.demo.entity.order.PaymentMethod;
+import com.example.demo.entity.product.Color;
 import com.example.demo.entity.product.Product;
 import com.example.demo.entity.user.User;
+import com.example.demo.repository.ColorRepository;
 import com.example.demo.repository.InventoryRepository;
 import com.example.demo.repository.OrderDetailRepository;
 import com.example.demo.repository.OrderRepository;
@@ -68,6 +70,9 @@ public class OrderServiceImpl implements OrderService {
 
 	@Autowired
 	private InventoryRepository inventoryRepos;
+	
+	@Autowired
+	private ColorRepository colorRepos;
 
 	@Override
 	public Page<OrderHisDto> getAllOrder(AdvanceSearchDto dto) {
@@ -79,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
 			pageIndex = 0;
 
 		String whereClause = "";
-		String orderBy = " ORDER BY entity.createdDate ";
+		String orderBy = " ORDER BY entity.createdDate DESC";
 		String sqlCount = "select count(entity.id) from  Order as entity where (1=1) ";
 		String sql = "select new com.example.demo.dto.order.OrderHisDto(entity) from  Order as entity where (1=1) ";
 
@@ -145,9 +150,9 @@ public class OrderServiceImpl implements OrderService {
 			Integer quantity = o.getOrderDetails().size() - 1;
 			if (quantity > 0) {
 				dto.setDescription(
-						o.getOrderDetails().get(0).getProduct().getName() + " và " + quantity + " sản phẩm khác");
+						o.getOrderDetails().get(0).getProduct().getName() + " - Màu " + o.getOrderDetails().get(0).getColor() + " và " + quantity + " sản phẩm khác");
 			} else {
-				dto.setDescription(o.getOrderDetails().get(0).getProduct().getName());
+				dto.setDescription(o.getOrderDetails().get(0).getProduct().getName() + " - Màu " + o.getOrderDetails().get(0).getColor());
 			}
 			orderDtos.add(dto);
 		}
@@ -175,6 +180,7 @@ public class OrderServiceImpl implements OrderService {
 			order.setPhone(dto.getPhone());
 			order.setTotal_price(dto.getTotal_price() - dto.getShip_fee());
 			order.setShip_fee(dto.getShip_fee());
+			order.setShip_type(dto.getShip_type());
 			order.setTotal_item(dto.getTotal_item());
 //			order.setShipment(ship);
 			order.setUser(user);
@@ -204,14 +210,16 @@ public class OrderServiceImpl implements OrderService {
 			List<OrderDetailDto> orderDetailDtos = dto.getOrder_details();
 			for (OrderDetailDto i : orderDetailDtos) {
 				Product product = productRepository.getById(i.getProduct_id());
-
-				if (inventoryRepos.existsByProductId(i.getProduct_id())) {
-					Inventory inventory = inventoryRepos.getOneByProductId(i.getProduct_id());
+				Color color = colorRepos.findOneByName(i.getColor());
+				if (inventoryRepos.existsByProductAndColor(product, color)) {
+					Inventory inventory = inventoryRepos.getOneByProductAndColor(product, color);
 					inventory.setQuantity_item(inventory.getQuantity_item() - i.getAmount());
 					inventoryRepos.save(inventory);
 				}
 
-				OrderDetail orderDetail = i.toEntity(order, product);
+				
+				OrderDetail orderDetail = i.toEntity(order, product, color.getName());
+				
 				orderDetailRepository.save(orderDetail);
 			}
 			return new OrderDto(order);

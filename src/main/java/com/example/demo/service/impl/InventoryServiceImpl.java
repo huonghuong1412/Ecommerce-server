@@ -22,7 +22,9 @@ import com.example.demo.dto.inventory.InventoryDto;
 import com.example.demo.dto.inventory.InventoryDtoNew;
 import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.inventory.InventoryDetail;
+import com.example.demo.entity.product.Color;
 import com.example.demo.entity.product.Product;
+import com.example.demo.repository.ColorRepository;
 import com.example.demo.repository.InventoryDetailRepository;
 import com.example.demo.repository.InventoryRepository;
 import com.example.demo.repository.ProductRepository;
@@ -42,6 +44,9 @@ public class InventoryServiceImpl implements InventoryService {
 
 	@Autowired
 	private ProductRepository productRepos;
+	
+	@Autowired
+	private ColorRepository colorRepos;
 
 	@Override
 	public Page<InventoryDtoNew> getList(SearchDto dto) {
@@ -60,7 +65,7 @@ public class InventoryServiceImpl implements InventoryService {
 //		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
 //			whereClause += " AND ( entity.name LIKE :text OR entity.description LIKE :text )";
 //		}
-		
+
 		if (dto.getCategory() != null) {
 			whereClause += " AND ( entity.category_code LIKE :category )";
 		}
@@ -75,7 +80,7 @@ public class InventoryServiceImpl implements InventoryService {
 			q.setParameter("text", '%' + dto.getKeyword() + '%');
 			qCount.setParameter("text", '%' + dto.getKeyword() + '%');
 		}
-		
+
 		if (dto.getCategory() != null) {
 			q.setParameter("category", dto.getCategory());
 			qCount.setParameter("category", dto.getCategory());
@@ -102,7 +107,9 @@ public class InventoryServiceImpl implements InventoryService {
 			InventoryDetail inventoryDetail = null;
 
 			Product product = productRepos.getById(dto.getProductId());
-			if (inventoryRepos.existsByProductId(dto.getProductId())) {
+			Color color = colorRepos.findOneByName(dto.getColor());
+
+			if (inventoryRepos.existsByProductAndColor(product, color)) {
 				inventory = inventoryRepos.getById(dto.getId());
 				inventory.setUpdatedDate(new Timestamp(new Date().getTime()).toString());
 				List<InventoryDetailDto> inventoryDetailDtos = dto.getInventory_details();
@@ -123,14 +130,13 @@ public class InventoryServiceImpl implements InventoryService {
 
 				inventory.setTotal_import_item(totalImport + inventory.getTotal_import_item());
 				inventory.setQuantity_item(inventory.getQuantity_item() + totalImport);
-				
+
 				inventory.setInventory_details(inventoryDetails);
 				for (InventoryDetail detail : inventoryDetails) {
 					detail.setInventory(inventory);
 				}
 				inventoryDetail = inventoryDetailRepos.save(inventoryDetail);
-			} 
-			else {
+			} else {
 				inventory = new Inventory();
 				inventory.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 				inventory.setProduct(product);
@@ -158,7 +164,6 @@ public class InventoryServiceImpl implements InventoryService {
 				}
 				inventoryDetail = inventoryDetailRepos.save(inventoryDetail);
 			}
-
 			inventory = inventoryRepos.save(inventory);
 
 			return new InventoryDto(inventory);

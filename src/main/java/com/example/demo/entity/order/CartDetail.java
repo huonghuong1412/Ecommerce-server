@@ -17,14 +17,17 @@ public class CartDetail extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "cart_id")
 	private Cart cart;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+	@JoinColumn(name = "product_id")
 	private Product product;
-	
-	@Column(name= "quantity")		// quantity of each product
+
+	@Column(name = "color")
+	private String color;
+
+	@Column(name = "quantity") // quantity of each product
 	private Integer quantity;
-	
+
 	public CartDetail() {
 		// TODO Auto-generated constructor stub
 	}
@@ -53,6 +56,12 @@ public class CartDetail extends BaseEntity {
 		this.quantity = quantity;
 	}
 
-	
-	
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
 }

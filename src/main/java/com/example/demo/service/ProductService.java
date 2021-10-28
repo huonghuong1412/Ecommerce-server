@@ -10,6 +10,7 @@ import com.example.demo.dto.SearchDto;
 import com.example.demo.dto.product.ProductDto;
 import com.example.demo.dto.product.ProductDtoNew;
 import com.example.demo.dto.product.ProductListDto;
+import com.example.demo.dto.product.ProductTopSale;
 
 @Service
 public interface ProductService {
@@ -29,8 +30,11 @@ public interface ProductService {
 	// lấy toàn bộ sản phẩm có trạng thái 1 theo thương hiệu, phân trang
 	public Page<ProductListDto> getAllProductByBrand(String brandCode, Integer page, Integer limit, String sortBy);
 	
+	// lấy thông tin sản phẩm bán chạy
+	public Page<ProductTopSale> topSaleProduct(SearchDto dto);
+	
 	// lấy thông tin sản phẩm theo id
-	public ProductDtoNew getProductById(Long id);
+	public ProductDtoNew getProductById(Long id, String color);
 	
 	// lấy thông tin sản phẩm theo id
 	public ProductDto getDetailProduct(Long id);

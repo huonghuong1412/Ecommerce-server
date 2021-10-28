@@ -17,7 +17,7 @@ public class OrderDetailHisDto {
 	public OrderDetailHisDto(OrderDetail entity) {
 		this.order_id = entity.getOrder().getId();
 		this.product_id = entity.getProduct().getId();
-		this.product_name = entity.getProduct().getName();
+		this.product_name = entity.getProduct().getName() + " - Màu " + entity.getColor();
 		this.product_slug = entity.getProduct().getSlug();
 		this.category = entity.getProduct().getCategory().getName();
 		this.sub_category = entity.getProduct().getSubcategory().getName();

@@ -1,5 +1,6 @@
 package com.example.demo.rest;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +32,14 @@ import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.order.Order;
 import com.example.demo.entity.order.OrderDetail;
 import com.example.demo.entity.order.Payment;
+import com.example.demo.entity.product.Color;
+import com.example.demo.entity.product.Product;
+import com.example.demo.repository.ColorRepository;
 import com.example.demo.repository.InventoryRepository;
 import com.example.demo.repository.OrderDetailRepository;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaymentRepository;
+import com.example.demo.repository.ProductRepository;
 import com.example.demo.service.OrderService;
 
 @CrossOrigin(origins = "*")
@@ -56,6 +61,13 @@ public class OrderController {
 
 	@Autowired
 	private PaymentRepository paymentRepository;
+	
+	@Autowired
+	private ProductRepository productRepos;
+	
+	@Autowired
+	private ColorRepository colorRepos;
+	
 
 	@GetMapping("/all")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -201,8 +213,10 @@ public class OrderController {
 				order.setStatus(-1);
 				List<OrderDetail> orderDetails = orderDetailRepository.getAllByOrderId(order.getId());
 				for (OrderDetail i : orderDetails) {
-					if (inventoryRepos.existsByProductId(i.getProduct().getId())) {
-						Inventory inventory = inventoryRepos.getOneByProductId(i.getProduct().getId());
+					Product p = productRepos.getById(i.getProduct().getId());
+					Color c = colorRepos.findOneByName(i.getColor());
+					if (inventoryRepos.existsByProductAndColor(p, c)) {
+						Inventory inventory = inventoryRepos.getOneByProductAndColor(p, c);
 						inventory.setQuantity_item(inventory.getQuantity_item() + i.getAmount());
 						inventoryRepos.save(inventory);
 					}
@@ -217,8 +231,10 @@ public class OrderController {
 				order.setStatus(-1);
 				List<OrderDetail> orderDetails = orderDetailRepository.getAllByOrderId(order.getId());
 				for (OrderDetail i : orderDetails) {
-					if (inventoryRepos.existsByProductId(i.getProduct().getId())) {
-						Inventory inventory = inventoryRepos.getOneByProductId(i.getProduct().getId());
+					Product p = productRepos.getById(i.getProduct().getId());
+					Color c = colorRepos.findOneByName(i.getColor());
+					if (inventoryRepos.existsByProductAndColor(p, c)) {
+						Inventory inventory = inventoryRepos.getOneByProductAndColor(p, c);
 						inventory.setQuantity_item(inventory.getQuantity_item() + i.getAmount());
 						inventoryRepos.save(inventory);
 					}
@@ -253,11 +269,22 @@ public class OrderController {
 	}
 
 	// đang giao hàng
-	@PutMapping("/update-order-code/{id}")
+	@PutMapping("/update-order-code-ghn/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageResponse> updateOrderCodeGHN(@PathVariable Long id, @RequestBody String order_code) {
 		Order order = orderRepository.getById(id);
 		order.setOrder_code(order_code);
+		orderRepository.save(order);
+		return ResponseEntity.ok(new MessageResponse("SUCCESS"));
+	}
+
+	// đang giao hàng
+	@PutMapping("/update-order-code/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<MessageResponse> updateOrderCode(@PathVariable Long id) {
+		Order order = orderRepository.getById(id);
+		String code = String.valueOf(new Date().getTime());
+		order.setOrder_code(code);
 		orderRepository.save(order);
 		return ResponseEntity.ok(new MessageResponse("SUCCESS"));
 	}

@@ -15,73 +15,85 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @Table(name = "tbl_order_detail")
 public class OrderDetail extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "product_id")
+	private Product product;
 
-    @Column(name = "amount")
-    private Integer amount;
+	@Column(name = "amount")
+	private Integer amount;
 
-    @Column(name = "price")
-    private Long price;
+	@Column(name = "price")
+	private Long price;
 
-    @Column(name = "total_price")
-    private Long total_price;
+	@Column(name = "total_price")
+	private Long total_price;
 
-    @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private Order order;
+	@Column(name = "color")
+	private String color;
 
-    public OrderDetail(Product product, Integer amount, Long price, Long total_price, Order order) {
-        this.product = product;
-        this.amount = amount;
-        this.price = price;
-        this.total_price = total_price;
-        this.order = order;
-    }
+	@JsonBackReference
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "order_id")
+	private Order order;
 
-    public OrderDetail() {
+	public OrderDetail(Product product, Integer amount, Long price, Long total_price, Order order) {
+		this.product = product;
+		this.amount = amount;
+		this.price = price;
+		this.total_price = total_price;
+		this.order = order;
+	}
 
-    }
+	public OrderDetail() {
 
-    public Product getProduct() {
-        return product;
-    }
+	}
 
-    public void setProduct(Product product) {
-        this.product = product;
-    }
+	public Product getProduct() {
+		return product;
+	}
 
-    public Integer getAmount() {
-        return amount;
-    }
+	public void setProduct(Product product) {
+		this.product = product;
+	}
 
-    public void setAmount(Integer amount) {
-        this.amount = amount;
-    }
+	public Integer getAmount() {
+		return amount;
+	}
 
-    public Long getPrice() {
-        return price;
-    }
+	public void setAmount(Integer amount) {
+		this.amount = amount;
+	}
 
-    public void setPrice(Long price) {
-        this.price = price;
-    }
+	public Long getPrice() {
+		return price;
+	}
 
-    public Long getTotal_price() {
-        return total_price;
-    }
+	public void setPrice(Long price) {
+		this.price = price;
+	}
 
-    public void setTotal_price(Long total_price) {
-        this.total_price = total_price;
-    }
+	public Long getTotal_price() {
+		return total_price;
+	}
 
-    public Order getOrder() {
-        return order;
-    }
+	public void setTotal_price(Long total_price) {
+		this.total_price = total_price;
+	}
 
-    public void setOrder(Order order) {
-        this.order = order;
-    }
+	public Order getOrder() {
+		return order;
+	}
+
+	public void setOrder(Order order) {
+		this.order = order;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
 }

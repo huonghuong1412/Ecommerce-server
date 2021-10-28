@@ -1,21 +1,23 @@
 package com.example.demo.dto.product;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.example.demo.common.CalculateDiscount;
 import com.example.demo.dto.AbstractDTO;
 import com.example.demo.dto.category.CategoryDtoNew;
 import com.example.demo.dto.category.SubcategoryDtoNew;
+import com.example.demo.dto.inventory.InventoryProductDto;
 import com.example.demo.entity.category.Category;
 import com.example.demo.entity.category.SubCategory;
-import com.example.demo.entity.product.Author;
+import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.product.Brand;
+import com.example.demo.entity.product.Camera;
 import com.example.demo.entity.product.Image;
 import com.example.demo.entity.product.Product;
 import com.example.demo.entity.product.Technology;
+import com.example.demo.entity.product.Tivi;
+import com.example.demo.entity.product.Wash;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -78,19 +80,24 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 	@JsonInclude(value = Include.NON_NULL)
 	private BrandDtoNew brand;
 
-	// ----------- BOOK -------------------
-	@JsonInclude(value = Include.NON_NULL)
-	private BookDto book;
-
-	@JsonInclude(value = Include.NON_NULL)
-	private Set<AuthorDtoNew> authors;
-
-	@JsonInclude(value = Include.NON_NULL)
-	private PublisherDtoNew publisher;
-
 	// ---------------- Technology --------------
 	@JsonInclude(value = Include.NON_NULL)
 	private TechDto technology;
+
+	// ---------------- Camera --------------
+	@JsonInclude(value = Include.NON_NULL)
+	private CameraDto camera;
+
+	// ---------------- Tivi --------------
+	@JsonInclude(value = Include.NON_NULL)
+	private TiviDto tivi;
+
+	// ---------------- Wash --------------
+	@JsonInclude(value = Include.NON_NULL)
+	private WashDto wash;
+	
+	@JsonInclude(value = Include.NON_NULL)
+	private List<InventoryProductDto> inventories;
 
 	public ProductDtoNew() {
 		// TODO Auto-generated constructor stub
@@ -119,9 +126,9 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 		this.width = entity.getWidth();
 		this.height = entity.getHeight();
 
-		if (entity.getInventory() != null) {
-			this.in_stock = entity.getInventory().getQuantity_item();
-		}
+//		if (entity.getInventory() != null) {
+//			this.in_stock = entity.getInventory().getQuantity_item();
+//		}
 
 		category = new CategoryDtoNew();
 		if (category != null) {
@@ -141,103 +148,180 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 		images.add(0, this.mainImage);
 
 		this.product_specs = new ArrayList<>();
+		if (entity.getSizeWeight() != null) {
+			this.product_specs.add(new ProductSpecify("Trọng lượng & Kích thước", entity.getSizeWeight()));
+		}
+		if (entity.getMaterial() != null) {
+			this.product_specs.add(new ProductSpecify("Thành phần", entity.getMaterial()));
+		}
 
-		// sach
 		switch (this.type) {
 		case 1:
-			// sach
-			this.book = new BookDto();
-			if (this.book != null) {
-				this.authors = new HashSet<>();
-				for (Author author : entity.getBook().getAuthors()) {
-					AuthorDtoNew dto = new AuthorDtoNew(author);
-					authors.add(dto);
-				}
-				this.publisher = new PublisherDtoNew(entity.getBook().getPublisher());
-				this.product_specs.add(new ProductSpecify("Số trang", entity.getBook().getNumberOfPages().toString()));
-				this.product_specs
-						.add(new ProductSpecify("Năm xuất bản", entity.getBook().getPublishingYear().toString()));
-				this.product_specs.add(new ProductSpecify("Nhà xuất bản", this.publisher.getName()));
-			}
-			break;
-		case 2:
-			// technology
 			this.technology = new TechDto();
 			if (this.technology != null) {
 				Technology item = entity.getTechnology();
-				if(item.getScreen() != null) {
+				if (item.getScreen() != null) {
 					this.product_specs.add(new ProductSpecify("Màn hình", item.getScreen()));
 				}
-				if(item.getScreen_size() != null) {
+				if (item.getScreen_size() != null) {
 					this.product_specs.add(new ProductSpecify("Kích thước Màn hình", item.getScreen_size()));
 				}
-				if(item.getOperatorSystem() != null) {
+				if (item.getOperatorSystem() != null) {
 					this.product_specs.add(new ProductSpecify("Hệ điều hành", item.getOperatorSystem()));
 				}
-				if(item.getRam() != null) {
+				if (item.getRam() != null) {
 					this.product_specs.add(new ProductSpecify("RAM", item.getRam()));
 				}
-				if(item.getPin() != null) {
+				if (item.getPin() != null) {
 					this.product_specs.add(new ProductSpecify("PIN", item.getPin()));
 				}
-				if(item.getChip() != null) {
+				if (item.getChip() != null) {
 					this.product_specs.add(new ProductSpecify("Chip", item.getChip()));
 				}
-				if(item.getCamera() != null) {
+				if (item.getCamera() != null) {
 					this.product_specs.add(new ProductSpecify("Camera", item.getCamera()));
 				}
-				if(item.getDisplay_resolution() != null) {
+				if (item.getDisplay_resolution() != null) {
 					this.product_specs.add(new ProductSpecify("Độ phân giải", item.getDisplay_resolution()));
 				}
-				if(item.getDesign() != null) {
+				if (item.getDesign() != null) {
 					this.product_specs.add(new ProductSpecify("Thiết kế", item.getDesign()));
 				}
-				if(item.getSizeWeight() != null) {
-					this.product_specs.add(new ProductSpecify("Trọng lượng & Kích thước", item.getSizeWeight()));
-				}
-				if(item.getMaterial() != null) {
-					this.product_specs.add(new ProductSpecify("Thành phần", item.getMaterial()));
-				}
-				if(item.getReleaseTime() != null) {
+
+				if (item.getReleaseTime() != null) {
 					this.product_specs.add(new ProductSpecify("Thời điểm ra mắt", item.getReleaseTime()));
 				}
-				if (this.category.getCode().equalsIgnoreCase("dien-thoai") || this.category.getCode().equalsIgnoreCase("may-tinh-bang")) {
-					if(item.getFrontCamera() != null) {
+				if (this.category.getCode().equalsIgnoreCase("dien-thoai")
+						|| this.category.getCode().equalsIgnoreCase("dienthoai")
+						|| this.category.getCode().equalsIgnoreCase("may-tinh-bang")
+						|| this.category.getCode().equalsIgnoreCase("maytinhbang")) {
+					if (item.getFrontCamera() != null) {
 						this.product_specs.add(new ProductSpecify("Camera trước", item.getFrontCamera()));
 					}
-					if(item.getBehindCamera() != null) {
+					if (item.getBehindCamera() != null) {
 						this.product_specs.add(new ProductSpecify("Camera sau", item.getBehindCamera()));
 					}
-					if(item.getInternalMemory() != null) {
+					if (item.getInternalMemory() != null) {
 						this.product_specs.add(new ProductSpecify("Bộ nhớ trong", item.getInternalMemory()));
 					}
-					if(item.getSim() != null) {
+					if (item.getSim() != null) {
 						this.product_specs.add(new ProductSpecify("Công nghệ SIM", item.getSim()));
 					}
-					if(item.getNumber_sim() != null) {
+					if (item.getNumber_sim() != null) {
 						this.product_specs.add(new ProductSpecify("Số SIM", item.getNumber_sim().toString()));
 					}
-					if(item.getAccessory() != null) {
+					if (item.getAccessory() != null) {
 						this.product_specs.add(new ProductSpecify("Phụ kiện đi kèm", item.getAccessory()));
 					}
 				}
 				if (this.category.getCode().equalsIgnoreCase("laptop")) {
-					if(item.getCpu() != null) {
+					if (item.getCpu() != null) {
 						this.product_specs.add(new ProductSpecify("CPU", item.getCpu()));
 					}
-					if(item.getBus() != null) {
+					if (item.getBus() != null) {
 						this.product_specs.add(new ProductSpecify("BUS", item.getBus()));
 					}
-					if(item.getHardWare() != null) {
+					if (item.getHardWare() != null) {
 						this.product_specs.add(new ProductSpecify("Phần cứng", item.getHardWare()));
 					}
-					if(item.getCard() != null) {
+					if (item.getCard() != null) {
 						this.product_specs.add(new ProductSpecify("Card màn hình", item.getCard()));
 					}
 				}
-
 			}
 			break;
+		case 2:
+			this.camera = new CameraDto();
+			if (this.camera != null) {
+				Camera item = entity.getCamera();
+				if (item.getImage_processing() != null) {
+					this.product_specs.add(new ProductSpecify("Bộ xử lý ảnh", item.getImage_processing()));
+				}
+				if (item.getImage_quality() != null) {
+					this.product_specs.add(new ProductSpecify("Chất lượng hình ảnh", item.getImage_quality()));
+				}
+				if (item.getVideo_quality() != null) {
+					this.product_specs.add(new ProductSpecify("Chất lượng video", item.getVideo_quality()));
+				}
+				if (item.getMemory_card() != null) {
+					this.product_specs.add(new ProductSpecify("Thẻ nhớ tương thích", item.getMemory_card()));
+				}
+				if (item.getScreen_camera() != null) {
+					this.product_specs.add(new ProductSpecify("Công nghệ màn hình", item.getScreen_camera()));
+				}
+				if (item.getScreen_size_camera() != null) {
+					this.product_specs.add(new ProductSpecify("Kích thước màn hình", item.getScreen_size_camera()));
+				}
+				if (item.getShutter_speed() != null) {
+					this.product_specs.add(new ProductSpecify("Tốc độ chụp", item.getShutter_speed()));
+				}
+			}
+			break;
+		case 3:
+			this.tivi = new TiviDto();
+			if (this.tivi != null) {
+				Tivi item = entity.getTivi();
+				if (item.getYear() != null) {
+					this.product_specs.add(new ProductSpecify("Năm ra mắt", item.getYear()));
+				}
+				if (item.getDisplay_resolution_tv() != null) {
+					this.product_specs.add(new ProductSpecify("Độ phân giải", item.getDisplay_resolution_tv()));
+				}
+				if (item.getType_tv() != null) {
+					this.product_specs
+							.add(new ProductSpecify("Loại TV", item.getType_tv() == 1 ? "Smart TV" : "Inverter TV"));
+				}
+				if (item.getApp_avaiable() != null) {
+					this.product_specs.add(new ProductSpecify("Ứng dụng có sẵn", item.getApp_avaiable()));
+				}
+				if (item.getUsb() != null) {
+					this.product_specs.add(new ProductSpecify("USB", item.getUsb()));
+				}
+				if (item.getIs3D() != null) {
+					this.product_specs.add(new ProductSpecify("3D", item.getIs3D() == 1 ? "Có" : "Không"));
+				}
+				if (item.getSpeaker() != null) {
+					this.product_specs.add(new ProductSpecify("Số lượng loa", item.getSpeaker().toString()));
+				}
+				if (item.getTechlonogy_sound() != null) {
+					this.product_specs.add(new ProductSpecify("Công nghệ âm thanh", item.getTechlonogy_sound()));
+				}
+				if (item.getComponent_video() != null) {
+					this.product_specs.add(new ProductSpecify("Component Video", item.getComponent_video()));
+				}
+				if (item.getHdmi() != null) {
+					this.product_specs.add(new ProductSpecify("Cổng HDMI", item.getHdmi()));
+				}
+				if (item.getImage_processing_tv() != null) {
+					this.product_specs
+							.add(new ProductSpecify("Công nghệ xử lý hình ảnh", item.getImage_processing_tv()));
+				}
+			}
+			break;
+		case 4:
+			this.wash = new WashDto();
+			if (this.wash != null) {
+				Wash item = entity.getWash();
+				if (item.getWash_weight() != null) {
+					this.product_specs.add(new ProductSpecify("Khối lượng giặt", item.getWash_weight()));
+				}
+				if (item.getWash_mode() != null) {
+					this.product_specs.add(new ProductSpecify("Chế độ giặt", item.getWash_mode()));
+				}
+				if (item.getIs_fast() != null) {
+					this.product_specs
+							.add(new ProductSpecify("Chế độ giặt nhanh", item.getIs_fast() == 1 ? "Có" : "Không"));
+				}
+				if (item.getWash_tub() != null) {
+					this.product_specs.add(new ProductSpecify("Loại lồng", item.getWash_tub()));
+				}
+				if (item.getIs_inverter() != null) {
+					this.product_specs
+							.add(new ProductSpecify("Công nghệ Inverter", item.getIs_inverter() == 1 ? "Có" : "Không"));
+				}
+			}
+			break;
+
 		default:
 			break;
 		}
@@ -247,14 +331,14 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 			Brand brandEntity = entity.getBrand();
 			brand = new BrandDtoNew(brandEntity);
 		}
-	}
-
-	public Integer getType() {
-		return type;
-	}
-
-	public void setType(Integer type) {
-		this.type = type;
+		this.inventories = new ArrayList<>();
+		if(inventories != null) {
+			List<Inventory> invs = entity.getInventories();
+			for(Inventory item : invs) {
+				InventoryProductDto dto = new InventoryProductDto(item);
+				this.inventories.add(dto);
+			}
+		}
 	}
 
 	public String getName() {
@@ -378,15 +462,6 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 	}
 
 	@JsonIgnore
-	public BookDto getBook() {
-		return book;
-	}
-
-	public void setBook(BookDto book) {
-		this.book = book;
-	}
-
-	@JsonIgnore
 	public TechDto getTechnology() {
 		return technology;
 	}
@@ -395,28 +470,39 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 		this.technology = technology;
 	}
 
+	@JsonIgnore
+	public CameraDto getCamera() {
+		return camera;
+	}
+
+	public void setCamera(CameraDto camera) {
+		this.camera = camera;
+	}
+
+	@JsonIgnore
+	public TiviDto getTivi() {
+		return tivi;
+	}
+
+	public void setTivi(TiviDto tivi) {
+		this.tivi = tivi;
+	}
+
+	@JsonIgnore
+	public WashDto getWash() {
+		return wash;
+	}
+
+	public void setWash(WashDto wash) {
+		this.wash = wash;
+	}
+
 	public BrandDtoNew getBrand() {
 		return brand;
 	}
 
 	public void setBrand(BrandDtoNew brand) {
 		this.brand = brand;
-	}
-
-	public Set<AuthorDtoNew> getAuthors() {
-		return authors;
-	}
-
-	public void setAuthors(Set<AuthorDtoNew> authors) {
-		this.authors = authors;
-	}
-
-	public PublisherDtoNew getPublisher() {
-		return publisher;
-	}
-
-	public void setPublisher(PublisherDtoNew publisher) {
-		this.publisher = publisher;
 	}
 
 	public Integer getIn_stock() {
@@ -450,6 +536,23 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 	public void setProduct_specs(List<ProductSpecify> product_specs) {
 		this.product_specs = product_specs;
 	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public List<InventoryProductDto> getInventories() {
+		return inventories;
+	}
+
+	public void setInventories(List<InventoryProductDto> inventories) {
+		this.inventories = inventories;
+	}
+	
 	
 
 }
