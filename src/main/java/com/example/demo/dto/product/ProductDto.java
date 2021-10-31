@@ -86,6 +86,9 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 	// brand
 	private String brand;
 
+	// color
+	private List<String> colors;
+
 	public ProductDto() {
 		super();
 	}
@@ -696,6 +699,14 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 
 	public void setType_engine(String type_engine) {
 		this.type_engine = type_engine;
+	}
+
+	public List<String> getColors() {
+		return colors;
+	}
+
+	public void setColors(List<String> colors) {
+		this.colors = colors;
 	}
 
 }

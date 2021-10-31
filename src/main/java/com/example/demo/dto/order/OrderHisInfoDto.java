@@ -24,6 +24,7 @@ public class OrderHisInfoDto {
 	private String status_order_name;
 	private Integer status_payment;
 	private String status_payment_name;
+	private String shipper_fullname;
 
 //	private String shipment_name;
 //	private Double shipment_fee;
@@ -53,6 +54,9 @@ public class OrderHisInfoDto {
 		this.district_id = entity.getDistrict_id();
 		this.status_order = entity.getStatus();
 		this.status_payment = entity.getPayment().getStatus();
+		if (entity.getShipper() != null) {
+			this.shipper_fullname = entity.getShipper().getUser().getUsername();
+		}
 		switch (this.status_order) {
 		case -1:
 			this.status_order_name = "Đã huỷ đơn";
@@ -236,6 +240,14 @@ public class OrderHisInfoDto {
 
 	public void setDistrict_id(Integer district_id) {
 		this.district_id = district_id;
+	}
+
+	public String getShipper_fullname() {
+		return shipper_fullname;
+	}
+
+	public void setShipper_fullname(String shipper_fullname) {
+		this.shipper_fullname = shipper_fullname;
 	}
 
 }

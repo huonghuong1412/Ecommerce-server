@@ -36,11 +36,24 @@ public class Inventory extends BaseEntity {
 	@Column(name = "category_code")
 	private String category_code;
 
+	@Column(name = "display")
+	private Integer display;
+
 	@OneToMany(mappedBy = "inventory", cascade = CascadeType.ALL)
 	private List<InventoryDetail> inventory_details;
 
 	public Inventory() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public Inventory(Integer total_import_item, Integer quantity_item, Product product, Color color,
+			String category_code) {
+		super();
+		this.total_import_item = total_import_item;
+		this.quantity_item = quantity_item;
+		this.product = product;
+		this.color = color;
+		this.category_code = category_code;
 	}
 
 	public Integer getTotal_import_item() {
@@ -89,6 +102,14 @@ public class Inventory extends BaseEntity {
 
 	public void setColor(Color color) {
 		this.color = color;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
 	}
 
 }

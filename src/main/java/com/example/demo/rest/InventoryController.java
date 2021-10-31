@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.SearchDto;
+import com.example.demo.dto.auth.MessageResponse;
 import com.example.demo.dto.inventory.InventoryDetailDto;
 import com.example.demo.dto.inventory.InventoryDto;
 import com.example.demo.dto.inventory.InventoryDtoNew;
+import com.example.demo.dto.product.ColorDto;
 import com.example.demo.service.InventoryService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -39,6 +42,20 @@ public class InventoryController {
 		SearchDto dto = new SearchDto(page, limit, keyword, category, null);
 		Page<InventoryDtoNew> result = service.getList(dto);
 		return new ResponseEntity<Page<InventoryDtoNew>>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/product/{id}")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<List<InventoryDtoNew>> getDetailByProductId(@PathVariable(name = "id") Long id) {
+		List<InventoryDtoNew> result = service.getListByProduct(id);
+		return new ResponseEntity<List<InventoryDtoNew>>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/not-exsist-color/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<List<ColorDto>> getAllColorNotExsistProduct(@PathVariable(name = "id") Long id) {
+		List<ColorDto> result = service.getAllColorNotExsistProduct(id);
+		return new ResponseEntity<List<ColorDto>>(result, HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/detail/{id}")
@@ -61,6 +78,17 @@ public class InventoryController {
 		dto.setId(id);
 		InventoryDto result = service.importOrUpdate(dto);
 		return new ResponseEntity<InventoryDto>(result, HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/cancel-sell-product/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<MessageResponse> calcelSellProduct(@PathVariable Long id) {
+		Boolean result = service.calcelSellProduct(id);
+		if(result) {
+			return new ResponseEntity<MessageResponse>(new MessageResponse("Cập nhật thành công!"), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<MessageResponse>(new MessageResponse("Cập nhật không thành công!"), HttpStatus.BAD_REQUEST);
+		}
 	}
 
 }

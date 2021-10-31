@@ -18,6 +18,7 @@ public class InventoryDto extends AbstractDTO<InventoryDto> {
 	private Long productId;
 	private String color;
 	private String category_code;
+	private Integer display;
 
 	private List<InventoryDetailDto> inventory_details;
 
@@ -40,6 +41,7 @@ public class InventoryDto extends AbstractDTO<InventoryDto> {
 				this.inventory_details.add(dto);
 			}
 		}
+		this.display = entity.getDisplay();
 
 	}
 
@@ -89,6 +91,14 @@ public class InventoryDto extends AbstractDTO<InventoryDto> {
 
 	public void setInventory_details(List<InventoryDetailDto> inventory_details) {
 		this.inventory_details = inventory_details;
+	}
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
 	}
 
 }

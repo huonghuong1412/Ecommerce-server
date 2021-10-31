@@ -1,9 +1,7 @@
 package com.example.demo.entity.user;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -49,6 +47,9 @@ public class User extends BaseEntity {
 	private Address address = new Address();
 
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Shipper shipper = new Shipper();
+
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Cart cart = new Cart();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -56,7 +57,7 @@ public class User extends BaseEntity {
 
 	@ManyToMany
 	@JoinTable(name = "tbl_user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles = new HashSet<>();
+	private List<Role> roles = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user")
 	private List<Comment> comments;
@@ -142,7 +143,7 @@ public class User extends BaseEntity {
 		this.display = display;
 	}
 
-	public Set<Role> getRoles() {
+	public List<Role> getRoles() {
 		return roles;
 	}
 
@@ -154,7 +155,7 @@ public class User extends BaseEntity {
 		this.address = address;
 	}
 
-	public void setRoles(Set<Role> roles) {
+	public void setRoles(List<Role> roles) {
 		this.roles = roles;
 	}
 
@@ -189,4 +190,13 @@ public class User extends BaseEntity {
 	public void setOrders(List<Order> orders) {
 		this.orders = orders;
 	}
+
+	public Shipper getShipper() {
+		return shipper;
+	}
+
+	public void setShipper(Shipper shipper) {
+		this.shipper = shipper;
+	}
+
 }

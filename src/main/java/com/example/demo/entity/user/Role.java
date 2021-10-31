@@ -1,7 +1,7 @@
 package com.example.demo.entity.user;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,7 +22,7 @@ public class Role extends BaseEntity {
 	private Erole name;
 
 	@ManyToMany(mappedBy = "roles")
-	private Set<User> users = new HashSet<>();
+	private List<User> users = new ArrayList<User>();
 	
 	public Role() {}
 
@@ -41,11 +41,11 @@ public class Role extends BaseEntity {
 		this.name = name;
 	}
 
-	public Set<User> getUsers() {
+	public List<User> getUsers() {
 		return users;
 	}
 
-	public void setUsers(Set<User> users) {
+	public void setUsers(List<User> users) {
 		this.users = users;
 	}
 	

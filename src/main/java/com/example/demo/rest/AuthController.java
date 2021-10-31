@@ -1,8 +1,7 @@
 package com.example.demo.rest;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +36,10 @@ import com.example.demo.dto.user.UserDto;
 import com.example.demo.entity.order.Cart;
 import com.example.demo.entity.user.Address;
 import com.example.demo.entity.user.Role;
+import com.example.demo.entity.user.Shipper;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.RoleRepository;
+import com.example.demo.repository.ShipperRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
 import com.example.demo.service.impl.UserDetailsImpl;
@@ -57,6 +58,9 @@ public class AuthController {
 
 	@Autowired
 	private RoleRepository roleRepository;
+	
+	@Autowired
+	private ShipperRepository shipperRepos;
 
 	@Autowired
 	private PasswordEncoder encoder;
@@ -82,7 +86,7 @@ public class AuthController {
 				new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
 
 	}
-	
+
 	@PostMapping("/admin/login")
 	public ResponseEntity<?> loginAdmin(@Validated @RequestBody LoginDto dto) {
 		Authentication authentication = authenticationManager
@@ -94,13 +98,14 @@ public class AuthController {
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 		List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
 				.collect(Collectors.toList());
-		if(userDetails.getRoles().contains(new String("ROLE_ADMIN"))) {
-			return ResponseEntity.ok(
-					new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+		if (userDetails.getRoles().contains(new String("ROLE_ADMIN"))) {
+			return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(),
+					userDetails.getEmail(), roles));
 		} else {
-			return new ResponseEntity<MessageResponse>(new MessageResponse("Truy cập bị từ chối! Tài khoản hoặc mật khẩu không chính xác!"), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<MessageResponse>(
+					new MessageResponse("Truy cập bị từ chối! Tài khoản hoặc mật khẩu không chính xác!"),
+					HttpStatus.BAD_REQUEST);
 		}
-		
 
 	}
 
@@ -121,32 +126,47 @@ public class AuthController {
 
 		User user = new User(dto.getPhone(), dto.getEmail(), dto.getUsername(), encoder.encode(dto.getPassword()),
 				dto.getDateOfBirth(), dto.getFullName(), address);
-		
-		Cart cart = new Cart();
-		cart.setUser(user);
-		user.setCart(cart);
+		user.setDisplay(1);
+		if (dto.getCccd() != null && dto.getShift() != null) {
+			Shipper ship = new Shipper();
+			ship.setCccd(dto.getCccd());
+			ship.setShift(dto.getShift());
+			ship.setUser(user);
+			user.setShipper(ship);
+		}
 
 		address.setUser(user);
 
-		Set<String> strRoles = dto.getRole();
-		Set<Role> roles = new HashSet<>();
+		List<String> strRoles = dto.getRole();
+		List<Role> roles = new ArrayList<>();
 
 		if (strRoles == null) {
-			Role userRole = roleRepository.findByName(Erole.ROLE_USER)
+			Role userRole = roleRepository.findOneByName(Erole.ROLE_USER)
 					.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
 			roles.add(userRole);
+			Cart cart = new Cart();
+			cart.setUser(user);
+			user.setCart(cart);
 		} else {
 			strRoles.forEach(role -> {
 				switch (role) {
 				case "admin":
-					Role adminRole = roleRepository.findByName(Erole.ROLE_ADMIN)
+					Role adminRole = roleRepository.findOneByName(Erole.ROLE_ADMIN)
 							.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
 					roles.add(adminRole);
 					break;
+				case "shipper":
+					Role shipRole = roleRepository.findOneByName(Erole.ROLE_SHIPPER)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+					roles.add(shipRole);
+					break;
 				default:
-					Role userRole = roleRepository.findByName(Erole.ROLE_USER)
+					Role userRole = roleRepository.findOneByName(Erole.ROLE_USER)
 							.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
 					roles.add(userRole);
+					Cart cart = new Cart();
+					cart.setUser(user);
+					user.setCart(cart);
 					break;
 				}
 			});
@@ -156,7 +176,7 @@ public class AuthController {
 		userRepository.save(user);
 		return ResponseEntity.ok(new MessageResponse("Đăng ký tài khoản thành công!"));
 	}
-	
+
 	@PutMapping("/update-info")
 	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> update(@Validated @RequestBody RegisterDto dto) {
@@ -170,10 +190,35 @@ public class AuthController {
 		user.setPhone(dto.getPhone());
 		user.setEmail(dto.getEmail());
 		user.setDateOfBirth(dto.getDateOfBirth());
+		if(dto.getCccd() != null && dto.getShift() != null) {
+			Shipper shipper = shipperRepos.findOneByUser(user);
+			shipper.setCccd(dto.getCccd());
+			shipper.setShift(dto.getShift());
+		}
 		userRepository.save(user);
 		return ResponseEntity.ok(new MessageResponse("Cập nhật thông tin tài khoản thành công!"));
 	}
 	
+	@PutMapping("/update-user/{username}")
+	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	public ResponseEntity<?> updateUserByAdmin(@Validated @RequestBody RegisterDto dto, @PathVariable String username) {
+		User user = userRepository.findOneByUsername(username);
+		if (userRepository.existsByEmail(dto.getEmail()) && user.getEmail().equals(dto.getEmail()) == false) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Email đã được đăng ký!"));
+		}
+		user.setFullname(dto.getFullName());
+		user.setPhone(dto.getPhone());
+		user.setEmail(dto.getEmail());
+		user.setDateOfBirth(dto.getDateOfBirth());
+		if(dto.getCccd() != null && dto.getShift() != null) {
+			Shipper shipper = shipperRepos.findOneByUser(user);
+			shipper.setCccd(dto.getCccd());
+			shipper.setShift(dto.getShift());
+		}
+		userRepository.save(user);
+		return ResponseEntity.ok(new MessageResponse("Cập nhật thông tin tài khoản thành công!"));
+	}
+
 	@PutMapping("/update-password")
 	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> updatePassword(@Validated @RequestBody RegisterDto dto) {
@@ -200,22 +245,52 @@ public class AuthController {
 		return new ResponseEntity<UserDto>(result, HttpStatus.OK);
 	}
 
-	@GetMapping("/all/user")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Page<UserDto>> getList(@RequestParam(name = "page", defaultValue = "1") int page,
+	@GetMapping("/all/{role}")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<UserDto>> getList(@PathVariable String role,
+			@RequestParam(name = "page", defaultValue = "0") int page,
 			@RequestParam(name = "limit", defaultValue = "10") int limit,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword) {
 		SearchDto dto = new SearchDto(page, limit, keyword);
-		Page<UserDto> result = userService.getList(dto);
+		String s = "";
+		switch (role) {
+		case "admin":
+			s += "ROLE_ADMIN";
+			break;
+		case "shipper":
+			s += "ROLE_SHIPPER";
+			break;
+		case "user":
+			s += "ROLE_USER";
+			break;
+		default:
+			break;
+		}
+		Page<UserDto> result = userService.getListByRole(s, dto);
 		return new ResponseEntity<Page<UserDto>>(result, HttpStatus.OK);
 	}
 
+//	@GetMapping("/all/shipper")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
+//	public ResponseEntity<Page<UserDto>> getListUserByRole(@RequestParam(name = "page", defaultValue = "0") int page,
+//			@RequestParam(name = "limit", defaultValue = "10") int limit) {
+//		SearchDto dto = new SearchDto();
+//		dto.setPageIndex(page);
+//		dto.setPageSize(limit);
+//		String role = "ROLE_ADMIN";
+//		Page<UserDto> result = userService.getListByRole(role, dto);
+//		return new ResponseEntity<Page<UserDto>>(result, HttpStatus.OK);
+//	}
 
 	@GetMapping("/customer/{id}")
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
 	public ResponseEntity<UserDto> getCustomerById(@PathVariable Long id) {
 		User user = userRepository.getById(id);
 		UserDto result = new UserDto(user);
+		if(user.getShipper() != null) {
+			result.setCccd(user.getShipper().getCccd());
+			result.setShift(user.getShipper().getShift());
+		}
 		return new ResponseEntity<UserDto>(result, HttpStatus.OK);
 	}
 

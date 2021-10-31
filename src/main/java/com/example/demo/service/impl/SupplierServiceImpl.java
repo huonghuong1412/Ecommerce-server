@@ -61,7 +61,11 @@ public class SupplierServiceImpl implements SupplierService {
 	public Boolean delete(Long id) {
 		if (id != null) {
 			Supplier entity = repos.getById(id);
-			entity.setDisplay(0);
+			if(entity.getDisplay() == 1) {
+				entity.setDisplay(0);
+			} else {
+				entity.setDisplay(1);
+			}
 			entity = repos.save(entity);
 			return true;
 		}

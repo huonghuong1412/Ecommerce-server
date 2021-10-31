@@ -20,6 +20,7 @@ import com.example.demo.dto.SearchDto;
 import com.example.demo.dto.inventory.InventoryDetailDto;
 import com.example.demo.dto.inventory.InventoryDto;
 import com.example.demo.dto.inventory.InventoryDtoNew;
+import com.example.demo.dto.product.ColorDto;
 import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.inventory.InventoryDetail;
 import com.example.demo.entity.product.Color;
@@ -44,7 +45,7 @@ public class InventoryServiceImpl implements InventoryService {
 
 	@Autowired
 	private ProductRepository productRepos;
-	
+
 	@Autowired
 	private ColorRepository colorRepos;
 
@@ -58,20 +59,40 @@ public class InventoryServiceImpl implements InventoryService {
 		else
 			pageIndex = 0;
 
-		String whereClause = "";
-		String orderBy = " ORDER BY entity.id DESC";
-		String sqlCount = "select count(entity.id) from Inventory as entity where (1=1) ";
-		String sql = "select new com.example.demo.dto.inventory.InventoryDtoNew(entity) from Inventory as entity where (1=1)  ";
-//		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
-//			whereClause += " AND ( entity.name LIKE :text OR entity.description LIKE :text )";
-//		}
+//		SELECT p.name as product_name, c.name as category_name, sum(i.total_import) as total_import, sum(i.total_item) as total_item, total_import - total_item as total_sell
+//		FROM tbl_inventory as i
+//		inner join tbl_product as p on p.id = 20 and p.id = i.product_id
+//		inner join tbl_category as c on c.id = p.category_id
+//		group by product_id
+
+		String orderBy = " ORDER BY p.id DESC";
+		String groupBy = " group by i.product.id ";
+		String sqlCount = "select new com.example.demo.dto.inventory.InventoryDtoNew(p.id as productId, "
+				+ "p.name as product_name, " + "p.mainIamge as productMainImage, " + "c.name as category_name, "
+				+ "sum(i.total_import_item) as total_import_item, " + "sum(i.quantity_item) as quantity_item ) "
+				+ "from Inventory as i inner join Product as p on p.id = i.product.id inner join Category as c on c.id = p.category.id ";
+		String sql = "select new com.example.demo.dto.inventory.InventoryDtoNew(p.id as productId, "
+				+ "p.name as product_name, " + "p.mainIamge as productMainImage, " + "c.name as category_name, "
+				+ "sum(i.total_import_item) as total_import_item, " + "sum(i.quantity_item) as quantity_item ) "
+				+ "from Inventory as i inner join Product as p on p.id = i.product.id inner join Category as c on c.id = p.category.id ";
 
 		if (dto.getCategory() != null) {
-			whereClause += " AND ( entity.category_code LIKE :category )";
+			sql += " and c.code = '" + dto.getCategory() + "'";
+			sqlCount += " and c.code = '" + dto.getCategory() + "'";
+		} else {
+			sql += "";
+			sqlCount += "";
+		};
+		
+		if (dto.getKeyword() != null && StringUtils.hasText(dto.getKeyword())) {
+			sql += " where i.display = 1 AND ( p.name LIKE :text OR p.description LIKE :text )" + groupBy + orderBy;
+			sqlCount += " where i.display = 1 AND ( p.name LIKE :text OR p.description LIKE :text )" + groupBy;
+		} else {
+			sql += " where i.display = 1" + groupBy + orderBy;
+			sqlCount += " where i.display = 1" + groupBy;
 		}
 
-		sql += whereClause + orderBy;
-		sqlCount += whereClause;
+		
 
 		Query q = manager.createQuery(sql, InventoryDtoNew.class);
 		Query qCount = manager.createQuery(sqlCount);
@@ -81,11 +102,6 @@ public class InventoryServiceImpl implements InventoryService {
 			qCount.setParameter("text", '%' + dto.getKeyword() + '%');
 		}
 
-		if (dto.getCategory() != null) {
-			q.setParameter("category", dto.getCategory());
-			qCount.setParameter("category", dto.getCategory());
-		}
-
 		int startPosition = pageIndex * pageSize;
 		q.setFirstResult(startPosition);
 		q.setMaxResults(pageSize);
@@ -93,7 +109,11 @@ public class InventoryServiceImpl implements InventoryService {
 		@SuppressWarnings("unchecked")
 		List<InventoryDtoNew> entities = q.getResultList();
 
-		long count = (long) qCount.getSingleResult();
+		for (InventoryDtoNew item : entities) {
+			item.setSold(item.getTotal_import_item() - item.getQuantity_item());
+		}
+
+		long count = (long) qCount.getResultList().size();
 		Pageable pageable = PageRequest.of(pageIndex, pageSize);
 		Page<InventoryDtoNew> result = new PageImpl<InventoryDtoNew>(entities, pageable, count);
 		return result;
@@ -130,7 +150,8 @@ public class InventoryServiceImpl implements InventoryService {
 
 				inventory.setTotal_import_item(totalImport + inventory.getTotal_import_item());
 				inventory.setQuantity_item(inventory.getQuantity_item() + totalImport);
-
+				inventory.setDisplay(1);
+				inventory.setColor(color);
 				inventory.setInventory_details(inventoryDetails);
 				for (InventoryDetail detail : inventoryDetails) {
 					detail.setInventory(inventory);
@@ -158,6 +179,8 @@ public class InventoryServiceImpl implements InventoryService {
 
 				inventory.setTotal_import_item(totalImport);
 				inventory.setQuantity_item(totalImport);
+				inventory.setDisplay(1);
+				inventory.setColor(color);
 				inventory.setInventory_details(inventoryDetails);
 				for (InventoryDetail detail : inventoryDetails) {
 					detail.setInventory(inventory);
@@ -186,6 +209,60 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 
 		return dtos;
+	}
+
+	@Override
+	public List<InventoryDtoNew> getListByProduct(Long productId) {
+		// TODO Auto-generated method stub
+		List<Inventory> list = inventoryRepos.getAllByProductId(productId);
+		List<InventoryDtoNew> dtos = new ArrayList<InventoryDtoNew>();
+		for (Inventory item : list) {
+			InventoryDtoNew dto = new InventoryDtoNew(item);
+			dto.setCategory_name(item.getProduct().getCategory().getName());
+			dto.setId(item.getId());
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+
+	@Override
+	public Boolean calcelSellProduct(Long id) {
+		// TODO Auto-generated method stub
+		if (id != null) {
+			Inventory i = inventoryRepos.getById(id);
+			if (i.getDisplay() == 1) {
+				i.setDisplay(0);
+			} else {
+				i.setDisplay(1);
+			}
+			inventoryRepos.save(i);
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public List<ColorDto> getAllColorNotExsistProduct(Long productId) {
+
+//		SELECT T1.name
+//		FROM
+//		   tbl_product_color T1
+//		   LEFT OUTER JOIN
+//		   tbl_inventory T2 ON T1.id = T2.color_id and T2.product_id = 47
+//		where T2.product_id is null
+
+		// TODO Auto-generated method stub
+
+		String sql = "select new com.example.demo.dto.product.ColorDto(c.name) "
+				+ "from Color as c LEFT OUTER JOIN Inventory as i on c.id = i.color.id and i.product.id = " + productId
+				+ " where i.product.id is null";
+
+		Query q = manager.createQuery(sql, ColorDto.class);
+
+		@SuppressWarnings("unchecked")
+		List<ColorDto> entities = q.getResultList();
+		return entities;
 	}
 
 }

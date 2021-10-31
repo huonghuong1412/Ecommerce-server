@@ -17,6 +17,13 @@ public class ColorDto extends AbstractDTO<ColorDto> {
 		// TODO Auto-generated constructor stub
 	}
 
+	public ColorDto(String name) {
+		super();
+		this.name = name;
+	}
+
+
+
 	public ColorDto(Color entity) {
 		super();
 		this.setId(entity.getId());

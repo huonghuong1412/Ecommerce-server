@@ -309,6 +309,15 @@ public class ProductServiceImpl implements ProductService {
 			// 1 - n product - image
 			List<String> imageUrls = dto.getImages();
 			List<Image> images = new ArrayList<>();
+			
+			List<String> color_names = dto.getColors();
+			List<Color> colors = new ArrayList<Color>();
+			for(String item : color_names) {
+				Color color = colorRepos.findOneByName(item);
+				colors.add(color);
+			}
+			
+			List<Inventory> inventories = new ArrayList<>();
 
 			if (dto.getId() != null) {
 				entity = productRepos.getById(dto.getId());
@@ -349,11 +358,16 @@ public class ProductServiceImpl implements ProductService {
 				camera = new Camera();
 				tivi = new Tivi();
 				wash = new Wash();
-				inventory = new Inventory();
-				inventory.setQuantity_item(0);
-				inventory.setTotal_import_item(0);
-				inventory.setCategory_code(category.getCode());
-				inventory.setProduct(entity);
+				
+				for(Color item : colors) {
+					inventory = new Inventory(0, 0, entity, item, category.getCode());
+//					inventory.setQuantity_item(0);
+//					inventory.setTotal_import_item(0);
+//					inventory.setCategory_code(category.getCode());
+//					inventory.setColor(item);
+//					inventory.setProduct(entity);
+					inventories.add(inventory);
+				}
 				for (int i = 0; i < imageUrls.size(); i++) {
 					image = new Image(imageUrls.get(i));
 					images.add(image);
@@ -450,6 +464,7 @@ public class ProductServiceImpl implements ProductService {
 			}
 
 			entity.setImages(images);
+			entity.setInventories(inventories);
 			for (int i = 0; i < images.size(); i++) {
 				images.get(i).setProduct(entity);
 			}
@@ -476,9 +491,17 @@ public class ProductServiceImpl implements ProductService {
 				break;
 			}
 
-			if (inventory != null) {
-				inventoryRepos.save(inventory);
-			}
+//			if (inventory != null) {
+//				inventoryRepos.save(inventory);
+//			}
+//			if(inventories != null) {
+//				for(Inventory item : inventories) {
+//					System.out.println(item.getColor().getName());
+//					if(item != null) {
+//						inventoryRepos.save(item);
+//					}
+//				}
+//			}
 
 			if (entity != null) {
 				return new ProductDto(entity);
@@ -522,6 +545,11 @@ public class ProductServiceImpl implements ProductService {
 	public ProductDto getDetailProduct(Long id) {
 		Product product = productRepos.getById(id);
 		ProductDto dto = new ProductDto(product);
+		List<String> colors = new ArrayList<>();
+		for(Inventory item : product.getInventories()) {
+			colors.add(item.getColor().getName());
+		}
+		dto.setColors(colors);
 		return dto;
 	}
 

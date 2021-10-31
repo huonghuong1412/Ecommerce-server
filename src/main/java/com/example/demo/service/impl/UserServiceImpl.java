@@ -1,5 +1,7 @@
 package com.example.demo.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -13,9 +15,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.example.demo.common.Erole;
 import com.example.demo.dto.SearchDto;
 import com.example.demo.dto.user.UserDto;
+import com.example.demo.entity.user.Role;
 import com.example.demo.entity.user.User;
+import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
 
@@ -27,6 +32,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private RoleRepository roleRepos;
 
 	@Override
 	public UserDto getCurrentUser(Long id) {
@@ -75,6 +83,28 @@ public class UserServiceImpl implements UserService {
 		Pageable pageable = PageRequest.of(pageIndex, pageSize);
 		Page<UserDto> result = new PageImpl<UserDto>(entities, pageable, count);
 		return result;
+	}
+
+	@Override
+	public Page<UserDto> getListByRole(String role, SearchDto dto) {
+		// TODO Auto-generated method stub
+		Pageable pageable = PageRequest.of(dto.getPageIndex(), dto.getPageSize());
+		Erole erole = Erole.valueOf(role);
+//		System.out.println(erole);
+		Role roleEntity = roleRepos.findOneByName(erole)
+				.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+		List<User> list = userRepository.findByRolesIn(Arrays.asList(roleEntity), pageable);
+		List<UserDto> dtos = new ArrayList<>();
+		for(User i : list) {
+			UserDto u = new UserDto(i);
+			if(erole.name().toString().equalsIgnoreCase("ROLE_SHIPPER")) {
+				u.setCccd(i.getShipper().getCccd());
+				u.setShift(i.getShipper().getShift());
+			}
+			dtos.add(u);
+		}
+		Page<UserDto> listDto = new PageImpl<UserDto>(dtos, pageable, list.size());;
+		return listDto;
 	}
 	
 }

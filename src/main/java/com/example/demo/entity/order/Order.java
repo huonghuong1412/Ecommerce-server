@@ -14,6 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.example.demo.entity.BaseEntity;
+import com.example.demo.entity.user.Shipper;
 import com.example.demo.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -24,6 +25,10 @@ public class Order extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "shipper")
+	private Shipper shipper;
 
 	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
 	private Payment payment;
@@ -183,6 +188,14 @@ public class Order extends BaseEntity {
 
 	public void setOrder_code(String order_code) {
 		this.order_code = order_code;
+	}
+
+	public Shipper getShipper() {
+		return shipper;
+	}
+
+	public void setShipper(Shipper shipper) {
+		this.shipper = shipper;
 	}
 
 //	public Shipment getShipment() {

@@ -25,6 +25,7 @@ public class OrderHisDto {
 	private String status_order_name;
 	private Integer status_payment;
 	private String status_payment_name;
+	private String ship_name;
 
 	public OrderHisDto() {
 	}
@@ -71,7 +72,7 @@ public class OrderHisDto {
 
 		switch (this.status_payment) {
 		case -1:
-			this.status_payment_name = "Đã huỷ thanh toán";
+			this.status_payment_name = "Huỷ thanh toán";
 			break;
 		case 0:
 			this.status_payment_name = "Chưa thanh toán";
@@ -84,6 +85,17 @@ public class OrderHisDto {
 			break;
 		default:
 			this.status_payment_name = "Chưa thanh toán";
+			break;
+		}
+
+		Integer ship_type = entity.getShip_type();
+		switch (ship_type) {
+		case 1:
+			this.ship_name = "Giao hàng nhanh";
+			break;
+		case 2:
+			this.ship_name = "Shop giao hàng";
+		default:
 			break;
 		}
 
@@ -231,6 +243,14 @@ public class OrderHisDto {
 
 	public void setDistrict_id(Integer district_id) {
 		this.district_id = district_id;
+	}
+
+	public String getShip_name() {
+		return ship_name;
+	}
+
+	public void setShip_name(String ship_name) {
+		this.ship_name = ship_name;
 	}
 
 }

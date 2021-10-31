@@ -1,6 +1,6 @@
 package com.example.demo.dto.auth;
 
-import java.util.Set;
+import java.util.List;
 
 import com.example.demo.dto.AbstractDTO;
 import com.example.demo.entity.user.User;
@@ -17,8 +17,10 @@ public class RegisterDto extends AbstractDTO<RegisterDto> {
 	private String district;
 	private String ward;
 	private String house;
+	private String cccd;
+	private String shift;
 
-	private Set<String> role;
+	private List<String> role;
 
 	public RegisterDto() {
 		super();
@@ -37,6 +39,8 @@ public class RegisterDto extends AbstractDTO<RegisterDto> {
 		this.district = entity.getAddress().getDistrict();
 		this.ward = entity.getAddress().getWard();
 		this.house = entity.getAddress().getHouse();
+		this.shift = entity.getShipper().getShift();
+		this.cccd = entity.getShipper().getCccd();
 	}
 
 	public String getUsername() {
@@ -95,11 +99,11 @@ public class RegisterDto extends AbstractDTO<RegisterDto> {
 		this.fullName = fullName;
 	}
 
-	public Set<String> getRole() {
+	public List<String> getRole() {
 		return role;
 	}
 
-	public void setRole(Set<String> role) {
+	public void setRole(List<String> role) {
 		this.role = role;
 	}
 
@@ -133,6 +137,22 @@ public class RegisterDto extends AbstractDTO<RegisterDto> {
 
 	public void setHouse(String house) {
 		this.house = house;
+	}
+
+	public String getCccd() {
+		return cccd;
+	}
+
+	public void setCccd(String cccd) {
+		this.cccd = cccd;
+	}
+
+	public String getShift() {
+		return shift;
+	}
+
+	public void setShift(String shift) {
+		this.shift = shift;
 	}
 
 }

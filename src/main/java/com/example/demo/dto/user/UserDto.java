@@ -3,6 +3,8 @@ package com.example.demo.dto.user;
 import com.example.demo.dto.AbstractDTO;
 import com.example.demo.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class UserDto extends AbstractDTO<UserDto> {
 	private String username;
@@ -21,6 +23,13 @@ public class UserDto extends AbstractDTO<UserDto> {
 	private String ward;
 	private String ward_id;
 	private String house;
+	
+	@JsonIgnore
+	@JsonInclude(value = Include.NON_NULL)
+	private ShipperDto shipper;
+	
+	private String cccd;
+	private String shift;
 
 	public UserDto() {
 		super();
@@ -150,5 +159,31 @@ public class UserDto extends AbstractDTO<UserDto> {
 	public void setWard_id(String ward_id) {
 		this.ward_id = ward_id;
 	}
+
+	public ShipperDto getShipper() {
+		return shipper;
+	}
+
+	public void setShipper(ShipperDto shipper) {
+		this.shipper = shipper;
+	}
+
+	public String getCccd() {
+		return cccd;
+	}
+
+	public void setCccd(String cccd) {
+		this.cccd = cccd;
+	}
+
+	public String getShift() {
+		return shift;
+	}
+
+	public void setShift(String shift) {
+		this.shift = shift;
+	}
+	
+	
 
 }

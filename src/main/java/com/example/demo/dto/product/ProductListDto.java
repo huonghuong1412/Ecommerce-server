@@ -10,6 +10,7 @@ import com.example.demo.dto.category.CategoryDtoNew;
 import com.example.demo.dto.category.SubcategoryDtoNew;
 import com.example.demo.entity.category.Category;
 import com.example.demo.entity.category.SubCategory;
+import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.product.Brand;
 import com.example.demo.entity.product.Product;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -30,7 +31,7 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 	@JsonInclude(value = Include.NON_NULL)
 	private Integer seller_count;
 	@JsonInclude(value = Include.NON_NULL)
-	private Integer in_stock;
+	private Integer in_stock = 0;
 	private Double percent_discount;
 
 	@JsonInclude(value = Include.NON_NULL)
@@ -61,6 +62,13 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 //		if (entity.getInventory() != null) {
 //			this.in_stock = entity.getInventory().getQuantity_item();
 //		}
+		Integer count = 0;
+		for(Inventory item : entity.getInventories()) {
+			if(item.getQuantity_item() == 0) {
+				count += 1;
+			}
+		}
+		this.in_stock = count;
 		this.mainImage = entity.getMainIamge();
 		category = new CategoryDtoNew();
 		if (category != null) {

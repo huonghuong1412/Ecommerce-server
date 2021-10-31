@@ -34,12 +34,16 @@ import com.example.demo.entity.order.OrderDetail;
 import com.example.demo.entity.order.Payment;
 import com.example.demo.entity.product.Color;
 import com.example.demo.entity.product.Product;
+import com.example.demo.entity.user.Shipper;
+import com.example.demo.entity.user.User;
 import com.example.demo.repository.ColorRepository;
 import com.example.demo.repository.InventoryRepository;
 import com.example.demo.repository.OrderDetailRepository;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.ProductRepository;
+import com.example.demo.repository.ShipperRepository;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.service.OrderService;
 
 @CrossOrigin(origins = "*")
@@ -67,6 +71,12 @@ public class OrderController {
 	
 	@Autowired
 	private ColorRepository colorRepos;
+	
+	@Autowired
+	private ShipperRepository shipperRepos;
+	
+	@Autowired
+	private UserRepository userRepos;
 	
 
 	@GetMapping("/all")
@@ -164,11 +174,16 @@ public class OrderController {
 	// đang giao hàng
 	@PutMapping("/is-shipping/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<MessageResponse> shipping(@PathVariable Long id) {
+	public ResponseEntity<MessageResponse> shipping(@PathVariable Long id, @RequestParam String shipper) {
 		Order order = orderRepository.getById(id);
-
 		Payment payment = paymentRepository.findOneByOrderId(order.getId());
-
+		User user = userRepos.findOneByUsername(shipper);
+		Shipper ship = shipperRepos.findOneByUser(user);
+		
+		if(ship != null) {
+			order.setShipper(ship);
+		}
+		
 		if (order.getStatus() == 1) {
 			return new ResponseEntity<MessageResponse>(
 					new MessageResponse("Đơn hàng đang giao, không cần xác nhận lại!"), HttpStatus.BAD_REQUEST);

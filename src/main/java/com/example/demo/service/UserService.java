@@ -12,4 +12,6 @@ public interface UserService {
 	
 	public Page<UserDto> getList(SearchDto dto);
 	
+	public Page<UserDto> getListByRole(String role, SearchDto dto);
+	
 }

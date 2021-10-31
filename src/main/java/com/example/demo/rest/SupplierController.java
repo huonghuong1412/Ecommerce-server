@@ -27,7 +27,7 @@ public class SupplierController {
 	@Autowired
 	private SupplierService service;
 
-	@GetMapping("")
+	@GetMapping("/all")
 	public ResponseEntity<Page<SupplierDto>> getAll(@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
 			@RequestParam(name = "sortBy", defaultValue = "name") String sortBy) {
