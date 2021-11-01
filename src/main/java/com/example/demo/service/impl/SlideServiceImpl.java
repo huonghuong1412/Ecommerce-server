@@ -1,15 +1,16 @@
 package com.example.demo.service.impl;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.dto.category.SlideDto;
-import com.example.demo.entity.category.Slide;
+import com.example.demo.dto.other.SlideDto;
+import com.example.demo.entity.other.Slide;
 import com.example.demo.repository.SlideRepository;
 import com.example.demo.service.SlideService;
 
@@ -20,14 +21,12 @@ public class SlideServiceImpl implements SlideService {
 	private SlideRepository repos;
 
 	@Override
-	public List<SlideDto> getAll() {
-		List<SlideDto> list = new ArrayList<>();
-		List<Slide> entities = repos.findAll();
-		for (Slide method : entities) {
-			SlideDto dto = new SlideDto(method);
-			list.add(dto);
-		}
-		return list;
+	public Page<SlideDto> getList(Integer page, Integer limit, String sortBy) {
+		Page<Slide> list = repos.findAll(PageRequest.of(page, limit, Sort.by(sortBy).descending()));
+
+		Page<SlideDto> dtos = list.map(tag -> new SlideDto(tag));
+
+		return dtos;
 	}
 
 	@Override
@@ -41,7 +40,7 @@ public class SlideServiceImpl implements SlideService {
 				entity = new Slide();
 			}
 
-			entity.setUrl(dto.getUrl());
+			entity.setImage(dto.getImage());
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			entity.setDisplay(1);
 			entity = repos.save(entity);
@@ -57,7 +56,11 @@ public class SlideServiceImpl implements SlideService {
 	public Boolean delete(Long id) {
 		if (id != null) {
 			Slide entity = repos.getById(id);
-			entity.setDisplay(0);
+			if(entity.getDisplay() == 1) {
+				entity.setDisplay(0);
+			} else {
+				entity.setDisplay(1);
+			}
 			entity = repos.save(entity);
 			return true;
 		}
@@ -67,6 +70,17 @@ public class SlideServiceImpl implements SlideService {
 	@Override
 	public Boolean checkCode(Long id, String code) {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SlideDto getOne(Long id) {
+		// TODO Auto-generated method stub
+		if(id != null) {
+			Slide s = repos.getById(id);
+			SlideDto dto = new SlideDto(s);
+			return dto;
+		}
 		return null;
 	}
 

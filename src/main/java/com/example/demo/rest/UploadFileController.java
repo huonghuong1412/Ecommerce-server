@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.example.demo.dto.auth.MessageResponse;
-
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping(value = "/api/upload")
@@ -27,11 +25,11 @@ public class UploadFileController {
 
 	@Value("${file-upload-dir}")
 	String FILE_DIRECTORY;
-	
-	@Value("${slide-file-upload-dir}")
-	String SLIDE_FILE_DIRECTORY;
 
-	@PostMapping(value="/image/product")
+	@Value("${image-file-upload-dir}")
+	String IMAGE_FILE_DIRECTORY;
+
+	@PostMapping(value = "/image/product")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> fileUpload(@RequestParam("File") MultipartFile[] multipartFile) throws IOException {
 
@@ -40,19 +38,17 @@ public class UploadFileController {
 			File file = new File(FILE_DIRECTORY + new Date().getTime() + "_" + multipartFile[i].getOriginalFilename());
 			files.add(file);
 		}
-		
-		 List<String> fileDownloadUrls = new ArrayList<String>();
-		 for(int i = 0; i < multipartFile.length; i++) {
-			 String url = ServletUriComponentsBuilder.fromCurrentContextPath()
-		                .path("/images/product/")
-		                .path(files.get(i).getName())
-		                .toUriString();
-			 fileDownloadUrls.add(url);
-		 }
-		
+
+		List<String> fileDownloadUrls = new ArrayList<String>();
+		for (int i = 0; i < multipartFile.length; i++) {
+			String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/images/product/")
+					.path(files.get(i).getName()).toUriString();
+			fileDownloadUrls.add(url);
+		}
+
 		FileOutputStream fos = null;
-		
-		for(int i = 0; i<multipartFile.length; i++) {
+
+		for (int i = 0; i < multipartFile.length; i++) {
 			files.get(i).createNewFile();
 			fos = new FileOutputStream(files.get(i));
 			fos.write(multipartFile[i].getBytes());
@@ -63,19 +59,21 @@ public class UploadFileController {
 		return ResponseEntity.ok(fileDownloadUrls);
 
 	}
-	
-	@PostMapping("/image/slide")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> imageSlidefileUpload(@RequestParam("File") MultipartFile multipartFile) throws IOException {
 
-		File file = new File(SLIDE_FILE_DIRECTORY +  multipartFile.getOriginalFilename());
+	@PostMapping("/image")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<?> imageSlidefileUpload(@RequestParam("File") MultipartFile multipartFile)
+			throws IOException {
+
+		File file = new File(IMAGE_FILE_DIRECTORY + new Date().getTime() + "_" + multipartFile.getOriginalFilename());
 		FileOutputStream fos = null;
-		
 		file.createNewFile();
 		fos = new FileOutputStream(file);
 		fos.write(multipartFile.getBytes());
 		fos.close();
-		return ResponseEntity.ok(new MessageResponse("Upload hình ảnh slide thành công!"));
+		String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/images/other/").path(file.getName())
+				.toUriString();
+		return ResponseEntity.ok(url);
 
 	}
 

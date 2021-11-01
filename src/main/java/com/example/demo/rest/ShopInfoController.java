@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.auth.MessageResponse;
 import com.example.demo.dto.user.ShopInfoDto;
 import com.example.demo.entity.user.ShopInfo;
 import com.example.demo.repository.ShopInfoRepository;
@@ -25,7 +26,7 @@ public class ShopInfoController {
 	private ShopInfoRepository repos;
 
 	@GetMapping("")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<ShopInfo> getShopInfo() {
 		ShopInfo shop = repos.getShopInfo();
 		if (shop != null) {
@@ -35,17 +36,17 @@ public class ShopInfoController {
 		}
 	}
 
-	@PutMapping("")
+	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<ShopInfo> updateShopInfo(@RequestBody ShopInfoDto data, @PathVariable Long id) {
+	public ResponseEntity<?> updateShopInfo(@RequestBody ShopInfoDto data, @PathVariable Long id) {
 		ShopInfo shop = repos.getById(id);
-		shop.setName(data.getName());
-		shop.setEmail(data.getEmail());
-		shop.setPhone(data.getPhone());
-		shop.setImage(data.getImage());
-		shop.setDescription(data.getDescription());
-		shop.setAddress(data.getAddress());
-		return new ResponseEntity<ShopInfo>(shop, HttpStatus.OK);
+		shop.setShop_name(data.getShop_name());
+		shop.setShop_email(data.getShop_email());
+		shop.setShop_phone(data.getShop_phone());
+		shop.setShop_description(data.getShop_description());
+		shop.setShop_address(data.getShop_address());
+		repos.save(shop);
+		return new ResponseEntity<MessageResponse>(new MessageResponse("Cập nhật thông tin thành công!"), HttpStatus.OK);
 	}
 
 }

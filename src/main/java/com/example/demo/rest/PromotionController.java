@@ -16,38 +16,38 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.dto.other.SlideDto;
-import com.example.demo.service.SlideService;
+import com.example.demo.dto.other.PromotionDto;
+import com.example.demo.service.PromotionService;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*")
 @RestController
-@RequestMapping(value = "/api/slide")
-public class SlideController {
+@RequestMapping(value = "/api/promotion")
+public class PromotionController {
 
 	@Autowired
-	private SlideService service;
+	private PromotionService service;
 
 	@GetMapping("")
-	public ResponseEntity<Page<SlideDto>> getAll(@RequestParam(name = "page", defaultValue = "0") Integer page,
+	public ResponseEntity<Page<PromotionDto>> getAll(@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "24") Integer limit,
 			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
-		Page<SlideDto> result = service.getList(page, limit, sortBy);
-		return new ResponseEntity<Page<SlideDto>>(result, HttpStatus.OK);
+		Page<PromotionDto> result = service.getList(page, limit, sortBy);
+		return new ResponseEntity<Page<PromotionDto>>(result, HttpStatus.OK);
 	}
 
 	@PostMapping("")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<SlideDto> create(@RequestBody SlideDto dto) {
-		SlideDto result = service.saveOrUpdate(dto);
-		return new ResponseEntity<SlideDto>(result, HttpStatus.OK);
+	public ResponseEntity<PromotionDto> create(@RequestBody PromotionDto dto) {
+		PromotionDto result = service.saveOrUpdate(dto);
+		return new ResponseEntity<PromotionDto>(result, HttpStatus.OK);
 	}
 
 	@PutMapping(value = "/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<SlideDto> update(@RequestBody SlideDto dto, @PathVariable Long id) {
+	public ResponseEntity<PromotionDto> update(@RequestBody PromotionDto dto, @PathVariable Long id) {
 		dto.setId(id);
-		SlideDto result = service.saveOrUpdate(dto);
-		return new ResponseEntity<SlideDto>(result, HttpStatus.OK);
+		PromotionDto result = service.saveOrUpdate(dto);
+		return new ResponseEntity<PromotionDto>(result, HttpStatus.OK);
 	}
 
 	@DeleteMapping(value = "/{id}")
@@ -59,9 +59,9 @@ public class SlideController {
 	
 	@GetMapping(value = "/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<SlideDto> getOne(@PathVariable Long id) {
-		SlideDto result = service.getOne(id);
-		return new ResponseEntity<SlideDto>(result, HttpStatus.OK);
+	public ResponseEntity<PromotionDto> getById(@PathVariable Long id) {
+		PromotionDto result = service.getOne(id);
+		return new ResponseEntity<PromotionDto>(result, HttpStatus.OK);
 	}
 
 }

@@ -4,12 +4,11 @@ import com.example.demo.dto.AbstractDTO;
 import com.example.demo.entity.user.ShopInfo;
 
 public class ShopInfoDto extends AbstractDTO<ShopInfoDto> {
-	private String name;
-	private String email;
-	private String phone;
-	private String address;
-	private String image;
-	private String description;
+	private String shop_name;
+	private String shop_email;
+	private String shop_phone;
+	private String shop_address;
+	private String shop_description;
 
 	public ShopInfoDto() {
 		super();
@@ -18,60 +17,51 @@ public class ShopInfoDto extends AbstractDTO<ShopInfoDto> {
 	public ShopInfoDto(ShopInfo s) {
 		super();
 		this.setId(s.getId());
-		this.name = s.getName();
-		this.address = s.getAddress();
-		this.email = s.getEmail();
-		this.phone = s.getPhone();
-		this.image = s.getImage();
-		this.description = s.getDescription();
+		this.shop_name = s.getShop_name();
+		this.shop_address = s.getShop_address();
+		this.shop_email = s.getShop_email();
+		this.shop_phone = s.getShop_phone();
+		this.shop_description = s.getShop_description();
 	}
 
-	public String getName() {
-		return name;
+	public String getShop_name() {
+		return shop_name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setShop_name(String shop_name) {
+		this.shop_name = shop_name;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getShop_email() {
+		return shop_email;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setShop_email(String shop_email) {
+		this.shop_email = shop_email;
 	}
 
-	public String getPhone() {
-		return phone;
+	public String getShop_phone() {
+		return shop_phone;
 	}
 
-	public void setPhone(String phone) {
-		this.phone = phone;
+	public void setShop_phone(String shop_phone) {
+		this.shop_phone = shop_phone;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getShop_address() {
+		return shop_address;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setShop_address(String shop_address) {
+		this.shop_address = shop_address;
 	}
 
-	public String getImage() {
-		return image;
+	public String getShop_description() {
+		return shop_description;
 	}
 
-	public void setImage(String image) {
-		this.image = image;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
+	public void setShop_description(String shop_description) {
+		this.shop_description = shop_description;
 	}
 
 }

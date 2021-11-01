@@ -1,4 +1,4 @@
-package com.example.demo.entity.category;
+package com.example.demo.entity.other;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +11,7 @@ import com.example.demo.entity.BaseEntity;
 public class Slide extends BaseEntity {
 
 	@Column(name = "url")
-	private String url;
+	private String image;
 
 	@Column(name = "display")
 	private Integer display; // 1 : show, 0: hidden
@@ -20,17 +20,17 @@ public class Slide extends BaseEntity {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Slide(String url) {
+	public Slide(String image) {
 		super();
-		this.url = url;
+		this.image = image;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getImage() {
+		return image;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setImage(String image) {
+		this.image = image;
 	}
 
 	public Integer getDisplay() {
