@@ -1,5 +1,7 @@
 package com.example.demo.rest;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -35,6 +37,12 @@ public class PromotionController {
 		return new ResponseEntity<Page<PromotionDto>>(result, HttpStatus.OK);
 	}
 
+	@GetMapping("/all")
+	public ResponseEntity<List<PromotionDto>> getAllActive() {
+		List<PromotionDto> result = service.getListDisplay();
+		return new ResponseEntity<List<PromotionDto>>(result, HttpStatus.OK);
+	}
+
 	@PostMapping("")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<PromotionDto> create(@RequestBody PromotionDto dto) {
@@ -56,7 +64,7 @@ public class PromotionController {
 		Boolean result = service.delete(id);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(value = "/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<PromotionDto> getById(@PathVariable Long id) {

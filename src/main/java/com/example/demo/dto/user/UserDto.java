@@ -23,13 +23,15 @@ public class UserDto extends AbstractDTO<UserDto> {
 	private String ward;
 	private String ward_id;
 	private String house;
-	
+
 	@JsonIgnore
 	@JsonInclude(value = Include.NON_NULL)
 	private ShipperDto shipper;
-	
+
 	private String cccd;
 	private String shift;
+
+	private Integer display;
 
 	public UserDto() {
 		super();
@@ -54,6 +56,7 @@ public class UserDto extends AbstractDTO<UserDto> {
 			this.district_id = this.address.getDistrict_id();
 			this.ward_id = this.address.getWard_id();
 		}
+		this.display = user.getDisplay();
 	}
 
 	public UserAddressDto getAddress() {
@@ -183,7 +186,13 @@ public class UserDto extends AbstractDTO<UserDto> {
 	public void setShift(String shift) {
 		this.shift = shift;
 	}
-	
-	
+
+	public Integer getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(Integer display) {
+		this.display = display;
+	}
 
 }

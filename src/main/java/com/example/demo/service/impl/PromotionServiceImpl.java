@@ -1,7 +1,9 @@
 package com.example.demo.service.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +28,18 @@ public class PromotionServiceImpl implements PromotionService {
 
 		Page<PromotionDto> dtos = list.map(tag -> new PromotionDto(tag));
 
+		return dtos;
+	}
+	
+	@Override
+	public List<PromotionDto> getListDisplay() {
+		// TODO Auto-generated method stub
+		List<Promotion> list = repos.getList();
+		List<PromotionDto> dtos = new ArrayList<>();
+		for(Promotion item : list) {
+			PromotionDto dto = new PromotionDto(item);
+			dtos.add(dto);
+		}
 		return dtos;
 	}
 

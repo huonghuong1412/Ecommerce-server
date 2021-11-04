@@ -1,7 +1,9 @@
 package com.example.demo.service.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +28,18 @@ public class SlideServiceImpl implements SlideService {
 
 		Page<SlideDto> dtos = list.map(tag -> new SlideDto(tag));
 
+		return dtos;
+	}
+	
+	@Override
+	public List<SlideDto> getListDisplay() {
+		// TODO Auto-generated method stub
+		List<Slide> list = repos.getList();
+		List<SlideDto> dtos = new ArrayList<SlideDto>();
+		for(Slide item : list) {
+			SlideDto dto = new SlideDto(item);
+			dtos.add(dto);
+		}
 		return dtos;
 	}
 

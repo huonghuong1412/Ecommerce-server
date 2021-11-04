@@ -24,6 +24,9 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 	private String ward_code;
 	private Integer district_id;
 	private String phone;
+	private String email;
+	private String customer_name;
+	private Integer send_status;
 	private Integer status_order;
 	private Integer status_payment;
 //	private String shipment;
@@ -36,7 +39,7 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 	public OrderDto(Order entity) {
 		this.setId(entity.getId());
 		try {
-			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(
+			this.createdDate = new SimpleDateFormat("dd/MM/yyyy hh:mm").format(
 					new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -55,8 +58,11 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 		this.ward_code = entity.getWard_code();
 		this.district_id = entity.getDistrict_id();
 		this.phone = entity.getPhone();
+		this.email = entity.getEmail();
+		this.customer_name = entity.getCustomer_name();
+		this.send_status = entity.getSend_status();
 //		this.shipment = entity.getShipment().getCode();
-
+		this.payment = new PaymentDto();
 		if (payment != null) {
 			Payment pay = entity.getPayment();
 			this.payment = new PaymentDto(pay);
@@ -179,6 +185,30 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getCustomer_name() {
+		return customer_name;
+	}
+
+	public void setCustomer_name(String customer_name) {
+		this.customer_name = customer_name;
+	}
+
+	public Integer getSend_status() {
+		return send_status;
+	}
+
+	public void setSend_status(Integer send_status) {
+		this.send_status = send_status;
 	}
 
 	public Integer getStatus_order() {

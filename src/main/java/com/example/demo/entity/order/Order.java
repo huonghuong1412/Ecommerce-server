@@ -67,8 +67,17 @@ public class Order extends BaseEntity {
 	@Column(name = "phone")
 	private String phone;
 
+	@Column(name = "email")
+	private String email;
+
+	@Column(name = "customer_full_name")
+	private String customer_name;
+
 	@Column(name = "status")
 	private Integer status;
+
+	@Column(name = "is_send_email")
+	private Integer send_status; // 0: chưa send, 1: đã send
 
 	@JsonManagedReference
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
@@ -196,6 +205,30 @@ public class Order extends BaseEntity {
 
 	public void setShipper(Shipper shipper) {
 		this.shipper = shipper;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getCustomer_name() {
+		return customer_name;
+	}
+
+	public void setCustomer_name(String customer_name) {
+		this.customer_name = customer_name;
+	}
+
+	public Integer getSend_status() {
+		return send_status;
+	}
+
+	public void setSend_status(Integer send_status) {
+		this.send_status = send_status;
 	}
 
 //	public Shipment getShipment() {

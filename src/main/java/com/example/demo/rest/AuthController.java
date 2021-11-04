@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -98,7 +99,7 @@ public class AuthController {
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 		List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
 				.collect(Collectors.toList());
-		if (userDetails.getRoles().contains(new String("ROLE_ADMIN"))) {
+		if (userDetails.getRoles().contains(new String("ROLE_ADMIN")) || userDetails.getRoles().contains(new String("ROLE_SHIPPER"))) {
 			return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(),
 					userDetails.getEmail(), roles));
 		} else {
@@ -178,7 +179,7 @@ public class AuthController {
 	}
 
 	@PutMapping("/update-info")
-	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_SHIPPER')")
 	public ResponseEntity<?> update(@Validated @RequestBody RegisterDto dto) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();
@@ -200,7 +201,7 @@ public class AuthController {
 	}
 	
 	@PutMapping("/update-user/{username}")
-	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_SHIPPER')")
 	public ResponseEntity<?> updateUserByAdmin(@Validated @RequestBody RegisterDto dto, @PathVariable String username) {
 		User user = userRepository.findOneByUsername(username);
 		if (userRepository.existsByEmail(dto.getEmail()) && user.getEmail().equals(dto.getEmail()) == false) {
@@ -218,9 +219,22 @@ public class AuthController {
 		userRepository.save(user);
 		return ResponseEntity.ok(new MessageResponse("Cập nhật thông tin tài khoản thành công!"));
 	}
+	
+	@DeleteMapping("/hide-user/{id}")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+	public ResponseEntity<?> hideUserByAdmin(@PathVariable Long id) {
+		User user = userRepository.getById(id);
+		if(user.getDisplay() == 1) {
+			user.setDisplay(0);
+		} else {
+			user.setDisplay(1);
+		}
+		userRepository.save(user);
+		return ResponseEntity.ok(new MessageResponse("Cập nhật thông tin tài khoản thành công!"));
+	}
 
 	@PutMapping("/update-password")
-	@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_SHIPPER')")
 	public ResponseEntity<?> updatePassword(@Validated @RequestBody RegisterDto dto) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();
@@ -237,11 +251,16 @@ public class AuthController {
 	}
 
 	@GetMapping("/info")
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_SHIPPER')")
 	public ResponseEntity<UserDto> getNewById() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 		UserDto result = userService.getCurrentUser(userDetails.getId());
+		User user = userRepository.getById(userDetails.getId());
+		if(user.getShipper() != null) {
+			result.setCccd(user.getShipper().getCccd());
+			result.setShift(user.getShipper().getShift());
+		}
 		return new ResponseEntity<UserDto>(result, HttpStatus.OK);
 	}
 

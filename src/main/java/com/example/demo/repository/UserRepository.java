@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.entity.user.Role;
@@ -17,11 +16,8 @@ import com.example.demo.entity.user.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-	@Query("select entity from User entity where entity.email = ?1 OR entity.username = ?1")
+	@Query("select entity from User entity where entity.email = ?1 OR entity.username = ?1 and entity.display=1")
 	Optional<User> findByUsernameOrEmail(String username);
-
-	@Query( "select u from User u  where u.roles in :roles" )
-	public List<User> findByRoles(@Param("roles") List<String> roles);
 
 	List<User> findByRolesIn(Collection<Role> names, Pageable pageable);
 	

@@ -1,5 +1,7 @@
 package com.example.demo.rest;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,12 @@ public class SlideController {
 			@RequestParam(name = "sortBy", defaultValue = "id") String sortBy) {
 		Page<SlideDto> result = service.getList(page, limit, sortBy);
 		return new ResponseEntity<Page<SlideDto>>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping("/all")
+	public ResponseEntity<List<SlideDto>> getAllActive() {
+		List<SlideDto> result = service.getListDisplay();
+		return new ResponseEntity<List<SlideDto>>(result, HttpStatus.OK);
 	}
 
 	@PostMapping("")

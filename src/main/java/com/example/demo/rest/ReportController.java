@@ -10,8 +10,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -105,6 +108,102 @@ public class ReportController {
 //		list.add(new OrderResponse("Đã huỷ đơn", orderRepository.countOrderByStatus(-1)));
 		return new ResponseEntity<List<OrderResponse>>(list, HttpStatus.OK);
 	}
+	
+	// đếm số lượng đơn hàng theo trạng thái đơn hàng
+	@GetMapping("/shipper/count/{username}")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SHIPPER')")
+	public ResponseEntity<List<OrderResponse>> getQuantityByStatusShipperByAdmin(
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "1000") Integer limit,
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date,
+			@RequestParam(name = "status", defaultValue = "3") Integer status, @PathVariable String username) {
+		AdvanceSearchDto dto = new AdvanceSearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		dto.setLast_date(last_date);
+		dto.setStatus(status);
+		Page<OrderHisDto> result = orderService.getAllOrderByShipperUsername(dto, username);
+
+		List<OrderResponse> list = new ArrayList<OrderResponse>();
+		Integer count_complete = 0, count_shiping = 0, count_wait = 0, count_cancel = 0;
+		for (OrderHisDto item : result.toList()) {
+			if (item.getStatus_order() == 2) {
+				count_complete += 1;
+			} else if (item.getStatus_order() == 1) {
+				count_shiping += 1;
+			} else if (item.getStatus_order() == 0) {
+				count_wait += 1;
+			} else {
+				count_cancel += 1;
+			}
+		}
+		list.add(new OrderResponse("Đã hoàn thành", count_complete > 0 ? count_complete : 0));
+		list.add(new OrderResponse("Đang giao hàng", count_shiping > 0 ? count_shiping : 0));
+		list.add(new OrderResponse("Đang chờ xác nhận", count_wait > 0 ? count_wait : 0));
+		list.add(new OrderResponse("Đã huỷ đơn", count_cancel > 0 ? count_cancel : 0));
+		list.add(new OrderResponse("Tỉ lệ huỷ đơn (%)",
+				(int)Math.round(CalculateDiscount.calPercent(count_cancel, result.getTotalElements()))));
+		list.add(new OrderResponse("Tỉ lệ thành công (%)",
+				(int)Math.round(CalculateDiscount.calPercent(count_complete, result.getTotalElements()))));
+		return new ResponseEntity<List<OrderResponse>>(list, HttpStatus.OK);
+	}
+	
+	@GetMapping("/shipper_list/{username}")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SHIPPER')")
+	public ResponseEntity<Page<OrderHisDto>> getAllShipperByUsernameByAdmin(@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date,
+			@RequestParam(name = "status", defaultValue = "3") Integer status, @PathVariable String username) {
+		AdvanceSearchDto dto = new AdvanceSearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		dto.setLast_date(last_date);
+		dto.setStatus(status);
+		Page<OrderHisDto> result = orderService.getAllOrderByShipperUsername(dto, username);
+		return new ResponseEntity<Page<OrderHisDto>>(result, HttpStatus.OK);
+	}
+	
+	
+	// đếm số lượng đơn hàng theo trạng thái đơn hàng
+		@GetMapping("/shipper/count")
+		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SHIPPER')")
+		public ResponseEntity<List<OrderResponse>> getQuantityByStatusAndShipper(
+				@RequestParam(name = "page", defaultValue = "0") Integer page,
+				@RequestParam(name = "limit", defaultValue = "1000") Integer limit,
+				@RequestParam(name = "last_date", defaultValue = "0") Integer last_date,
+				@RequestParam(name = "status", defaultValue = "3") Integer status) {
+			AdvanceSearchDto dto = new AdvanceSearchDto();
+			dto.setPageIndex(page);
+			dto.setPageSize(limit);
+			dto.setLast_date(last_date);
+			dto.setStatus(status);
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			String username = auth.getName();
+			Page<OrderHisDto> result = orderService.getAllOrderByShipperUsername(dto, username);
+
+			List<OrderResponse> list = new ArrayList<OrderResponse>();
+			Integer count_complete = 0, count_shiping = 0, count_wait = 0, count_cancel = 0;
+			for (OrderHisDto item : result.toList()) {
+				if (item.getStatus_order() == 2) {
+					count_complete += 1;
+				} else if (item.getStatus_order() == 1) {
+					count_shiping += 1;
+				} else if (item.getStatus_order() == 0) {
+					count_wait += 1;
+				} else {
+					count_cancel += 1;
+				}
+			}
+			list.add(new OrderResponse("Đã hoàn thành", count_complete > 0 ? count_complete : 0));
+			list.add(new OrderResponse("Đang giao hàng", count_shiping > 0 ? count_shiping : 0));
+			list.add(new OrderResponse("Đang chờ xác nhận", count_wait > 0 ? count_wait : 0));
+			list.add(new OrderResponse("Đã huỷ đơn", count_cancel > 0 ? count_cancel : 0));
+			list.add(new OrderResponse("Tỉ lệ huỷ đơn (%)",
+					(int)Math.round(CalculateDiscount.calPercent(count_cancel, result.getTotalElements()))));
+			list.add(new OrderResponse("Tỉ lệ thành công (%)",
+					(int)Math.round(CalculateDiscount.calPercent(count_complete, result.getTotalElements()))));
+			return new ResponseEntity<List<OrderResponse>>(list, HttpStatus.OK);
+		}
 
 	// thống kê doanh thu theo ngày
 	@GetMapping("/revenue")

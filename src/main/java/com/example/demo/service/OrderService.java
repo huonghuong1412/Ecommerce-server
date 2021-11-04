@@ -17,11 +17,17 @@ public interface OrderService {
 	
 	public Page<OrderHisDto> getAllOrder(AdvanceSearchDto dto);
 	
+	public Page<OrderHisDto> getAllOrderByShipper(AdvanceSearchDto dto, Long shipper_id);
+	
+	public Page<OrderHisDto> getAllOrderByShipperUsername(AdvanceSearchDto dto, String shipper_username);
+	
 	public List<OrderDetailHisDto> getDetailOrderById(Long id);
 	
 	public List<OrderHisDto> getAllOrderByUser(String username);
 	
 	public OrderHisFullDto getDetailOrder(Long id);
+	
+	public OrderDto getOneOrderAfterPayment(Long id);
 	
 	public OrderDto createOrder(OrderDto dto);
 	
