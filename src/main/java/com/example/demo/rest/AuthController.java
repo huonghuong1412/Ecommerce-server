@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.common.ETypeAccount;
 import com.example.demo.common.Erole;
-import com.example.demo.common.JwtUtils;
 import com.example.demo.dto.SearchDto;
 import com.example.demo.dto.auth.JwtResponse;
 import com.example.demo.dto.auth.LoginDto;
@@ -44,6 +44,7 @@ import com.example.demo.repository.ShipperRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
 import com.example.demo.service.impl.UserDetailsImpl;
+import com.example.demo.utils.JwtUtils;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -128,6 +129,7 @@ public class AuthController {
 		User user = new User(dto.getPhone(), dto.getEmail(), dto.getUsername(), encoder.encode(dto.getPassword()),
 				dto.getDateOfBirth(), dto.getFullName(), address);
 		user.setDisplay(1);
+		user.setType_account(ETypeAccount.LOCAL);
 		if (dto.getCccd() != null && dto.getShift() != null) {
 			Shipper ship = new Shipper();
 			ship.setCccd(dto.getCccd());

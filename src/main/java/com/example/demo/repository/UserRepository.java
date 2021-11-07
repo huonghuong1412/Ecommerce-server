@@ -16,7 +16,7 @@ import com.example.demo.entity.user.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-	@Query("select entity from User entity where entity.email = ?1 OR entity.username = ?1 and entity.display=1")
+	@Query("select entity from User entity where entity.email = ?1 OR entity.username = ?1 and entity.display=1 and entity.type_account='LOCAL'")
 	Optional<User> findByUsernameOrEmail(String username);
 
 	List<User> findByRolesIn(Collection<Role> names, Pageable pageable);

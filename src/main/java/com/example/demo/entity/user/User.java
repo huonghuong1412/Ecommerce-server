@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -14,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.example.demo.common.ETypeAccount;
 import com.example.demo.entity.BaseEntity;
 import com.example.demo.entity.order.Cart;
 import com.example.demo.entity.order.Order;
@@ -39,6 +42,10 @@ public class User extends BaseEntity {
 
 	@Column(name = "date_of_birth")
 	private String dateOfBirth;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "type_account")
+	private ETypeAccount type_account;
 
 	@Column(name = "display")
 	private Integer display; // 1 : show, 0: hidden
@@ -135,6 +142,14 @@ public class User extends BaseEntity {
 		this.dateOfBirth = dateOfBirth;
 	}
 
+	public ETypeAccount getType_account() {
+		return type_account;
+	}
+
+	public void setType_account(ETypeAccount type_account) {
+		this.type_account = type_account;
+	}
+
 	public Integer getDisplay() {
 		return display;
 	}
@@ -166,14 +181,6 @@ public class User extends BaseEntity {
 	public void setComments(List<Comment> comments) {
 		this.comments = comments;
 	}
-
-//	public Store getStore() {
-//		return store;
-//	}
-//
-//	public void setStore(Store store) {
-//		this.store = store;
-//	}
 
 	public List<Order> getOrders() {
 		return orders;
