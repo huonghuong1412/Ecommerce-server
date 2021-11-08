@@ -31,6 +31,7 @@ import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.utils.GoogleUtils;
 import com.example.demo.utils.JwtUtils;
+import com.example.demo.utils.RestFB;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,12 +41,15 @@ public class AuthSocialController {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
+
 	@Autowired
 	private JwtUtils jwtUtils;
-	
+
 	@Autowired
 	private GoogleUtils googleUtils;
+
+	@Autowired
+	private RestFB restFb;
 
 	@Autowired
 	private PasswordEncoder encoder;
@@ -77,7 +81,7 @@ public class AuthSocialController {
 		authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		User user = userRepository.findOneByEmail(userDetail.getUsername());
+		User user = userRepository.findOneByUsername(userDetail.getUsername());
 
 		if (user == null) {
 			user = new User();
@@ -92,7 +96,7 @@ public class AuthSocialController {
 					.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
 			roles.add(userRole);
 			user.setRoles(roles);
-			
+
 			Address address = new Address(null, null, null, null);
 			user.setAddress(address);
 			address.setUser(user);
@@ -101,10 +105,72 @@ public class AuthSocialController {
 			user.setCart(cart);
 			userRepository.save(user);
 		}
-		Authentication authen = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), googlePojo.getSocial_user_id()));
+		Authentication authen = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(user.getUsername(), googlePojo.getSocial_user_id()));
 		String jwt = jwtUtils.generateJwtToken(authen);
-		return new RedirectView("http://localhost:3000/oauth2/redirect?status=true&token=" + jwt + "&username="
-				+ user.getEmail());
+		return new RedirectView(
+				"http://localhost:3000/oauth2/redirect?status=true&token=" + jwt + "&username=" + user.getEmail());
+	}
+
+	@RequestMapping("/oauth2/facebook")
+	public RedirectView loginFacebook(HttpServletRequest request) throws ClientProtocolException, IOException {
+		String code = request.getParameter("code");
+
+		if (code == null || code.isEmpty()) {
+			return new RedirectView("http://localhost:3000/oauth2/redirect?status=false");
+		}
+		ObjectMapper mapper = new ObjectMapper();
+		String token = restFb.getToken(code);
+		JsonNode node = mapper.readTree(token);
+		String accessToken = node.get("access_token").textValue();
+		com.restfb.types.User user = restFb.getUserInfo(accessToken);
+		UserDetails userDetail = restFb.buildUser(user);
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail, null,
+				userDetail.getAuthorities());
+		authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+//		System.out.println(user.getEmail());
+		
+		User userEntity = userRepository.findOneByUsername(userDetail.getUsername());
+		if (userEntity == null) {
+			userEntity = new User();
+			userEntity.setDisplay(1);
+			StringBuilder str = new StringBuilder();
+			str.append(user.getId());
+			str.reverse();
+			String randomemail = "facebook-" + str + "@yopmail.com";
+			if(user.getEmail() != null) {
+				userEntity.setEmail(user.getEmail());
+			} else {
+				userEntity.setEmail(randomemail);
+			}
+			userEntity.setUsername(user.getId());
+			userEntity.setFullname(user.getName());
+			userEntity.setPassword(encoder.encode(user.getId()));
+			userEntity.setType_account(ETypeAccount.FACEBOOK);
+			List<Role> roles = new ArrayList<Role>();
+			Role userRole = roleRepository.findOneByName(Erole.ROLE_USER)
+					.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+			roles.add(userRole);
+			userEntity.setRoles(roles);
+
+			Address address = new Address(null, null, null, null);
+			userEntity.setAddress(address);
+			address.setUser(userEntity);
+			Cart cart = new Cart();
+			cart.setUser(userEntity);
+			userEntity.setCart(cart);
+			userRepository.save(userEntity);
+		}
+//		System.out.println(user.getEmail());
+//		System.out.println("1 " + userEntity.getUsername());
+		String username = userEntity.getUsername();
+		Authentication authen = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(username, username));
+//		System.out.println(authen.getName() + " " + authen);
+//		System.out.println("2 " + userEntity.getUsername());
+		String jwt = jwtUtils.generateJwtToken(authen);
+		return new RedirectView(
+				"http://localhost:3000/oauth2/redirect?status=true&token=" + jwt + "&username=" + userEntity.getUsername());
 	}
 }
