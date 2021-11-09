@@ -19,7 +19,7 @@ import com.restfb.FacebookClient;
 import com.restfb.Version;
 
 @Component
-public class RestFB {
+public class FacebookUtils {
 
 	@Autowired
 	private Environment env;

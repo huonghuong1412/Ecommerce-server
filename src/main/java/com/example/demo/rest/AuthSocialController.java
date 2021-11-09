@@ -23,15 +23,17 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.example.demo.common.ETypeAccount;
 import com.example.demo.common.Erole;
 import com.example.demo.common.GooglePojo;
+import com.example.demo.common.ZaloPojo;
 import com.example.demo.entity.order.Cart;
 import com.example.demo.entity.user.Address;
 import com.example.demo.entity.user.Role;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.utils.FacebookUtils;
 import com.example.demo.utils.GoogleUtils;
 import com.example.demo.utils.JwtUtils;
-import com.example.demo.utils.RestFB;
+import com.example.demo.utils.ZaloUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -49,7 +51,10 @@ public class AuthSocialController {
 	private GoogleUtils googleUtils;
 
 	@Autowired
-	private RestFB restFb;
+	private FacebookUtils facebookUtils;
+
+	@Autowired
+	private ZaloUtils zaloUtils;
 
 	@Autowired
 	private PasswordEncoder encoder;
@@ -120,17 +125,14 @@ public class AuthSocialController {
 			return new RedirectView("http://localhost:3000/oauth2/redirect?status=false");
 		}
 		ObjectMapper mapper = new ObjectMapper();
-		String token = restFb.getToken(code);
+		String token = facebookUtils.getToken(code);
 		JsonNode node = mapper.readTree(token);
 		String accessToken = node.get("access_token").textValue();
-		com.restfb.types.User user = restFb.getUserInfo(accessToken);
-		UserDetails userDetail = restFb.buildUser(user);
+		com.restfb.types.User user = facebookUtils.getUserInfo(accessToken);
+		UserDetails userDetail = facebookUtils.buildUser(user);
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail, null,
 				userDetail.getAuthorities());
 		authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-//		System.out.println(user.getEmail());
-		
 		User userEntity = userRepository.findOneByUsername(userDetail.getUsername());
 		if (userEntity == null) {
 			userEntity = new User();
@@ -139,7 +141,7 @@ public class AuthSocialController {
 			str.append(user.getId());
 			str.reverse();
 			String randomemail = "facebook-" + str + "@yopmail.com";
-			if(user.getEmail() != null) {
+			if (user.getEmail() != null) {
 				userEntity.setEmail(user.getEmail());
 			} else {
 				userEntity.setEmail(randomemail);
@@ -162,15 +164,69 @@ public class AuthSocialController {
 			userEntity.setCart(cart);
 			userRepository.save(userEntity);
 		}
-//		System.out.println(user.getEmail());
-//		System.out.println("1 " + userEntity.getUsername());
 		String username = userEntity.getUsername();
-		Authentication authen = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(username, username));
-//		System.out.println(authen.getName() + " " + authen);
-//		System.out.println("2 " + userEntity.getUsername());
+		Authentication authen = authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(username, username));
+		String jwt = jwtUtils.generateJwtToken(authen);
+		return new RedirectView("http://localhost:3000/oauth2/redirect?status=true&token=" + jwt + "&username="
+				+ userEntity.getUsername());
+	}
+
+	@RequestMapping(value = "/oauth2/zalo")
+	public RedirectView loginZalo(HttpServletRequest request) throws ClientProtocolException, IOException {
+		String code = request.getParameter("code");
+		if (code == null || code.isEmpty()) {
+			return new RedirectView("http://localhost:3000/oauth2/redirect?status=false");
+		}
+		ObjectMapper mapper = new ObjectMapper();
+		String token = zaloUtils.getToken(code);
+//		System.out.println(token);
+		JsonNode node = mapper.readTree(token);
+		String accessToken = node.get("access_token").textValue();
+		ZaloPojo zaloPojo = null;
+		if (accessToken != null) {
+			zaloPojo = zaloUtils.getUserInfo(accessToken);
+		}
+		UserDetails userDetail = zaloUtils.buildUser(zaloPojo);
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail, null,
+				userDetail.getAuthorities());
+		authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		User user = userRepository.findOneByUsername(userDetail.getUsername());
+		if (user == null) {
+			user = new User();
+			user.setDisplay(1);
+			StringBuilder str = new StringBuilder();
+			str.append(zaloPojo.getId());
+			str.reverse();
+			String randomemail = "zalo-" + str + "@yopmail.com";
+			if (user.getEmail() != null) {
+				user.setEmail(user.getEmail());
+			} else {
+				user.setEmail(randomemail);
+			}
+			user.setUsername(zaloPojo.getId());
+			user.setFullname(zaloPojo.getName());
+			user.setPassword(encoder.encode(zaloPojo.getId()));
+			user.setType_account(ETypeAccount.ZALO);
+			List<Role> roles = new ArrayList<Role>();
+			Role userRole = roleRepository.findOneByName(Erole.ROLE_USER)
+					.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+			roles.add(userRole);
+			user.setRoles(roles);
+			
+			Address address = new Address(null, null, null, null);
+			user.setAddress(address);
+			address.setUser(user);
+			Cart cart = new Cart();
+			cart.setUser(user);
+			user.setCart(cart);
+			userRepository.save(user);
+		}
+		Authentication authen = authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getUsername()));
 		String jwt = jwtUtils.generateJwtToken(authen);
 		return new RedirectView(
-				"http://localhost:3000/oauth2/redirect?status=true&token=" + jwt + "&username=" + userEntity.getUsername());
+				"http://localhost:3000/oauth2/redirect?status=true&token=" + jwt + "&username=" + user.getUsername());
 	}
 }
