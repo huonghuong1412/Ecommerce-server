@@ -21,7 +21,7 @@ public class UserAddressDto extends AbstractDTO<UserAddressDto> {
 
 	public UserAddressDto(Address entity) {
 		super();
-		this.setId(entity.getId());
+		this.setId(entity.getUser().getId());
 		this.phone = entity.getUser().getPhone();
 		this.username = entity.getUser().getUsername();
 		this.city = entity.getCity();
