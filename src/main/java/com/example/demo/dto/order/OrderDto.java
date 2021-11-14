@@ -33,6 +33,8 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 	private PaymentDto payment;
 	private List<OrderDetailDto> order_details;
 
+	private String status_payment_name;
+
 	public OrderDto() {
 	}
 
@@ -225,6 +227,14 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 
 	public void setStatus_payment(Integer status_payment) {
 		this.status_payment = status_payment;
+	}
+
+	public String getStatus_payment_name() {
+		return status_payment_name;
+	}
+
+	public void setStatus_payment_name(String status_payment_name) {
+		this.status_payment_name = status_payment_name;
 	}
 
 //	public String getShipment() {

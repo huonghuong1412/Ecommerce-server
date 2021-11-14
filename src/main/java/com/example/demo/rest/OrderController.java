@@ -139,6 +139,24 @@ public class OrderController {
 //	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_SHIPPER')")
 	public ResponseEntity<OrderDto> getDetailAfterPayment(@PathVariable Long id) {
 		OrderDto result = service.getOneOrderAfterPayment(id);
+		String ship_type = "";
+		switch (result.getPayment().getMethod_code()) {
+		case "cod":
+			ship_type = "Thanh toán tiền mặt khi nhận hàng";
+			break;
+		case "vnpay":
+			ship_type = "Thanh toán bằng ví VnPay";
+			break;
+		case "momo":
+			ship_type = "Thanh toán bằng ví Momo";
+			break;
+		case "zalopay":
+			ship_type = "Thanh toán bằng ví ZaloPay";
+			break;
+		default:
+			break;
+		}
+		result.setStatus_payment_name(ship_type);
 		return new ResponseEntity<OrderDto>(result, HttpStatus.OK);
 	}
 

@@ -42,10 +42,13 @@ public class SendMailController {
 			ship_type = "Thanh toán tiền mặt khi nhận hàng";
 			break;
 		case "vnpay":
-			ship_type = "Thanh toán bằng thẻ ATM/Internet Banking";
+			ship_type = "Thanh toán bằng ví VnPay";
+			break;
+		case "momo":
+			ship_type = "Thanh toán bằng ví Momo";
 			break;
 		case "zalopay":
-			ship_type = "Thanh toán qua ví ZaloPay";
+			ship_type = "Thanh toán bằng ví ZaloPay";
 			break;
 		default:
 			break;
