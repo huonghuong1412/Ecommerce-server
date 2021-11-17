@@ -12,6 +12,9 @@ public class OrderHisInfoDto {
 	private Integer total_item;
 	private String orderInfo;
 	private String address;
+	private String province;
+	private String district;
+	private String ward;
 	private Integer weight;
 	private Integer length;
 	private Integer width;
@@ -25,9 +28,6 @@ public class OrderHisInfoDto {
 	private Integer status_payment;
 	private String status_payment_name;
 	private String shipper_fullname;
-
-//	private String shipment_name;
-//	private Double shipment_fee;
 
 	private String payment_method;
 
@@ -49,9 +49,12 @@ public class OrderHisInfoDto {
 		this.ship_type = entity.getShip_type();
 		this.total_item = entity.getTotal_item();
 		this.orderInfo = entity.getOrderInfo();
-		this.address = entity.getAddress();
-		this.ward_code = entity.getWard_code();
-		this.district_id = entity.getDistrict_id();
+		this.address = entity.getShipment().getAddress();
+		this.province = entity.getShipment().getProvince();
+		this.district = entity.getShipment().getDistrict();
+		this.ward = entity.getShipment().getWard();
+		this.ward_code = entity.getShipment().getWard_code();
+		this.district_id = entity.getShipment().getDistrict_id();
 		this.status_order = entity.getStatus();
 		this.status_payment = entity.getPayment().getStatus();
 		if (entity.getShipper() != null) {
@@ -224,6 +227,30 @@ public class OrderHisInfoDto {
 
 	public void setShip_type(Integer ship_type) {
 		this.ship_type = ship_type;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public String getWard() {
+		return ward;
+	}
+
+	public void setWard(String ward) {
+		this.ward = ward;
 	}
 
 	public String getWard_code() {

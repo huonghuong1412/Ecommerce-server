@@ -360,12 +360,14 @@ public class ProductServiceImpl implements ProductService {
 				wash = new Wash();
 				
 				for(Color item : colors) {
-					inventory = new Inventory(0, 0, entity, item, category.getCode());
-//					inventory.setQuantity_item(0);
-//					inventory.setTotal_import_item(0);
-//					inventory.setCategory_code(category.getCode());
-//					inventory.setColor(item);
-//					inventory.setProduct(entity);
+//					inventory = new Inventory(0, 0, entity, item, category.getCode());
+					inventory = new Inventory();
+					inventory.setDisplay(1);
+					inventory.setCategory_code(category.getCode());
+					inventory.setQuantity_item(0);
+					inventory.setTotal_import_item(0);
+					inventory.setColor(item);
+					inventory.setProduct(entity);
 					inventories.add(inventory);
 				}
 				for (int i = 0; i < imageUrls.size(); i++) {
@@ -600,7 +602,7 @@ public class ProductServiceImpl implements ProductService {
 				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id " + "GROUP BY s.product.id ";
 		String sql = "select new com.example.demo.dto.product.ProductTopSale(p.id as id, p.name as name, "
 				+ "p.slug as slug, p.price as price, p.list_price as list_price, p.mainIamge as mainImage, p.brand.name as brandName, p.brand.madeIn as brandMadeIn, "
-				+ " SUM(s.amount) as quantity_sold) " + " from OrderDetail as s "
+				+ " SUM(s.quantity) as quantity_sold) " + " from OrderDetail as s "
 				+ " INNER JOIN Product p ON s.product.id = p.id"
 				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id "
 				+ " AND (TIMESTAMPDIFF(DAY, o.createdDate, NOW()) <= 30 )";

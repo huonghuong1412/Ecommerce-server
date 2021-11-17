@@ -28,6 +28,7 @@ import com.example.demo.entity.order.Order;
 import com.example.demo.entity.order.OrderDetail;
 import com.example.demo.entity.order.Payment;
 import com.example.demo.entity.order.PaymentMethod;
+import com.example.demo.entity.order.Shipment;
 import com.example.demo.entity.product.Color;
 import com.example.demo.entity.product.Product;
 import com.example.demo.entity.user.Shipper;
@@ -39,6 +40,7 @@ import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaymentMethodRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.ProductRepository;
+import com.example.demo.repository.ShipmentRepository;
 import com.example.demo.repository.ShipperRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.OrderService;
@@ -64,18 +66,18 @@ public class OrderServiceImpl implements OrderService {
 	@Autowired
 	private PaymentRepository paymentRepos;
 
-//	@Autowired
-//	private ShipmentRepository shipmentRepos;
+	@Autowired
+	private ShipmentRepository shipmentRepos;
 
 	@Autowired
 	private PaymentMethodRepository paymentMethodRepos;
 
 	@Autowired
 	private InventoryRepository inventoryRepos;
-	
+
 	@Autowired
 	private ColorRepository colorRepos;
-	
+
 	@Autowired
 	private ShipperRepository shipperRepos;
 
@@ -154,10 +156,11 @@ public class OrderServiceImpl implements OrderService {
 			OrderHisDto dto = new OrderHisDto(o);
 			Integer quantity = o.getOrderDetails().size() - 1;
 			if (quantity > 0) {
-				dto.setDescription(
-						o.getOrderDetails().get(0).getProduct().getName() + " - Màu " + o.getOrderDetails().get(0).getColor() + " và " + quantity + " sản phẩm khác");
+				dto.setDescription(o.getOrderDetails().get(0).getProduct().getName() + " - Màu "
+						+ o.getOrderDetails().get(0).getColor() + " và " + quantity + " sản phẩm khác");
 			} else {
-				dto.setDescription(o.getOrderDetails().get(0).getProduct().getName() + " - Màu " + o.getOrderDetails().get(0).getColor());
+				dto.setDescription(o.getOrderDetails().get(0).getProduct().getName() + " - Màu "
+						+ o.getOrderDetails().get(0).getColor());
 			}
 			orderDtos.add(dto);
 		}
@@ -169,29 +172,31 @@ public class OrderServiceImpl implements OrderService {
 		if (dto != null) {
 			User user = userRepository.findOneByUsername(dto.getUsername());
 			Payment payment = new Payment();
+			Shipment shipment = new Shipment();
 			PaymentDto paymentDto = dto.getPayment();
 			PaymentMethod payMethod = paymentMethodRepos.findOneByCode(paymentDto.getMethod_code());
 
-//			String shipCode = dto.getShipment();
-//			Shipment ship = shipmentRepos.findOneByCode(shipCode);
-
 			Order order = new Order();
 			order.setOrderInfo(dto.getOrderInfo());
-			order.setOrder_code(dto.getOrder_code());
 			order.setStatus(0);
-			order.setAddress(dto.getAddress());
-			order.setDistrict_id(dto.getDistrict_id());
-			order.setWard_code(dto.getWard_code());
-			order.setPhone(dto.getPhone());
-			order.setEmail(dto.getEmail());
-			order.setCustomer_name(dto.getCustomer_name());
+
 			order.setSend_status(0);
 			order.setTotal_price(dto.getTotal_price() - dto.getShip_fee());
 			order.setShip_fee(dto.getShip_fee());
 			order.setShip_type(dto.getShip_type());
 			order.setTotal_item(dto.getTotal_item());
-//			order.setShipment(ship);
 			order.setUser(user);
+
+			shipment.setOrder_code(dto.getOrder_code());
+			shipment.setProvince(dto.getProvince());
+			shipment.setDistrict(dto.getDistrict());
+			shipment.setWard(dto.getWard());
+			shipment.setAddress(dto.getAddress());
+			shipment.setDistrict_id(dto.getDistrict_id());
+			shipment.setWard_code(dto.getWard_code());
+			shipment.setPhone(dto.getPhone());
+			shipment.setEmail(dto.getEmail());
+			shipment.setCustomer_name(dto.getCustomer_name());
 
 			payment.setBankName(paymentDto.getBankName());
 			payment.setDatePayment(paymentDto.getDatePayment());
@@ -210,10 +215,13 @@ public class OrderServiceImpl implements OrderService {
 			}
 
 			order.setPayment(payment);
+			order.setShipment(shipment);
 			payment.setOrder(order);
+			shipment.setOrder(order);
 
 			order = orderRepository.save(order);
 			payment = paymentRepos.save(payment);
+			shipment = shipmentRepos.save(shipment);
 
 			List<OrderDetailDto> orderDetailDtos = dto.getOrder_details();
 			for (OrderDetailDto i : orderDetailDtos) {
@@ -221,13 +229,17 @@ public class OrderServiceImpl implements OrderService {
 				Color color = colorRepos.findOneByName(i.getColor());
 				if (inventoryRepos.existsByProductAndColor(product, color)) {
 					Inventory inventory = inventoryRepos.getOneByProductAndColor(product, color);
-					inventory.setQuantity_item(inventory.getQuantity_item() - i.getAmount());
+					inventory.setQuantity_item(inventory.getQuantity_item() - i.getQuantity());
 					inventoryRepos.save(inventory);
 				}
-
-				
-				OrderDetail orderDetail = i.toEntity(order, product, color.getName());
-				
+//				OrderDetail orderDetail = i.toEntity(order, product, color.getName());
+				OrderDetail orderDetail = new OrderDetail();
+				orderDetail.setProduct(product);
+				orderDetail.setQuantity(i.getQuantity());
+				orderDetail.setColor(color.getName());
+				orderDetail.setPrice(i.getPrice());
+				orderDetail.setTotal_price(i.getTotal_price());
+				orderDetail.setOrder(order);
 				orderDetailRepository.save(orderDetail);
 			}
 			return new OrderDto(order);
@@ -248,8 +260,6 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public List<OrderDetailHisDto> getDetailOrderById(Long id) {
-		// TODO Auto-generated method stub
-
 		List<OrderDetail> details = orderDetailRepository.getAllByOrderId(id);
 		List<OrderDetailHisDto> dtos = new ArrayList<>();
 		for (OrderDetail detail : details) {
@@ -269,7 +279,7 @@ public class OrderServiceImpl implements OrderService {
 			OrderHisInfoDto orderInfoDto = dto.getOrder_info();
 			List<OrderDetailHisDto> list = dto.getOrder_details();
 			Integer total_weight = 0, total_length = 0, total_width = 0, total_height = 0;
-			for(OrderDetailHisDto item : list) {
+			for (OrderDetailHisDto item : list) {
 				Product p = productRepository.getById(item.getProduct_id());
 				total_weight += p.getWeight();
 				total_length += p.getLength();
@@ -292,7 +302,7 @@ public class OrderServiceImpl implements OrderService {
 		Integer count_seller = 0;
 		for (OrderDetail order : orders) {
 			if (order.getOrder().getStatus() == 2) {
-				count_seller += order.getAmount();
+				count_seller += order.getQuantity();
 			}
 		}
 		return count_seller;
@@ -309,8 +319,10 @@ public class OrderServiceImpl implements OrderService {
 
 		String whereClause = "";
 		String orderBy = " ORDER BY entity.createdDate DESC";
-		String sqlCount = "select count(entity.id) from  Order as entity where (1=1) and entity.shipper.id = " + shipper_id;
-		String sql = "select new com.example.demo.dto.order.OrderHisDto(entity) from  Order as entity where (1=1) and entity.shipper.id = " + shipper_id;
+		String sqlCount = "select count(entity.id) from  Order as entity where (1=1) and entity.shipper.id = "
+				+ shipper_id;
+		String sql = "select new com.example.demo.dto.order.OrderHisDto(entity) from  Order as entity where (1=1) and entity.shipper.id = "
+				+ shipper_id;
 
 		if (dto.getStatus() == -1 || dto.getStatus() == 0 || dto.getStatus() == 1 || dto.getStatus() == 2) {
 			whereClause += " AND ( entity.status = " + dto.getStatus() + ")";
@@ -374,8 +386,10 @@ public class OrderServiceImpl implements OrderService {
 		Shipper ship = shipperRepos.findOneByUser(userRepository.findOneByUsername(shipper_username));
 		String whereClause = "";
 		String orderBy = " ORDER BY entity.createdDate DESC";
-		String sqlCount = "select count(entity.id) from  Order as entity where (1=1) and entity.shipper.id = " + ship.getId();
-		String sql = "select new com.example.demo.dto.order.OrderHisDto(entity) from  Order as entity where (1=1) and entity.shipper.id = " + ship.getId();
+		String sqlCount = "select count(entity.id) from  Order as entity where (1=1) and entity.shipper.id = "
+				+ ship.getId();
+		String sql = "select new com.example.demo.dto.order.OrderHisDto(entity) from  Order as entity where (1=1) and entity.shipper.id = "
+				+ ship.getId();
 
 		if (dto.getStatus() == -1 || dto.getStatus() == 0 || dto.getStatus() == 1 || dto.getStatus() == 2) {
 			whereClause += " AND ( entity.status = " + dto.getStatus() + ")";

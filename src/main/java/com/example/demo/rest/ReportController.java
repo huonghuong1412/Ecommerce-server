@@ -211,14 +211,14 @@ public class ReportController {
 	public ResponseEntity<List<OrderResponse>> reportRevenue(@RequestParam(name = "last_date", defaultValue = "1000000000") Integer last_date) {
 		List<OrderResponse> list = new ArrayList<>();
 		Long totalRevenue = orderRepos.totalRevenueFromOrder(last_date);
-		Long totalPriceImport = inventoryDetailRepos.getTotalPriceImport();
+		Long totalPriceImport = inventoryDetailRepos.getTotalPriceImport(last_date);
 		if(totalRevenue!= null) {
 			totalRevenue = orderRepos.totalRevenueFromOrder(last_date);
 		} else {
 			totalRevenue = 0L;
 		}
 		if(totalPriceImport!= null) {
-			totalPriceImport = inventoryDetailRepos.getTotalPriceImport();
+			totalPriceImport = inventoryDetailRepos.getTotalPriceImport(last_date);
 		} else {
 			totalPriceImport = 0L;
 		}

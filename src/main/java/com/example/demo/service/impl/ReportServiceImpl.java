@@ -138,8 +138,8 @@ public class ReportServiceImpl implements ReportService {
 				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id " + "GROUP BY s.product.id ";
 		String sql = "select new com.example.demo.dto.report.ReportOrderDto(p.id as id, p.name as product_name, "
 				+ "p.sku as product_sku, p.category.name as product_category, p.brand.name as product_brand, "
-				+ " o.id as order_id, " + " SUM(s.amount) as quantity_sold, "
-				+ " SUM(s.amount * s.price) as total_price)" + " from OrderDetail as s "
+				+ " o.id as order_id, " + " SUM(s.quantity) as quantity_sold, "
+				+ " SUM(s.quantity * s.price) as total_price)" + " from OrderDetail as s "
 				+ " INNER JOIN Product p ON s.product.id = p.id"
 				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id ";
 		if (dto.getLast_date() != null
@@ -184,7 +184,7 @@ public class ReportServiceImpl implements ReportService {
 		String whereClause = "";
 		String sqlCount = "select count(*) from OrderDetail as s " + "INNER JOIN Order o ON o.id = s.order.id "
 				+ "INNER JOIN Product p ON s.product.id = p.id";
-		String sql = "select new com.example.demo.dto.report.ReportProduct(o.id as id, o.status as status, s.amount as quantity, s.total_price as total_price,"
+		String sql = "select new com.example.demo.dto.report.ReportProduct(o.id as id, o.status as status, s.quantity as quantity, s.total_price as total_price,"
 				+ "o.createdDate as create_time) " + " from OrderDetail as s "
 				+ " INNER JOIN Order o ON o.id = s.order.id" + " INNER JOIN Product p ON s.product.id = p.id";
 		whereClause += " where p.id = " + product_id;

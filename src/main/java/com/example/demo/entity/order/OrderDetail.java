@@ -20,7 +20,7 @@ public class OrderDetail extends BaseEntity {
 	private Product product;
 
 	@Column(name = "amount")
-	private Integer amount;
+	private Integer quantity;
 
 	@Column(name = "price")
 	private Long price;
@@ -36,9 +36,9 @@ public class OrderDetail extends BaseEntity {
 	@JoinColumn(name = "order_id")
 	private Order order;
 
-	public OrderDetail(Product product, Integer amount, Long price, Long total_price, Order order) {
+	public OrderDetail(Product product, Integer quantity, Long price, Long total_price, Order order) {
 		this.product = product;
-		this.amount = amount;
+		this.quantity = quantity;
 		this.price = price;
 		this.total_price = total_price;
 		this.order = order;
@@ -56,12 +56,12 @@ public class OrderDetail extends BaseEntity {
 		this.product = product;
 	}
 
-	public Integer getAmount() {
-		return amount;
+	public Integer getQuantity() {
+		return quantity;
 	}
 
-	public void setAmount(Integer amount) {
-		this.amount = amount;
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
 	}
 
 	public Long getPrice() {

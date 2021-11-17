@@ -9,7 +9,7 @@ public class OrderDetailDto {
 	private Long product_id;
 	private String color;
 	private String product_name;
-	private Integer amount;
+	private Integer quantity;
 	private Long price;
 	private Long total_price;
 	private Long order_id;
@@ -21,14 +21,14 @@ public class OrderDetailDto {
 		this.product_id = orderDetail.getProduct().getId();
 		this.color = orderDetail.getColor();
 		this.product_name = orderDetail.getProduct().getName();
-		this.amount = orderDetail.getAmount();
+		this.quantity = orderDetail.getQuantity();
 		this.price = orderDetail.getPrice();
 		this.total_price = orderDetail.getTotal_price();
 	}
 
 	public OrderDetail toEntity(Order order, Product product, String color) {
 		OrderDetail o = new OrderDetail();
-		o.setAmount(this.getAmount());
+		o.setQuantity(this.getQuantity());
 		o.setPrice(this.getPrice());
 		o.setTotal_price(this.getTotal_price());
 		o.setOrder(order);
@@ -53,12 +53,14 @@ public class OrderDetailDto {
 		this.product_name = product_name;
 	}
 
-	public Integer getAmount() {
-		return amount;
+	
+
+	public Integer getQuantity() {
+		return quantity;
 	}
 
-	public void setAmount(Integer amount) {
-		this.amount = amount;
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
 	}
 
 	public Long getPrice() {

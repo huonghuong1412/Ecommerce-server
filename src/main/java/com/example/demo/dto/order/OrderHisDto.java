@@ -5,9 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.example.demo.entity.order.Order;
+import com.example.demo.entity.order.Shipment;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class OrderHisDto {
 	private Long id;
+	@JsonInclude(value = Include.NON_NULL)
 	private String order_code;
 	private String description;
 	private String createdDate;
@@ -16,6 +20,9 @@ public class OrderHisDto {
 	private Integer total_item;
 	private String orderInfo;
 	private String address;
+	private String province;
+	private String district;
+	private String ward;
 	private String ward_code;
 	private Integer district_id;
 	private String username;
@@ -32,7 +39,7 @@ public class OrderHisDto {
 
 	public OrderHisDto(Order entity) {
 		this.setId(entity.getId());
-		this.order_code = entity.getOrder_code();
+//		this.order_code = entity.getShipment().getOrder_code();
 		try {
 			this.createdDate = new SimpleDateFormat("dd/MM/yyyy hh:mm").format(
 					new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
@@ -44,10 +51,17 @@ public class OrderHisDto {
 		this.ship_fee = entity.getShip_fee();
 		this.total_item = entity.getTotal_item();
 		this.orderInfo = entity.getOrderInfo();
-		this.address = entity.getAddress();
-		this.district_id = entity.getDistrict_id();
-		this.ward_code = entity.getWard_code();
-		this.phone = entity.getPhone();
+		
+		Shipment shipment = entity.getShipment();
+		if(shipment != null) {
+			this.address = entity.getShipment().getAddress();
+			this.province = entity.getShipment().getProvince();
+			this.district = entity.getShipment().getDistrict();
+			this.ward = entity.getShipment().getWard();
+			this.district_id = entity.getShipment().getDistrict_id();
+			this.ward_code = entity.getShipment().getWard_code();
+			this.phone = entity.getShipment().getPhone();
+		}
 		this.username = entity.getUser().getUsername();
 		this.user_fullname = entity.getUser().getFullname();
 		this.status_order = entity.getStatus();
@@ -227,6 +241,30 @@ public class OrderHisDto {
 
 	public void setStatus_payment_name(String status_payment_name) {
 		this.status_payment_name = status_payment_name;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public String getWard() {
+		return ward;
+	}
+
+	public void setWard(String ward) {
+		this.ward = ward;
 	}
 
 	public String getWard_code() {

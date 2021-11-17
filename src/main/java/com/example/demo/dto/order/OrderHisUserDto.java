@@ -17,10 +17,9 @@ public class OrderHisUserDto {
 	public OrderHisUserDto(Order entity) {
 		this.dateOfBirth = entity.getUser().getDateOfBirth();
 		this.email = entity.getUser().getEmail();
-
-		this.phone = entity.getPhone();
+		this.phone = entity.getShipment().getPhone();
 		this.username = entity.getUser().getUsername();
-		this.user_fullname = entity.getUser().getFullname();
+		this.user_fullname = entity.getShipment().getCustomer_name();
 	}
 
 	public String getUsername() {

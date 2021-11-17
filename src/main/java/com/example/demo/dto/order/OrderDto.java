@@ -20,6 +20,9 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 	private Integer total_item;
 	private String orderInfo;
 	private String order_code; // mã đơn hàng trên giaohannhanh
+	private String province;
+	private String district;
+	private String ward;
 	private String address;
 	private String ward_code;
 	private Integer district_id;
@@ -29,7 +32,6 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 	private Integer send_status;
 	private Integer status_order;
 	private Integer status_payment;
-//	private String shipment;
 	private PaymentDto payment;
 	private List<OrderDetailDto> order_details;
 
@@ -52,18 +54,20 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 		this.ship_type = entity.getShip_type();
 		this.total_item = entity.getTotal_item();
 		this.username = entity.getUser().getUsername();
-		this.order_code = entity.getOrder_code();
+		this.order_code = entity.getShipment().getOrder_code();
 		this.orderInfo = entity.getOrderInfo();
 		this.status_order = entity.getStatus();
 		this.status_payment = entity.getPayment().getStatus();
-		this.address = entity.getAddress();
-		this.ward_code = entity.getWard_code();
-		this.district_id = entity.getDistrict_id();
-		this.phone = entity.getPhone();
-		this.email = entity.getEmail();
-		this.customer_name = entity.getCustomer_name();
+		this.address = entity.getShipment().getAddress();
+		this.province = entity.getShipment().getProvince();
+		this.district = entity.getShipment().getDistrict();
+		this.ward = entity.getShipment().getWard();
+		this.ward_code = entity.getShipment().getWard_code();
+		this.district_id = entity.getShipment().getDistrict_id();
+		this.phone = entity.getShipment().getPhone();
+		this.email = entity.getShipment().getEmail();
+		this.customer_name = entity.getShipment().getCustomer_name();
 		this.send_status = entity.getSend_status();
-//		this.shipment = entity.getShipment().getCode();
 		this.payment = new PaymentDto();
 		if (payment != null) {
 			Payment pay = entity.getPayment();
@@ -131,6 +135,30 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public String getWard() {
+		return ward;
+	}
+
+	public void setWard(String ward) {
+		this.ward = ward;
 	}
 
 	public String getWard_code() {
@@ -236,13 +264,5 @@ public class OrderDto extends AbstractDTO<OrderDto> {
 	public void setStatus_payment_name(String status_payment_name) {
 		this.status_payment_name = status_payment_name;
 	}
-
-//	public String getShipment() {
-//		return shipment;
-//	}
-//
-//	public void setShipment(String shipment) {
-//		this.shipment = shipment;
-//	}
 
 }

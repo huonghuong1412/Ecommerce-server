@@ -33,9 +33,8 @@ public class Order extends BaseEntity {
 	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
 	private Payment payment;
 
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "shipment_id")
-//	private Shipment shipment;
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+	private Shipment shipment;
 
 	@Column(name = "total_price")
 	private Long total_price;
@@ -43,7 +42,7 @@ public class Order extends BaseEntity {
 	@Column(name = "ship_fee")
 	private Long ship_fee;
 
-	@Column(name = "ship_type") // 1 giao hàng nhanh, 2 shop tự giao
+	@Column(name = "ship_type") // 1 giao hàng nhanh, 2 giao hàng tiết kiệm
 	private Integer ship_type;
 
 	@Column(name = "total_item")
@@ -51,27 +50,6 @@ public class Order extends BaseEntity {
 
 	@Column(name = "order_info")
 	private String orderInfo;
-
-	@Column(name = "order_code")
-	private String order_code;
-
-	@Column(name = "address")
-	private String address;
-
-	@Column(name = "ward_code")
-	private String ward_code; // mã phường/xã để giao hàng
-
-	@Column(name = "district_id")
-	private Integer district_id; // mã quận huyện giao hàng
-
-	@Column(name = "phone")
-	private String phone;
-
-	@Column(name = "email")
-	private String email;
-
-	@Column(name = "customer_full_name")
-	private String customer_name;
 
 	@Column(name = "status")
 	private Integer status;
@@ -127,38 +105,6 @@ public class Order extends BaseEntity {
 		this.orderInfo = orderInfo;
 	}
 
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public String getWard_code() {
-		return ward_code;
-	}
-
-	public void setWard_code(String ward_code) {
-		this.ward_code = ward_code;
-	}
-
-	public Integer getDistrict_id() {
-		return district_id;
-	}
-
-	public void setDistrict_id(Integer district_id) {
-		this.district_id = district_id;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
 	public Integer getStatus() {
 		return status;
 	}
@@ -173,6 +119,14 @@ public class Order extends BaseEntity {
 
 	public void setPayment(Payment payment) {
 		this.payment = payment;
+	}
+
+	public Shipment getShipment() {
+		return shipment;
+	}
+
+	public void setShipment(Shipment shipment) {
+		this.shipment = shipment;
 	}
 
 	public Long getShip_fee() {
@@ -191,36 +145,12 @@ public class Order extends BaseEntity {
 		this.ship_type = ship_type;
 	}
 
-	public String getOrder_code() {
-		return order_code;
-	}
-
-	public void setOrder_code(String order_code) {
-		this.order_code = order_code;
-	}
-
 	public Shipper getShipper() {
 		return shipper;
 	}
 
 	public void setShipper(Shipper shipper) {
 		this.shipper = shipper;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getCustomer_name() {
-		return customer_name;
-	}
-
-	public void setCustomer_name(String customer_name) {
-		this.customer_name = customer_name;
 	}
 
 	public Integer getSend_status() {
@@ -230,13 +160,5 @@ public class Order extends BaseEntity {
 	public void setSend_status(Integer send_status) {
 		this.send_status = send_status;
 	}
-
-//	public Shipment getShipment() {
-//		return shipment;
-//	}
-//
-//	public void setShipment(Shipment shipment) {
-//		this.shipment = shipment;
-//	}
 
 }

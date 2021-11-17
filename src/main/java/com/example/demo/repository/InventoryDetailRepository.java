@@ -12,8 +12,7 @@ import com.example.demo.entity.inventory.InventoryDetail;
 public interface InventoryDetailRepository extends JpaRepository<InventoryDetail, Long> {
 
 	public List<InventoryDetail> getAllByInventoryId(Long id);
-	
-	@Query("SELECT sum(id.original_price * id.import_quantity) from InventoryDetail id")
-	public Long getTotalPriceImport();
+	@Query("SELECT sum(id.original_price * id.import_quantity) from InventoryDetail id where (TIMESTAMPDIFF(DAY, id.createdDate, NOW())<=?1)")
+	public Long getTotalPriceImport(Integer lastDate);
 	
 }

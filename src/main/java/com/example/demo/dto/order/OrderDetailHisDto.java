@@ -21,7 +21,7 @@ public class OrderDetailHisDto {
 		this.product_slug = entity.getProduct().getSlug();
 		this.category = entity.getProduct().getCategory().getName();
 		this.sub_category = entity.getProduct().getSubcategory().getName();
-		this.amount_item = entity.getAmount();
+		this.amount_item = entity.getQuantity();
 		this.price_item = entity.getPrice();
 		this.mainImage = entity.getProduct().getMainIamge();
 		this.total_price = entity.getTotal_price();

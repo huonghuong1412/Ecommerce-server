@@ -75,7 +75,6 @@ public class InventoryServiceImpl implements InventoryService {
 				+ "p.name as product_name, " + "p.mainIamge as productMainImage, " + "c.name as category_name, "
 				+ "sum(i.total_import_item) as total_import_item, " + "sum(i.quantity_item) as quantity_item ) "
 				+ "from Inventory as i inner join Product as p on p.id = i.product.id inner join Category as c on c.id = p.category.id ";
-
 		if (dto.getCategory() != null) {
 			sql += " and c.code = '" + dto.getCategory() + "'";
 			sqlCount += " and c.code = '" + dto.getCategory() + "'";

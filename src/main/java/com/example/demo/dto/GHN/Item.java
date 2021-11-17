@@ -5,6 +5,7 @@ public class Item {
 	private String code;
 	private Integer quantity;
 	private Long price;
+	private Double weight;
 
 	public Item() {
 		super();
@@ -16,6 +17,17 @@ public class Item {
 		this.code = code;
 		this.quantity = quantity;
 		this.price = price;
+	}
+	
+	
+
+	public Item(String name, String code, Integer quantity, Long price, Double weight) {
+		super();
+		this.name = name;
+		this.code = code;
+		this.quantity = quantity;
+		this.price = price;
+		this.weight = weight;
 	}
 
 	public String getName() {
@@ -48,6 +60,14 @@ public class Item {
 
 	public void setPrice(Long price) {
 		this.price = price;
+	}
+
+	public Double getWeight() {
+		return weight;
+	}
+
+	public void setWeight(Double weight) {
+		this.weight = weight;
 	}
 
 }

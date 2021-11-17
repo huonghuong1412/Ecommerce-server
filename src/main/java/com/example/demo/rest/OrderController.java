@@ -32,6 +32,7 @@ import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.order.Order;
 import com.example.demo.entity.order.OrderDetail;
 import com.example.demo.entity.order.Payment;
+import com.example.demo.entity.order.Shipment;
 import com.example.demo.entity.product.Color;
 import com.example.demo.entity.product.Product;
 import com.example.demo.entity.user.Shipper;
@@ -42,6 +43,7 @@ import com.example.demo.repository.OrderDetailRepository;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.ProductRepository;
+import com.example.demo.repository.ShipmentRepository;
 import com.example.demo.repository.ShipperRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.OrderService;
@@ -65,6 +67,9 @@ public class OrderController {
 
 	@Autowired
 	private PaymentRepository paymentRepository;
+	
+	@Autowired
+	private ShipmentRepository shipmentRepos;
 
 	@Autowired
 	private ProductRepository productRepos;
@@ -291,7 +296,7 @@ public class OrderController {
 					Color c = colorRepos.findOneByName(i.getColor());
 					if (inventoryRepos.existsByProductAndColor(p, c)) {
 						Inventory inventory = inventoryRepos.getOneByProductAndColor(p, c);
-						inventory.setQuantity_item(inventory.getQuantity_item() + i.getAmount());
+						inventory.setQuantity_item(inventory.getQuantity_item() + i.getQuantity());
 						inventoryRepos.save(inventory);
 					}
 				}
@@ -309,7 +314,7 @@ public class OrderController {
 					Color c = colorRepos.findOneByName(i.getColor());
 					if (inventoryRepos.existsByProductAndColor(p, c)) {
 						Inventory inventory = inventoryRepos.getOneByProductAndColor(p, c);
-						inventory.setQuantity_item(inventory.getQuantity_item() + i.getAmount());
+						inventory.setQuantity_item(inventory.getQuantity_item() + i.getQuantity());
 						inventoryRepos.save(inventory);
 					}
 				}
@@ -347,7 +352,9 @@ public class OrderController {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageResponse> updateOrderCodeGHN(@PathVariable Long id, @RequestBody String order_code) {
 		Order order = orderRepository.getById(id);
-		order.setOrder_code(order_code);
+		Shipment shipment = shipmentRepos.findOneByOrderId(id);
+		shipment.setOrder_code(order_code);
+		shipmentRepos.save(shipment);
 		orderRepository.save(order);
 		return ResponseEntity.ok(new MessageResponse("SUCCESS"));
 	}
@@ -356,10 +363,11 @@ public class OrderController {
 	@PutMapping("/update-order-code/{id}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageResponse> updateOrderCode(@PathVariable Long id) {
-		Order order = orderRepository.getById(id);
+//		Order order = orderRepository.getById(id);
+		Shipment shipment = shipmentRepos.findOneByOrderId(id);
 		String code = String.valueOf(new Date().getTime());
-		order.setOrder_code(code);
-		orderRepository.save(order);
+		shipment.setOrder_code(code);
+		shipmentRepos.save(shipment);
 		return ResponseEntity.ok(new MessageResponse("SUCCESS"));
 	}
 
