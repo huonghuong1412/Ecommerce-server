@@ -13,6 +13,10 @@ public class OrderDetailHisDto {
 	private Integer amount_item;
 	private Long price_item;
 	private Long total_price;
+	private Integer weight;
+	private Integer length;
+	private Integer width;
+	private Integer height;
 
 	public OrderDetailHisDto(OrderDetail entity) {
 		this.order_id = entity.getOrder().getId();
@@ -25,6 +29,10 @@ public class OrderDetailHisDto {
 		this.price_item = entity.getPrice();
 		this.mainImage = entity.getProduct().getMainIamge();
 		this.total_price = entity.getTotal_price();
+		this.weight = entity.getProduct().getWeight();
+		this.length = entity.getProduct().getLength();
+		this.width = entity.getProduct().getWidth();
+		this.height = entity.getProduct().getHeight();
 	}
 
 	public OrderDetailHisDto() {
@@ -108,6 +116,38 @@ public class OrderDetailHisDto {
 
 	public void setPrice_item(Long price_item) {
 		this.price_item = price_item;
+	}
+
+	public Integer getWeight() {
+		return weight;
+	}
+
+	public void setWeight(Integer weight) {
+		this.weight = weight;
+	}
+
+	public Integer getLength() {
+		return length;
+	}
+
+	public void setLength(Integer length) {
+		this.length = length;
+	}
+
+	public Integer getWidth() {
+		return width;
+	}
+
+	public void setWidth(Integer width) {
+		this.width = width;
+	}
+
+	public Integer getHeight() {
+		return height;
+	}
+
+	public void setHeight(Integer height) {
+		this.height = height;
 	}
 
 }

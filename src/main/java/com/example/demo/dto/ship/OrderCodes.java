@@ -1,4 +1,4 @@
-package com.example.demo.dto.GHN;
+package com.example.demo.dto.ship;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -5,25 +5,23 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.example.demo.dto.AbstractDTO;
-import com.example.demo.entity.user.Shipper;
+import com.example.demo.entity.user.Seller;
 
-public class ShipperDto extends AbstractDTO<ShipperDto> {
+public class SellerDto extends AbstractDTO<SellerDto> {
 
 	private String cccd;
-	private String shift;
-	private Long salary;
+	private Integer exp;
 	private String createdDate;
 
-	public ShipperDto() {
+	public SellerDto() {
 		super();
 	}
 
-	public ShipperDto(Shipper s) {
+	public SellerDto(Seller s) {
 		super();
 		this.setId(s.getId());
 		this.cccd = s.getCccd();
-		this.shift = s.getShift();
-		this.salary = s.getSalary();
+		this.exp = s.getExp();
 		try {
 			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(
 					new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(s.getCreatedDate()).getTime()));
@@ -40,20 +38,12 @@ public class ShipperDto extends AbstractDTO<ShipperDto> {
 		this.cccd = cccd;
 	}
 
-	public String getShift() {
-		return shift;
+	public Integer getExp() {
+		return exp;
 	}
 
-	public void setShift(String shift) {
-		this.shift = shift;
-	}
-
-	public Long getSalary() {
-		return salary;
-	}
-
-	public void setSalary(Long salary) {
-		this.salary = salary;
+	public void setExp(Integer exp) {
+		this.exp = exp;
 	}
 
 	public String getCreatedDate() {

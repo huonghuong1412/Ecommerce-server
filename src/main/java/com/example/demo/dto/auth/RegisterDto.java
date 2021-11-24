@@ -18,7 +18,7 @@ public class RegisterDto extends AbstractDTO<RegisterDto> {
 	private String ward;
 	private String house;
 	private String cccd;
-	private String shift;
+	private Integer exp;
 
 	private List<String> role;
 
@@ -39,8 +39,8 @@ public class RegisterDto extends AbstractDTO<RegisterDto> {
 		this.district = entity.getAddress().getDistrict();
 		this.ward = entity.getAddress().getWard();
 		this.house = entity.getAddress().getHouse();
-		this.shift = entity.getShipper().getShift();
-		this.cccd = entity.getShipper().getCccd();
+		this.cccd = entity.getSeller().getCccd();
+		this.exp = entity.getSeller().getExp();
 	}
 
 	public String getUsername() {
@@ -147,12 +147,12 @@ public class RegisterDto extends AbstractDTO<RegisterDto> {
 		this.cccd = cccd;
 	}
 
-	public String getShift() {
-		return shift;
+	public Integer getExp() {
+		return exp;
 	}
 
-	public void setShift(String shift) {
-		this.shift = shift;
+	public void setExp(Integer exp) {
+		this.exp = exp;
 	}
 
 }

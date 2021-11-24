@@ -26,10 +26,10 @@ public class UserDto extends AbstractDTO<UserDto> {
 
 	@JsonIgnore
 	@JsonInclude(value = Include.NON_NULL)
-	private ShipperDto shipper;
+	private SellerDto seller;
 
 	private String cccd;
-	private String shift;
+	private Integer exp;
 
 	private Integer display;
 
@@ -163,14 +163,6 @@ public class UserDto extends AbstractDTO<UserDto> {
 		this.ward_id = ward_id;
 	}
 
-	public ShipperDto getShipper() {
-		return shipper;
-	}
-
-	public void setShipper(ShipperDto shipper) {
-		this.shipper = shipper;
-	}
-
 	public String getCccd() {
 		return cccd;
 	}
@@ -179,12 +171,20 @@ public class UserDto extends AbstractDTO<UserDto> {
 		this.cccd = cccd;
 	}
 
-	public String getShift() {
-		return shift;
+	public SellerDto getSeller() {
+		return seller;
 	}
 
-	public void setShift(String shift) {
-		this.shift = shift;
+	public void setSeller(SellerDto seller) {
+		this.seller = seller;
+	}
+
+	public Integer getExp() {
+		return exp;
+	}
+
+	public void setExp(Integer exp) {
+		this.exp = exp;
 	}
 
 	public Integer getDisplay() {

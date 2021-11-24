@@ -24,6 +24,11 @@ public interface CartDetailRepository extends JpaRepository<CartDetail, Long> {
 	
 	@Transactional
 	@Modifying
+	@Query("Delete from CartDetail entity WHERE entity.id =?1")
+	public void deleteByCartDetailId(Long id);
+	
+	@Transactional
+	@Modifying
 	@Query("Delete from CartDetail entity WHERE entity.cart.id =?1")
 	public void deleteByCartId(Long id);
 	

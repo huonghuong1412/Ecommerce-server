@@ -1,4 +1,4 @@
-package com.example.demo.dto.GHN;
+package com.example.demo.dto.ship;
 
 public class Item {
 	private String name;
@@ -6,6 +6,7 @@ public class Item {
 	private Integer quantity;
 	private Long price;
 	private Double weight;
+	private Integer product_code;
 
 	public Item() {
 		super();
@@ -18,8 +19,6 @@ public class Item {
 		this.quantity = quantity;
 		this.price = price;
 	}
-	
-	
 
 	public Item(String name, String code, Integer quantity, Long price, Double weight) {
 		super();
@@ -68,6 +67,14 @@ public class Item {
 
 	public void setWeight(Double weight) {
 		this.weight = weight;
+	}
+
+	public Integer getProduct_code() {
+		return product_code;
+	}
+
+	public void setProduct_code(Integer product_code) {
+		this.product_code = product_code;
 	}
 
 }

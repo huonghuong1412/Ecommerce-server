@@ -4,9 +4,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.CartResponse;
 import com.example.demo.dto.order.CartDto;
-import com.example.demo.entity.order.Cart;
-import com.example.demo.entity.order.CartDetail;
-import com.example.demo.entity.product.Product;
 
 @Service
 public interface CartService {
@@ -22,18 +19,20 @@ public interface CartService {
 
 	// get giỏ hàng theo users
 	public CartDto getCartByUser(String username);
+	
+	// get giỏ hàng theo users đã chọn sản phẩm để đặt hàng
+	public CartDto getCartByUserSelected(String username);
 
 	public Integer getQuantityItemByUser(String username);
 
 	public Integer getQuantityProductByUser(String username);
-
-	// Xử lý cart detail
-	public CartDetail getCartDetailByProductAndCart(Product product, Cart cart);
 
 	// Xoá 1 sản phẩm trong giỏ hàng
 	public CartResponse deleteCartDetail(String username, Long product_id);
 	
 	// Xoá giỏ hàng sau khi đặt hàng thành công
 	public Boolean deleteAllCartDetail(String username);
+	
+	public CartDto handleSelectedItemInCart(String username, Long product_id);
 
 }

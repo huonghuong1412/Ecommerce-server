@@ -31,7 +31,7 @@ import com.example.demo.entity.order.PaymentMethod;
 import com.example.demo.entity.order.Shipment;
 import com.example.demo.entity.product.Color;
 import com.example.demo.entity.product.Product;
-import com.example.demo.entity.user.Shipper;
+import com.example.demo.entity.user.Seller;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.ColorRepository;
 import com.example.demo.repository.InventoryRepository;
@@ -40,8 +40,8 @@ import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaymentMethodRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.ProductRepository;
+import com.example.demo.repository.SellerRepository;
 import com.example.demo.repository.ShipmentRepository;
-import com.example.demo.repository.ShipperRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.OrderService;
 
@@ -79,7 +79,7 @@ public class OrderServiceImpl implements OrderService {
 	private ColorRepository colorRepos;
 
 	@Autowired
-	private ShipperRepository shipperRepos;
+	private SellerRepository sellerRepos;
 
 	@Override
 	public Page<OrderHisDto> getAllOrder(AdvanceSearchDto dto) {
@@ -173,6 +173,7 @@ public class OrderServiceImpl implements OrderService {
 			User user = userRepository.findOneByUsername(dto.getUsername());
 			Payment payment = new Payment();
 			Shipment shipment = new Shipment();
+//			Seller seller = new Seller();
 			PaymentDto paymentDto = dto.getPayment();
 			PaymentMethod payMethod = paymentMethodRepos.findOneByCode(paymentDto.getMethod_code());
 
@@ -186,6 +187,11 @@ public class OrderServiceImpl implements OrderService {
 			order.setShip_type(dto.getShip_type());
 			order.setTotal_item(dto.getTotal_item());
 			order.setUser(user);
+			if(dto.getTotal_price() > 0 && dto.getTotal_price() <= 1000000) {
+				order.setDiscount_price(dto.getTotal_price() * 5 /100);
+			}  else {
+				order.setDiscount_price(0L);
+			}
 
 			shipment.setOrder_code(dto.getOrder_code());
 			shipment.setProvince(dto.getProvince());
@@ -309,7 +315,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Page<OrderHisDto> getAllOrderByShipper(AdvanceSearchDto dto, Long shipper_id) {
+	public Page<OrderHisDto> getAllOrderBySeller(AdvanceSearchDto dto, Long shipper_id) {
 		int pageIndex = dto.getPageIndex();
 		int pageSize = dto.getPageSize();
 		if (pageIndex > 0)
@@ -319,9 +325,9 @@ public class OrderServiceImpl implements OrderService {
 
 		String whereClause = "";
 		String orderBy = " ORDER BY entity.createdDate DESC";
-		String sqlCount = "select count(entity.id) from  Order as entity where (1=1) and entity.shipper.id = "
+		String sqlCount = "select count(entity.id) from  Order as entity where (1=1) and entity.seller.id = "
 				+ shipper_id;
-		String sql = "select new com.example.demo.dto.order.OrderHisDto(entity) from  Order as entity where (1=1) and entity.shipper.id = "
+		String sql = "select new com.example.demo.dto.order.OrderHisDto(entity) from  Order as entity where (1=1) and entity.seller.id = "
 				+ shipper_id;
 
 		if (dto.getStatus() == -1 || dto.getStatus() == 0 || dto.getStatus() == 1 || dto.getStatus() == 2) {
@@ -375,7 +381,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Page<OrderHisDto> getAllOrderByShipperUsername(AdvanceSearchDto dto, String shipper_username) {
+	public Page<OrderHisDto> getAllOrderBySellerUsername(AdvanceSearchDto dto, String seller_username) {
 		int pageIndex = dto.getPageIndex();
 		int pageSize = dto.getPageSize();
 		if (pageIndex > 0)
@@ -383,13 +389,13 @@ public class OrderServiceImpl implements OrderService {
 		else
 			pageIndex = 0;
 
-		Shipper ship = shipperRepos.findOneByUser(userRepository.findOneByUsername(shipper_username));
+		Seller seller = sellerRepos.findOneByUser(userRepository.findOneByUsername(seller_username));
 		String whereClause = "";
 		String orderBy = " ORDER BY entity.createdDate DESC";
-		String sqlCount = "select count(entity.id) from  Order as entity where (1=1) and entity.shipper.id = "
-				+ ship.getId();
-		String sql = "select new com.example.demo.dto.order.OrderHisDto(entity) from  Order as entity where (1=1) and entity.shipper.id = "
-				+ ship.getId();
+		String sqlCount = "select count(entity.id) from  Order as entity where (1=1) and entity.seller.id = "
+				+ seller.getId();
+		String sql = "select new com.example.demo.dto.order.OrderHisDto(entity) from  Order as entity where (1=1) and entity.seller.id = "
+				+ seller.getId();
 
 		if (dto.getStatus() == -1 || dto.getStatus() == 0 || dto.getStatus() == 1 || dto.getStatus() == 2) {
 			whereClause += " AND ( entity.status = " + dto.getStatus() + ")";

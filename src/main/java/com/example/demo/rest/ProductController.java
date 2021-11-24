@@ -159,8 +159,9 @@ public class ProductController {
 			@RequestParam(name = "sku", defaultValue = "") String sku,
 			@RequestParam(name = "category", defaultValue = "") String category,
 			@RequestParam(name = "brand", defaultValue = "") String brand,
+			@RequestParam(name = "supplier", defaultValue = "") String supplier,
 			@RequestParam(name = "display", defaultValue = "2") Integer display) {
-		AdvanceSearchDto dto = new AdvanceSearchDto(page, limit, name, sku, display, brand, category);
+		AdvanceSearchDto dto = new AdvanceSearchDto(page, limit, name, sku, display, brand, supplier, category);
 		Page<ProductListDto> result = service.getAllProduct(dto);
 		return new ResponseEntity<Page<ProductListDto>>(result, HttpStatus.OK);
 	}

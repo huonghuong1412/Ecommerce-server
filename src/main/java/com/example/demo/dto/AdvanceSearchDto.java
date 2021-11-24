@@ -7,6 +7,7 @@ public class AdvanceSearchDto {
 	private String sku;
 	private Integer display;
 	private String brand; // tim theo thuong hieu
+	private String supplier;
 	private String category;
 
 	// order
@@ -25,7 +26,7 @@ public class AdvanceSearchDto {
 	}
 
 	public AdvanceSearchDto(int pageIndex, int pageSize, String name, String sku, Integer display, String brand,
-			String category) {
+			String supplier, String category) {
 		super();
 		this.pageIndex = pageIndex;
 		this.pageSize = pageSize;
@@ -33,6 +34,7 @@ public class AdvanceSearchDto {
 		this.sku = sku;
 		this.display = display;
 		this.brand = brand;
+		this.supplier = supplier;
 		this.category = category;
 	}
 
@@ -82,6 +84,14 @@ public class AdvanceSearchDto {
 
 	public void setBrand(String brand) {
 		this.brand = brand;
+	}
+
+	public String getSupplier() {
+		return supplier;
+	}
+
+	public void setSupplier(String supplier) {
+		this.supplier = supplier;
 	}
 
 	public String getCategory() {

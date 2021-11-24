@@ -19,10 +19,13 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.AdvanceSearchDto;
 import com.example.demo.dto.order.OrderHisDto;
+import com.example.demo.dto.report.ReportBrand;
+import com.example.demo.dto.report.ReportCategory;
 import com.example.demo.dto.report.ReportCustomer;
-import com.example.demo.dto.report.ReportOrderDto;
 import com.example.demo.dto.report.ReportProduct;
 import com.example.demo.dto.report.ReportProductInventory;
+import com.example.demo.dto.report.ReportProductOrder;
+import com.example.demo.dto.report.ReportSupplier;
 import com.example.demo.entity.order.Order;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.OrderRepository;
@@ -111,7 +114,7 @@ public class ReportServiceImpl implements ReportService {
 
 	// thống kê sản phẩm bán chạy nhất
 	@Override
-	public Page<ReportOrderDto> reportProduct(AdvanceSearchDto dto) {
+	public Page<ReportProductOrder> reportProduct(AdvanceSearchDto dto) {
 //			SELECT product_id, sum(amount) As MostSold 
 //			FROM tbl_order_detail, tbl_order
 //			where tbl_order.status=2
@@ -136,7 +139,7 @@ public class ReportServiceImpl implements ReportService {
 		String groupOrderClause = " GROUP BY s.product.id ORDER BY quantity_sold DESC";
 		String sqlCount = "select count(*) from OrderDetail as s " + "INNER JOIN Product p ON s.product.id = p.id "
 				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id " + "GROUP BY s.product.id ";
-		String sql = "select new com.example.demo.dto.report.ReportOrderDto(p.id as id, p.name as product_name, "
+		String sql = "select new com.example.demo.dto.report.ReportProductOrder(p.id as id, p.name as product_name, "
 				+ "p.sku as product_sku, p.category.name as product_category, p.brand.name as product_brand, "
 				+ " o.id as order_id, " + " SUM(s.quantity) as quantity_sold, "
 				+ " SUM(s.quantity * s.price) as total_price)" + " from OrderDetail as s "
@@ -150,7 +153,7 @@ public class ReportServiceImpl implements ReportService {
 		}
 		sql += whereClause + groupOrderClause;
 
-		Query q = manager.createQuery(sql, ReportOrderDto.class);
+		Query q = manager.createQuery(sql, ReportProductOrder.class);
 		Query qCount = manager.createQuery(sqlCount);
 		q.setMaxResults(pageSize);
 
@@ -160,11 +163,11 @@ public class ReportServiceImpl implements ReportService {
 		long count = (long) qCount.getResultList().size();
 
 		@SuppressWarnings("unchecked")
-		List<ReportOrderDto> entities = q.getResultList();
+		List<ReportProductOrder> entities = q.getResultList();
 
 		Pageable pageable = PageRequest.of(pageIndex, pageSize);
 
-		Page<ReportOrderDto> result = new PageImpl<ReportOrderDto>(entities, pageable, count);
+		Page<ReportProductOrder> result = new PageImpl<ReportProductOrder>(entities, pageable, count);
 		return result;
 	}
 
@@ -266,6 +269,309 @@ public class ReportServiceImpl implements ReportService {
 		Pageable pageable = PageRequest.of(pageIndex, pageSize);
 
 		Page<ReportProductInventory> result = new PageImpl<ReportProductInventory>(entities, pageable, count);
+		return result;
+	}
+
+	@Override
+	public Page<ReportSupplier> reportSupplier(AdvanceSearchDto dto) {
+//		SELECT c.name, SUM(o.total_item) as Quantity, sum(o.total_price) as total_price 
+//		FROM tbl_order_detail s
+//		INNER JOIN tbl_product p ON s.product_id = p.id
+//		inner join tbl_supplier c on c.id = p.supplier_id
+//		INNER JOIN tbl_order o ON o.status = 2 and o.id = s.order_id
+//		GROUP BY p.supplier_id
+//		ORDER BY Quantity DESC limit 5
+		int pageIndex = dto.getPageIndex();
+		int pageSize = dto.getPageSize();
+		if (pageIndex > 0)
+			pageIndex -= 1;
+		else
+			pageIndex = 0;
+		String whereClause = " where (1=1) ";
+		String groupOrderClause = " GROUP BY p.supplier.id ORDER BY quantity_sold DESC";
+		String sqlCount = "select count(*) from OrderDetail as s " + "INNER JOIN Product p ON s.product.id = p.id "
+				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id " + "GROUP BY p.supplier.id ";
+
+		String sql = "select new com.example.demo.dto.report.ReportSupplier(c.id, c.name, c.code, "
+				+ " SUM(o.total_item) as quantity_sold, " + " SUM(o.total_price) as total_price)"
+				+ " FROM OrderDetail as s " + " INNER JOIN Product p ON s.product.id = p.id"
+				+ " inner join Supplier c on c.id = p.supplier.id"
+				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id ";
+		if (dto.getLast_date() != null
+				&& (dto.getLast_date() == 1 || dto.getLast_date() == 7 || dto.getLast_date() == 30)) {
+			whereClause += " AND (TIMESTAMPDIFF(DAY, o.createdDate, NOW()) <= " + dto.getLast_date() + " )";
+		} else {
+			whereClause += "";
+		}
+		sql += whereClause + groupOrderClause;
+
+		Query q = manager.createQuery(sql, ReportSupplier.class);
+		Query qCount = manager.createQuery(sqlCount);
+		q.setMaxResults(pageSize);
+
+		int startPosition = pageIndex * pageSize;
+		q.setFirstResult(startPosition);
+		q.setMaxResults(pageSize);
+		long count = (long) qCount.getResultList().size();
+
+		@SuppressWarnings("unchecked")
+		List<ReportSupplier> entities = q.getResultList();
+
+		Pageable pageable = PageRequest.of(pageIndex, pageSize);
+
+		Page<ReportSupplier> result = new PageImpl<ReportSupplier>(entities, pageable, count);
+		return result;
+	}
+
+	@Override
+	public Page<ReportCategory> reportCategory(AdvanceSearchDto dto) {
+//		SELECT c.name, SUM(o.total_item) as Quantity, sum(o.total_price) as total_price 
+//		FROM tbl_order_detail s
+//		INNER JOIN tbl_product p ON s.product_id = p.id
+//		inner join tbl_category c on c.id = p.category_id
+//		INNER JOIN tbl_order o ON o.status = 2 and o.id = s.order_id
+//		GROUP BY p.category_id
+//		ORDER BY Quantity DESC limit 5
+		int pageIndex = dto.getPageIndex();
+		int pageSize = dto.getPageSize();
+		if (pageIndex > 0)
+			pageIndex -= 1;
+		else
+			pageIndex = 0;
+		String whereClause = " where (1=1) ";
+		String groupOrderClause = " GROUP BY p.category.id ORDER BY quantity_sold DESC";
+		String sqlCount = "select count(*) from OrderDetail as s " + "INNER JOIN Product p ON s.product.id = p.id "
+				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id " + "GROUP BY p.category.id ";
+
+		String sql = "select new com.example.demo.dto.report.ReportCategory(c.id, c.name, c.code, "
+				+ " SUM(o.total_item) as quantity_sold, " + " SUM(o.total_price) as total_price)"
+				+ " FROM OrderDetail as s " + " INNER JOIN Product p ON s.product.id = p.id"
+				+ " INNER JOIN Category c on c.id = p.category.id"
+				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id ";
+		if (dto.getLast_date() != null
+				&& (dto.getLast_date() == 1 || dto.getLast_date() == 7 || dto.getLast_date() == 30)) {
+			whereClause += " AND (TIMESTAMPDIFF(DAY, o.createdDate, NOW()) <= " + dto.getLast_date() + " )";
+		} else {
+			whereClause += "";
+		}
+		sql += whereClause + groupOrderClause;
+
+		Query q = manager.createQuery(sql, ReportCategory.class);
+		Query qCount = manager.createQuery(sqlCount);
+		q.setMaxResults(pageSize);
+
+		int startPosition = pageIndex * pageSize;
+		q.setFirstResult(startPosition);
+		q.setMaxResults(pageSize);
+		long count = (long) qCount.getResultList().size();
+
+		@SuppressWarnings("unchecked")
+		List<ReportCategory> entities = q.getResultList();
+
+		Pageable pageable = PageRequest.of(pageIndex, pageSize);
+
+		Page<ReportCategory> result = new PageImpl<ReportCategory>(entities, pageable, count);
+		return result;
+	}
+
+	@Override
+	public Page<ReportBrand> reportBrand(AdvanceSearchDto dto) {
+//		SELECT b.name, SUM(o.total_item) as Quantity, sum(o.total_price) as total_price 
+//		FROM tbl_order_detail s
+//		INNER JOIN tbl_product p ON s.product_id = p.id
+//		inner join tbl_brand b on b.id = p.brand_id
+//		INNER JOIN tbl_order o ON o.status = 2 and o.id = s.order_id
+//		GROUP BY p.brand_id
+//		ORDER BY Quantity DESC limit 5
+		int pageIndex = dto.getPageIndex();
+		int pageSize = dto.getPageSize();
+		if (pageIndex > 0)
+			pageIndex -= 1;
+		else
+			pageIndex = 0;
+		String whereClause = " where (1=1) ";
+		String groupOrderClause = " GROUP BY p.brand.id ORDER BY quantity_sold DESC";
+		String sqlCount = "select count(*) from OrderDetail as s " + "INNER JOIN Product p ON s.product.id = p.id "
+				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id " + "GROUP BY p.brand.id ";
+
+		String sql = "select new com.example.demo.dto.report.ReportBrand(b.id, b.name, b.code, "
+				+ " SUM(o.total_item) as quantity_sold, " + " SUM(o.total_price) as total_price)"
+				+ " FROM OrderDetail as s " + " INNER JOIN Product p ON s.product.id = p.id"
+				+ " inner join Brand b on b.id = p.brand.id"
+				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id ";
+		if (dto.getLast_date() != null
+				&& (dto.getLast_date() == 1 || dto.getLast_date() == 7 || dto.getLast_date() == 30)) {
+			whereClause += " AND (TIMESTAMPDIFF(DAY, o.createdDate, NOW()) <= " + dto.getLast_date() + " )";
+		} else {
+			whereClause += "";
+		}
+		sql += whereClause + groupOrderClause;
+
+		Query q = manager.createQuery(sql, ReportBrand.class);
+		Query qCount = manager.createQuery(sqlCount);
+		q.setMaxResults(pageSize);
+
+		int startPosition = pageIndex * pageSize;
+		q.setFirstResult(startPosition);
+		q.setMaxResults(pageSize);
+		long count = (long) qCount.getResultList().size();
+
+		@SuppressWarnings("unchecked")
+		List<ReportBrand> entities = q.getResultList();
+
+		Pageable pageable = PageRequest.of(pageIndex, pageSize);
+
+		Page<ReportBrand> result = new PageImpl<ReportBrand>(entities, pageable, count);
+		return result;
+	}
+
+	@Override
+	public Page<ReportCustomer> reportSellerEmployee(AdvanceSearchDto dto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Page<ReportProductOrder> reportDetailProductBySupplier(Long supplier_id, AdvanceSearchDto dto) {
+		int pageIndex = dto.getPageIndex();
+		int pageSize = dto.getPageSize();
+		if (pageIndex > 0)
+			pageIndex -= 1;
+		else
+			pageIndex = 0;
+		String whereClause = " where (1=1) ";
+		String groupOrderClause = " GROUP BY s.product.id ORDER BY quantity_sold DESC";
+		String sqlCount = "select count(*) from OrderDetail as s " + "INNER JOIN Product p ON s.product.id = p.id "
+				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id " + "GROUP BY s.product.id ";
+		String sql = "select new com.example.demo.dto.report.ReportProductOrder(p.id, p.name, p.sku, p.category.name, p.brand.name, "
+				+ " SUM(s.quantity) as quantity_sold, "
+				+ " SUM(s.quantity * s.price) as total_price)" + " from OrderDetail as s "
+				+ " INNER JOIN Product p ON s.product.id = p.id"
+				+ " inner join Supplier b on b.id = p.supplier.id and p.supplier.id = " + supplier_id
+				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id ";
+		if (dto.getLast_date() != null
+				&& (dto.getLast_date() == 1 || dto.getLast_date() == 7 || dto.getLast_date() == 30)) {
+			whereClause += " AND (TIMESTAMPDIFF(DAY, o.createdDate, NOW()) <= " + dto.getLast_date() + " )";
+		} else {
+			whereClause += "";
+		}
+		sql += whereClause + groupOrderClause;
+
+		Query q = manager.createQuery(sql, ReportProductOrder.class);
+		Query qCount = manager.createQuery(sqlCount);
+		q.setMaxResults(pageSize);
+
+		int startPosition = pageIndex * pageSize;
+		q.setFirstResult(startPosition);
+		q.setMaxResults(pageSize);
+		long count = (long) qCount.getResultList().size();
+
+		@SuppressWarnings("unchecked")
+		List<ReportProductOrder> entities = q.getResultList();
+
+		Pageable pageable = PageRequest.of(pageIndex, pageSize);
+
+		Page<ReportProductOrder> result = new PageImpl<ReportProductOrder>(entities, pageable, count);
+		return result;
+	}
+
+	@Override
+	public Page<ReportProductOrder> reportDetailProductByCategory(Long category_id, AdvanceSearchDto dto) {
+//		SELECT p.name as product_name, o.id as order_id, sum(s.amount) as amount, sum(s.total_price) as total_price
+//		FROM tbl_order_detail s
+//		INNER JOIN tbl_product p ON s.product_id = p.id  and p.category_id = 5
+//		inner join tbl_category c on c.id = p.category_id
+//		INNER JOIN tbl_order o ON o.status = 2 and o.id = s.order_id
+//		group by s.product_id
+
+		int pageIndex = dto.getPageIndex();
+		int pageSize = dto.getPageSize();
+		if (pageIndex > 0)
+			pageIndex -= 1;
+		else
+			pageIndex = 0;
+		String whereClause = " where (1=1) ";
+		String groupOrderClause = " GROUP BY s.product.id ORDER BY quantity_sold DESC";
+		String sqlCount = "select count(*) from OrderDetail as s " + "INNER JOIN Product p ON s.product.id = p.id "
+				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id " + "GROUP BY s.product.id ";
+		String sql = "select new com.example.demo.dto.report.ReportProductOrder(p.id, p.name, p.sku, p.category.name, p.brand.name, "
+				+ " SUM(s.quantity) as quantity_sold, "
+				+ " SUM(s.quantity * s.price) as total_price)" + " from OrderDetail as s "
+				+ " INNER JOIN Product p ON s.product.id = p.id"
+				+ " inner join Category c on c.id = p.category.id and p.category.id = " + category_id
+				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id ";
+		if (dto.getLast_date() != null
+				&& (dto.getLast_date() == 1 || dto.getLast_date() == 7 || dto.getLast_date() == 30)) {
+			whereClause += " AND (TIMESTAMPDIFF(DAY, o.createdDate, NOW()) <= " + dto.getLast_date() + " )";
+		} else {
+			whereClause += "";
+		}
+		sql += whereClause + groupOrderClause;
+
+		Query q = manager.createQuery(sql, ReportProductOrder.class);
+		Query qCount = manager.createQuery(sqlCount);
+		q.setMaxResults(pageSize);
+
+		int startPosition = pageIndex * pageSize;
+		q.setFirstResult(startPosition);
+		q.setMaxResults(pageSize);
+		long count = (long) qCount.getResultList().size();
+
+		@SuppressWarnings("unchecked")
+		List<ReportProductOrder> entities = q.getResultList();
+
+		Pageable pageable = PageRequest.of(pageIndex, pageSize);
+
+		Page<ReportProductOrder> result = new PageImpl<ReportProductOrder>(entities, pageable, count);
+		return result;
+	}
+
+	@Override
+	public Page<ReportProductOrder> reportDetailProductByBrand(Long brand_id, AdvanceSearchDto dto) {
+//		SELECT p.name as product_name, o.id as order_id, sum(s.amount) as amount, sum(s.total_price) as total_price
+//		FROM tbl_order_detail s
+//		INNER JOIN tbl_product p ON s.product_id = p.id  and p.brand_id = 21
+//		INNER JOIN tbl_order o ON o.status = 2 and o.id = s.order_id
+//		group by s.product_id
+		int pageIndex = dto.getPageIndex();
+		int pageSize = dto.getPageSize();
+		if (pageIndex > 0)
+			pageIndex -= 1;
+		else
+			pageIndex = 0;
+		String whereClause = " where (1=1) ";
+		String groupOrderClause = " GROUP BY s.product.id ORDER BY quantity_sold DESC";
+		String sqlCount = "select count(*) from OrderDetail as s " + "INNER JOIN Product p ON s.product.id = p.id "
+				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id " + "GROUP BY s.product.id ";
+		String sql = "select new com.example.demo.dto.report.ReportProductOrder(p.id, p.name, p.sku, p.category.name, p.brand.name, "
+				+ " SUM(s.quantity) as quantity_sold, "
+				+ " SUM(s.quantity * s.price) as total_price)" + " from OrderDetail as s "
+				+ " INNER JOIN Product p ON s.product.id = p.id"
+				+ " inner join Brand b on b.id = p.brand.id and p.brand.id = " + brand_id
+				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id ";
+		if (dto.getLast_date() != null
+				&& (dto.getLast_date() == 1 || dto.getLast_date() == 7 || dto.getLast_date() == 30)) {
+			whereClause += " AND (TIMESTAMPDIFF(DAY, o.createdDate, NOW()) <= " + dto.getLast_date() + " )";
+		} else {
+			whereClause += "";
+		}
+		sql += whereClause + groupOrderClause;
+
+		Query q = manager.createQuery(sql, ReportProductOrder.class);
+		Query qCount = manager.createQuery(sqlCount);
+		q.setMaxResults(pageSize);
+
+		int startPosition = pageIndex * pageSize;
+		q.setFirstResult(startPosition);
+		q.setMaxResults(pageSize);
+		long count = (long) qCount.getResultList().size();
+
+		@SuppressWarnings("unchecked")
+		List<ReportProductOrder> entities = q.getResultList();
+
+		Pageable pageable = PageRequest.of(pageIndex, pageSize);
+
+		Page<ReportProductOrder> result = new PageImpl<ReportProductOrder>(entities, pageable, count);
 		return result;
 	}
 

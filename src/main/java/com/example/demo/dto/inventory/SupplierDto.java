@@ -10,6 +10,9 @@ public class SupplierDto extends AbstractDTO<SupplierDto> {
 	private String email;
 	private String phone;
 	private String address;
+	private String province;
+	private String district;
+	private String ward;
 
 	public SupplierDto() {
 		// TODO Auto-generated constructor stub
@@ -23,6 +26,9 @@ public class SupplierDto extends AbstractDTO<SupplierDto> {
 		this.email = entity.getEmail();
 		this.phone = entity.getPhone();
 		this.address = entity.getAddress();
+		this.province = entity.getProvince();
+		this.district = entity.getDistrict();
+		this.ward = entity.getWard();
 	}
 
 	public String getName() {
@@ -63,6 +69,30 @@ public class SupplierDto extends AbstractDTO<SupplierDto> {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public String getWard() {
+		return ward;
+	}
+
+	public void setWard(String ward) {
+		this.ward = ward;
 	}
 
 }

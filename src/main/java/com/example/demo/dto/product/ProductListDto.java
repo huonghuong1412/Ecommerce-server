@@ -13,6 +13,7 @@ import com.example.demo.entity.category.SubCategory;
 import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.product.Brand;
 import com.example.demo.entity.product.Product;
+import com.example.demo.entity.promotion.ProductDiscount;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -54,17 +55,29 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 		this.slug = entity.getSlug();
 		this.price = entity.getPrice();
 		this.list_price = entity.getList_price();
+		ProductDiscount discount = entity.getDiscount();
+		if (discount.getStatus() == 1) {
+			if(discount.getType() != null && discount.getValue() != null) {
+				if (discount.getType() == 1) {
+					this.price = entity.getPrice() * (100 - discount.getValue()) / 100;
+				} else {
+					this.price = entity.getPrice() - discount.getValue();
+				}
+			} else {
+				this.price = entity.getPrice();
+			}
+		} else {
+			this.price = entity.getPrice();
+		}
+
 		if (this.price != null && this.list_price != null) {
 			this.percent_discount = CalculateDiscount.countDiscount(this.price, this.list_price);
 		} else {
 			this.percent_discount = null;
 		}
-//		if (entity.getInventory() != null) {
-//			this.in_stock = entity.getInventory().getQuantity_item();
-//		}
 		Integer count = 0;
-		for(Inventory item : entity.getInventories()) {
-			if(item.getQuantity_item() == 0) {
+		for (Inventory item : entity.getInventories()) {
+			if (item.getQuantity_item() == 0) {
 				count += 1;
 			}
 		}

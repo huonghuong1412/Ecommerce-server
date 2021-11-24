@@ -38,13 +38,23 @@ public class CartController {
 		return new ResponseEntity<CartDto>(result, HttpStatus.OK);
 	}
 
+	// get all info cart
+	@GetMapping("/items/selected")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+	public ResponseEntity<CartDto> getCartDetailSelected() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
+		CartDto result = service.getCartByUserSelected(username);
+		return new ResponseEntity<CartDto>(result, HttpStatus.OK);
+	}
+
 	// get quantity & total price cart
 	@GetMapping("/info")
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public ResponseEntity<CartResponse> getCartInfo() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();
-		
+
 		Integer items_quantity = service.getQuantityProductByUser(username);
 		Integer items_count = service.getQuantityItemByUser(username);
 		return new ResponseEntity<CartResponse>(new CartResponse("SUCCESS", items_count, items_quantity),
@@ -101,6 +111,16 @@ public class CartController {
 		String username = auth.getName();
 		Boolean result = service.deleteAllCartDetail(username);
 		return new ResponseEntity<Boolean>(result, HttpStatus.OK);
+	}
+
+	// cartid/quantity
+	@PostMapping("/items/selected")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+	public ResponseEntity<CartDto> selectedItem(@RequestParam Long product_id) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
+		CartDto result = service.handleSelectedItemInCart(username, product_id);
+		return new ResponseEntity<CartDto>(result, HttpStatus.OK);
 	}
 
 }

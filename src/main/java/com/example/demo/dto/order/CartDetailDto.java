@@ -15,7 +15,7 @@ public class CartDetailDto extends AbstractDTO<CartDetailDto> {
 	private Long product_id;
 	private String color;
 	private Integer quantity;
-
+	private Integer selected;
 	// info product
 	private Integer type;
 	private String name;
@@ -40,6 +40,7 @@ public class CartDetailDto extends AbstractDTO<CartDetailDto> {
 		this.color = entity.getColor();
 		this.quantity = entity.getQuantity();
 		this.cart_id = entity.getCart().getId();
+		this.selected = entity.getSelected();
 		this.type = entity.getProduct().getType();
 		this.name = entity.getProduct().getName();
 		this.slug = entity.getProduct().getSlug();
@@ -65,6 +66,14 @@ public class CartDetailDto extends AbstractDTO<CartDetailDto> {
 
 	public void setCart_id(Long cart_id) {
 		this.cart_id = cart_id;
+	}
+
+	public Integer getSelected() {
+		return selected;
+	}
+
+	public void setSelected(Integer selected) {
+		this.selected = selected;
 	}
 
 	public Long getProduct_id() {

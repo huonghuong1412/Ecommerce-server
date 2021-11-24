@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 	public List<Order> getAllByUser(User user, Sort sort);
 	
-	public Page<Order> getAllByShipper(User user, Pageable pageable);
+	public Page<Order> getAllBySeller(User user, Pageable pageable);
 	
 	public Boolean existsByStatus(Long status);
 	
@@ -29,6 +29,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	@Query("SELECT COUNT(entity) FROM Order entity WHERE entity.status=?1 AND entity.user.id =?2")
 	public Integer countOrderByStatusAndUser(Integer status, Long user_id);
 	
-	@Query("SELECT COUNT(entity) FROM Order entity WHERE entity.status=?1 AND entity.shipper.id =?2")
-	public Integer countOrderByStatusAndShipper(Integer status, Long shipper_id);
+	@Query("SELECT COUNT(entity) FROM Order entity WHERE entity.status=?1 AND entity.seller.id =?2")
+	public Integer countOrderByStatusAndSeller(Integer status, Long seller_id);
 }

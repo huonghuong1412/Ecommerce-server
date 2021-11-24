@@ -45,6 +45,9 @@ public class SupplierServiceImpl implements SupplierService {
 			entity.setCode(dto.getCode());
 			entity.setEmail(dto.getEmail());
 			entity.setAddress(dto.getAddress());
+			entity.setProvince(dto.getProvince());
+			entity.setDistrict(dto.getDistrict());
+			entity.setWard(dto.getWard());
 			entity.setPhone(dto.getPhone());
 			entity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 			entity.setDisplay(1);

@@ -1,5 +1,6 @@
 package com.example.demo.rest;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -35,8 +36,6 @@ import com.example.demo.entity.order.Payment;
 import com.example.demo.entity.order.Shipment;
 import com.example.demo.entity.product.Color;
 import com.example.demo.entity.product.Product;
-import com.example.demo.entity.user.Shipper;
-import com.example.demo.entity.user.User;
 import com.example.demo.repository.ColorRepository;
 import com.example.demo.repository.InventoryRepository;
 import com.example.demo.repository.OrderDetailRepository;
@@ -44,8 +43,6 @@ import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.PaymentRepository;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.ShipmentRepository;
-import com.example.demo.repository.ShipperRepository;
-import com.example.demo.repository.UserRepository;
 import com.example.demo.service.OrderService;
 
 @CrossOrigin(origins = "*")
@@ -67,7 +64,7 @@ public class OrderController {
 
 	@Autowired
 	private PaymentRepository paymentRepository;
-	
+
 	@Autowired
 	private ShipmentRepository shipmentRepos;
 
@@ -76,12 +73,6 @@ public class OrderController {
 
 	@Autowired
 	private ColorRepository colorRepos;
-
-	@Autowired
-	private ShipperRepository shipperRepos;
-
-	@Autowired
-	private UserRepository userRepos;
 
 	@GetMapping("/all")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -98,8 +89,8 @@ public class OrderController {
 		return new ResponseEntity<Page<OrderHisDto>>(result, HttpStatus.OK);
 	}
 
-	@GetMapping("/shipper/{id}")
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SHIPPER')")
+	@GetMapping("/seller/{id}")
+//	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SELLER')")
 	public ResponseEntity<Page<OrderHisDto>> getAllByShipper(
 			@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
@@ -110,12 +101,12 @@ public class OrderController {
 		dto.setPageSize(limit);
 		dto.setLast_date(last_date);
 		dto.setStatus(status);
-		Page<OrderHisDto> result = service.getAllOrderByShipper(dto, id);
+		Page<OrderHisDto> result = service.getAllOrderBySeller(dto, id);
 		return new ResponseEntity<Page<OrderHisDto>>(result, HttpStatus.OK);
 	}
 
-	@GetMapping("/shipper")
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SHIPPER')")
+	@GetMapping("/seller")
+//	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SELLER')")
 	public ResponseEntity<Page<OrderHisDto>> getAllShipperByUsername(
 			@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
@@ -128,20 +119,20 @@ public class OrderController {
 		dto.setStatus(status);
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();
-		Page<OrderHisDto> result = service.getAllOrderByShipperUsername(dto, username);
+		Page<OrderHisDto> result = service.getAllOrderBySellerUsername(dto, username);
 		return new ResponseEntity<Page<OrderHisDto>>(result, HttpStatus.OK);
 	}
 
 	@GetMapping("/detail/{id}")
-	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_SHIPPER')")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_SELLER')")
 	public ResponseEntity<List<OrderDetailHisDto>> getDetail(@PathVariable Long id) {
 		List<OrderDetailHisDto> result = service.getDetailOrderById(id);
 		return new ResponseEntity<List<OrderDetailHisDto>>(result, HttpStatus.OK);
 	}
-	
-	// get sau khi đặt 
+
+	// get sau khi đặt
 	@GetMapping("/chi-tiet/{id}")
-//	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_SHIPPER')")
+//	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_SELLER')")
 	public ResponseEntity<OrderDto> getDetailAfterPayment(@PathVariable Long id) {
 		OrderDto result = service.getOneOrderAfterPayment(id);
 		String ship_type = "";
@@ -166,7 +157,7 @@ public class OrderController {
 	}
 
 	@GetMapping("/detail-full/{id}")
-	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_SHIPPER')")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_SELLER')")
 	public ResponseEntity<OrderHisFullDto> getDetailFull(@PathVariable Long id) {
 		OrderHisFullDto result = service.getDetailOrder(id);
 		return new ResponseEntity<OrderHisFullDto>(result, HttpStatus.OK);
@@ -201,7 +192,7 @@ public class OrderController {
 
 	// xác nhận đơn hàng
 	@PutMapping("/confirm/{id}")
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SHIPPER')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SELLER')")
 	public ResponseEntity<MessageResponse> confirmOrder(@PathVariable Long id) {
 		Order order = orderRepository.getById(id);
 		Payment payment = paymentRepository.findOneByOrderId(order.getId());
@@ -213,6 +204,7 @@ public class OrderController {
 					HttpStatus.BAD_REQUEST);
 		} else {
 			order.setStatus(2);
+			order.setCompleteDate(new Timestamp(new Date().getTime()).toString());
 //			List<OrderDetail> orderDetails = orderDetailRepository.getAllByOrderId(order.getId());
 //			for (OrderDetail i : orderDetails) {
 //				if (inventoryRepos.existsByProductId(i.getProduct().getId())) {
@@ -237,17 +229,11 @@ public class OrderController {
 
 	// đang giao hàng
 	@PutMapping("/is-shipping/{id}")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<MessageResponse> shipping(@PathVariable Long id, @RequestParam String shipper) {
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_SELLER')")
+	public ResponseEntity<MessageResponse> shipping(@PathVariable Long id, @RequestParam String order_code) {
 		Order order = orderRepository.getById(id);
 		Payment payment = paymentRepository.findOneByOrderId(order.getId());
-		User user = userRepos.findOneByUsername(shipper);
-		Shipper ship = shipperRepos.findOneByUser(user);
-
-		if (ship != null) {
-			order.setShipper(ship);
-		}
-
+		Shipment shipment = shipmentRepos.findOneByOrderId(order.getId());
 		if (order.getStatus() == 1) {
 			return new ResponseEntity<MessageResponse>(
 					new MessageResponse("Đơn hàng đang giao, không cần xác nhận lại!"), HttpStatus.BAD_REQUEST);
@@ -259,6 +245,8 @@ public class OrderController {
 					HttpStatus.BAD_REQUEST);
 		} else {
 			order.setStatus(1);
+			shipment.setOrder_code(order_code);
+			order.setCreatedShipDate(new Timestamp(new Date().getTime()).toString());
 		}
 
 		if (order.getStatus() == -1) {
@@ -268,12 +256,13 @@ public class OrderController {
 		}
 		paymentRepository.save(payment);
 		orderRepository.save(order);
+		shipmentRepos.save(shipment);
 		return ResponseEntity.ok(new MessageResponse("Cập nhật trạng thái đơn hàng thành công!"));
 	}
 
 	// huỷ đơn hàng
 	@PutMapping("/cancel/{id}")
-	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_SHIPPER')")
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN', 'ROLE_SELLER')")
 	public ResponseEntity<MessageResponse> cancel(@PathVariable Long id) {
 		Order order = orderRepository.getById(id);
 		Payment payment = paymentRepository.findOneByOrderId(order.getId());
@@ -320,13 +309,6 @@ public class OrderController {
 				}
 			}
 		}
-
-//		if(order.getPayment().getStatus() == 0) {
-//			payment.setStatus(-1);
-//		} else if(order.getPayment().getStatus() == 1) {
-//			payment.setStatus(2);
-//		}
-
 		payment.setStatus(-1);
 		paymentRepository.save(payment);
 
@@ -378,7 +360,7 @@ public class OrderController {
 		Order order = orderRepository.getById(id);
 		order.setSend_status(1);
 		orderRepository.save(order);
-		return ResponseEntity.ok("");
+		return ResponseEntity.ok("SUCCESS");
 	}
 
 }

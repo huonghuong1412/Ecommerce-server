@@ -87,6 +87,7 @@ public class CartServiceImpl implements CartService {
 					cartDetailEntity.setCreatedDate(new Timestamp(new Date().getTime()).toString());
 					cartDetailEntity.setProduct(product);
 					cartDetailEntity.setCart(cart);
+					cartDetailEntity.setSelected(0);
 					cartDetailEntity.setColor(color.getName());
 					cartDetails.add(cartDetailEntity);
 				}
@@ -212,37 +213,73 @@ public class CartServiceImpl implements CartService {
 			CartDto dto = new CartDto(cart);
 			List<CartDetailDto> details = dto.getCart_details();
 			Integer total_weight = 0, total_length = 0, total_width = 0, total_height = 0;
+			Long total_price = 0L;
 			for (CartDetailDto item : details) {
-				Product p = productRepos.getById(item.getProduct_id());
-				total_weight += p.getWeight();
-				total_length += p.getLength();
-				total_width += p.getWidth();
-				total_height += p.getHeight();
+				if(item.getSelected() == 1) {
+					Product p = productRepos.getById(item.getProduct_id());
+					total_weight += p.getWeight();
+					total_length += p.getLength();
+					total_width += p.getWidth();
+					total_height += p.getHeight();
+					total_price += item.getPrice() * item.getQuantity();
+				}
 			}
 			dto.setWeight(total_weight);
 			dto.setLength(total_length);
 			dto.setWidth(total_width);
 			dto.setHeight(total_height);
+			dto.setTotal_price(total_price);
+			return dto;
+		}
+		return null;
+	}
+	
+	@Override
+	public CartDto getCartByUserSelected(String username) {
+		// TODO Auto-generated method stub
+		if (username != null) {
+			User user = userRepos.findOneByUsername(username);
+			Cart cart = cartRepos.getOneByUser(user);
+			CartDto dto = new CartDto(cart);
+			List<CartDetailDto> details = dto.getCart_details();
+			List<CartDetailDto> list = new ArrayList<CartDetailDto>();
+			
+			for(CartDetailDto item : details) {
+				if(item.getSelected() == 1) {
+					list.add(item);
+				}
+			}
+			
+			Integer total_weight = 0, total_length = 0, total_width = 0, total_height = 0, quantity = 0;
+			Long total_price = 0L;
+			for (CartDetailDto item : list) {
+				Product p = productRepos.getById(item.getProduct_id());
+				total_weight += p.getWeight();
+				total_length += p.getLength();
+				total_width += p.getWidth();
+				total_height += p.getHeight();
+				total_price += item.getPrice() * item.getQuantity();
+				quantity += item.getQuantity();
+			}
+			dto.setWeight(total_weight);
+			dto.setLength(total_length);
+			dto.setWidth(total_width);
+			dto.setHeight(total_height);
+			dto.setCart_details(list);
+			dto.setItems_quantity(quantity);
+			dto.setTotal_price(total_price);
 			return dto;
 		}
 		return null;
 	}
 
 	@Override
-	public CartDetail getCartDetailByProductAndCart(Product product, Cart cart) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public CartResponse deleteCartDetail(String username, Long product_id) {
-		// TODO Auto-generated method stub
 		User user = userRepos.findOneByUsername(username);
 		Cart cart = cartRepos.getOneByUser(user);
 		List<CartDetail> cartDetails = cartDetailRepos.findAllByCart(cart);
 		for (CartDetail item : cartDetails) {
 			Product product = productRepos.getById(product_id);
-//			Color color = colorRepos.findOneByName(item.getColor().getName());
 			if (item.getProduct().getId() == product_id) {
 				CartDetail detail = cartDetailRepos.getByProductAndCart(product, cart);
 				cartDetailRepos.delete(detail);
@@ -306,12 +343,40 @@ public class CartServiceImpl implements CartService {
 		User user = userRepos.findOneByUsername(username);
 		Cart cart = cartRepos.getOneByUser(user);
 		List<CartDetail> details = cart.getCart_details();
-		cartDetailRepos.deleteByCartId(cart.getId());
-		if (details.size() == 0) {
+		Integer size = details.size();
+		for(CartDetail item : details) {
+			if(item.getSelected() == 1) {
+				cartDetailRepos.deleteByCartDetailId(item.getId());;
+			}
+		}
+		if (details.size() == 0 || details.size() < size) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+	
+	@Override
+	public CartDto handleSelectedItemInCart(String username, Long product_id) {
+		// TODO Auto-generated method stub
+		User user = userRepos.findOneByUsername(username);
+		Cart cart = cartRepos.getOneByUser(user);
+		List<CartDetail> cartDetails = cartDetailRepos.findAllByCart(cart);
+		for (CartDetail item : cartDetails) {
+			Product product = productRepos.getById(product_id);
+//			Color color = colorRepos.findOneByName(item.getColor().getName());
+			if (item.getProduct().getId() == product_id) {
+				CartDetail detail = cartDetailRepos.getByProductAndCart(product, cart);
+				if(detail.getSelected() == 0) {
+					detail.setSelected(1);
+				} else {
+					detail.setSelected(0);
+				}
+				cartDetailRepos.save(detail);
+				return new CartDto(cart);
+			}
+		}
+		return new CartDto(cart);
 	}
 
 }

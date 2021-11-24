@@ -25,14 +25,18 @@ import com.example.demo.dto.OrderResponse;
 import com.example.demo.dto.SearchDto;
 import com.example.demo.dto.order.OrderHisDto;
 import com.example.demo.dto.product.ProductListDto;
+import com.example.demo.dto.report.ReportBrand;
+import com.example.demo.dto.report.ReportCategory;
 import com.example.demo.dto.report.ReportComment;
 import com.example.demo.dto.report.ReportCustomer;
-import com.example.demo.dto.report.ReportOrderDto;
 import com.example.demo.dto.report.ReportProduct;
 import com.example.demo.dto.report.ReportProductInventory;
+import com.example.demo.dto.report.ReportProductOrder;
+import com.example.demo.dto.report.ReportSupplier;
 import com.example.demo.dto.user.CommentDto;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.InventoryDetailRepository;
+import com.example.demo.repository.InventoryRepository;
 import com.example.demo.repository.OrderRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.CommentService;
@@ -60,12 +64,15 @@ public class ReportController {
 
 	@Autowired
 	private UserRepository userRepos;
-	
+
 	@Autowired
 	private OrderRepository orderRepos;
-	
+
 	@Autowired
 	private InventoryDetailRepository inventoryDetailRepos;
+	
+	@Autowired
+	private InventoryRepository inventoryRepos;
 
 	// đếm số lượng đơn hàng theo trạng thái đơn hàng
 	@GetMapping("/order/count")
@@ -99,20 +106,13 @@ public class ReportController {
 		list.add(new OrderResponse("Đang giao hàng", count_shiping > 0 ? count_shiping : 0));
 		list.add(new OrderResponse("Đang chờ xác nhận", count_wait > 0 ? count_wait : 0));
 		list.add(new OrderResponse("Đã huỷ đơn", count_cancel > 0 ? count_cancel : 0));
-//		list.add(new OrderResponse("Tỉ lệ huỷ đơn",
-//				(int)Math.round(CalculateDiscount.calPercent(count_cancel, result.getTotalElements()))));
-
-//		list.add(new OrderResponse("Đã hoàn thành", orderRepository.countOrderByStatus(2)));
-//		list.add(new OrderResponse("Đang giao hàng", orderRepository.countOrderByStatus(1)));
-//		list.add(new OrderResponse("Đang chờ xác nhận", orderRepository.countOrderByStatus(0)));
-//		list.add(new OrderResponse("Đã huỷ đơn", orderRepository.countOrderByStatus(-1)));
 		return new ResponseEntity<List<OrderResponse>>(list, HttpStatus.OK);
 	}
-	
+
 	// đếm số lượng đơn hàng theo trạng thái đơn hàng
-	@GetMapping("/shipper/count/{username}")
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SHIPPER')")
-	public ResponseEntity<List<OrderResponse>> getQuantityByStatusShipperByAdmin(
+	@GetMapping("/seller/count/{username}")
+//	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SELLER')")
+	public ResponseEntity<List<OrderResponse>> getQuantityByStatusSellerByAdmin(
 			@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "1000") Integer limit,
 			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date,
@@ -122,7 +122,7 @@ public class ReportController {
 		dto.setPageSize(limit);
 		dto.setLast_date(last_date);
 		dto.setStatus(status);
-		Page<OrderHisDto> result = orderService.getAllOrderByShipperUsername(dto, username);
+		Page<OrderHisDto> result = orderService.getAllOrderBySellerUsername(dto, username);
 
 		List<OrderResponse> list = new ArrayList<OrderResponse>();
 		Integer count_complete = 0, count_shiping = 0, count_wait = 0, count_cancel = 0;
@@ -142,15 +142,16 @@ public class ReportController {
 		list.add(new OrderResponse("Đang chờ xác nhận", count_wait > 0 ? count_wait : 0));
 		list.add(new OrderResponse("Đã huỷ đơn", count_cancel > 0 ? count_cancel : 0));
 		list.add(new OrderResponse("Tỉ lệ huỷ đơn (%)",
-				(int)Math.round(CalculateDiscount.calPercent(count_cancel, result.getTotalElements()))));
+				(int) Math.round(CalculateDiscount.calPercent(count_cancel, result.getTotalElements()))));
 		list.add(new OrderResponse("Tỉ lệ thành công (%)",
-				(int)Math.round(CalculateDiscount.calPercent(count_complete, result.getTotalElements()))));
+				(int) Math.round(CalculateDiscount.calPercent(count_complete, result.getTotalElements()))));
 		return new ResponseEntity<List<OrderResponse>>(list, HttpStatus.OK);
 	}
-	
-	@GetMapping("/shipper_list/{username}")
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SHIPPER')")
-	public ResponseEntity<Page<OrderHisDto>> getAllShipperByUsernameByAdmin(@RequestParam(name = "page", defaultValue = "0") Integer page,
+
+	@GetMapping("/seller_list/{username}")
+//	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SELLER')")
+	public ResponseEntity<Page<OrderHisDto>> getAllSellerByUsernameByAdmin(
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
 			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date,
 			@RequestParam(name = "status", defaultValue = "3") Integer status, @PathVariable String username) {
@@ -159,95 +160,77 @@ public class ReportController {
 		dto.setPageSize(limit);
 		dto.setLast_date(last_date);
 		dto.setStatus(status);
-		Page<OrderHisDto> result = orderService.getAllOrderByShipperUsername(dto, username);
+		Page<OrderHisDto> result = orderService.getAllOrderBySellerUsername(dto, username);
 		return new ResponseEntity<Page<OrderHisDto>>(result, HttpStatus.OK);
 	}
-	
-	
-	// đếm số lượng đơn hàng theo trạng thái đơn hàng
-		@GetMapping("/shipper/count")
-		@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SHIPPER')")
-		public ResponseEntity<List<OrderResponse>> getQuantityByStatusAndShipper(
-				@RequestParam(name = "page", defaultValue = "0") Integer page,
-				@RequestParam(name = "limit", defaultValue = "1000") Integer limit,
-				@RequestParam(name = "last_date", defaultValue = "0") Integer last_date,
-				@RequestParam(name = "status", defaultValue = "3") Integer status) {
-			AdvanceSearchDto dto = new AdvanceSearchDto();
-			dto.setPageIndex(page);
-			dto.setPageSize(limit);
-			dto.setLast_date(last_date);
-			dto.setStatus(status);
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			String username = auth.getName();
-			Page<OrderHisDto> result = orderService.getAllOrderByShipperUsername(dto, username);
 
-			List<OrderResponse> list = new ArrayList<OrderResponse>();
-			Integer count_complete = 0, count_shiping = 0, count_wait = 0, count_cancel = 0;
-			for (OrderHisDto item : result.toList()) {
-				if (item.getStatus_order() == 2) {
-					count_complete += 1;
-				} else if (item.getStatus_order() == 1) {
-					count_shiping += 1;
-				} else if (item.getStatus_order() == 0) {
-					count_wait += 1;
-				} else {
-					count_cancel += 1;
-				}
+	// đếm số lượng đơn hàng theo trạng thái đơn hàng
+	@GetMapping("/seller/count")
+//	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_SELLER')")
+	public ResponseEntity<List<OrderResponse>> getQuantityByStatusAndShipper(
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "1000") Integer limit,
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date,
+			@RequestParam(name = "status", defaultValue = "3") Integer status) {
+		AdvanceSearchDto dto = new AdvanceSearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		dto.setLast_date(last_date);
+		dto.setStatus(status);
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = auth.getName();
+		Page<OrderHisDto> result = orderService.getAllOrderBySellerUsername(dto, username);
+
+		List<OrderResponse> list = new ArrayList<OrderResponse>();
+		Integer count_complete = 0, count_shiping = 0, count_wait = 0, count_cancel = 0;
+		for (OrderHisDto item : result.toList()) {
+			if (item.getStatus_order() == 2) {
+				count_complete += 1;
+			} else if (item.getStatus_order() == 1) {
+				count_shiping += 1;
+			} else if (item.getStatus_order() == 0) {
+				count_wait += 1;
+			} else {
+				count_cancel += 1;
 			}
-			list.add(new OrderResponse("Đã hoàn thành", count_complete > 0 ? count_complete : 0));
-			list.add(new OrderResponse("Đang giao hàng", count_shiping > 0 ? count_shiping : 0));
-			list.add(new OrderResponse("Đang chờ xác nhận", count_wait > 0 ? count_wait : 0));
-			list.add(new OrderResponse("Đã huỷ đơn", count_cancel > 0 ? count_cancel : 0));
-			list.add(new OrderResponse("Tỉ lệ huỷ đơn (%)",
-					(int)Math.round(CalculateDiscount.calPercent(count_cancel, result.getTotalElements()))));
-			list.add(new OrderResponse("Tỉ lệ thành công (%)",
-					(int)Math.round(CalculateDiscount.calPercent(count_complete, result.getTotalElements()))));
-			return new ResponseEntity<List<OrderResponse>>(list, HttpStatus.OK);
 		}
+		list.add(new OrderResponse("Đã hoàn thành", count_complete > 0 ? count_complete : 0));
+		list.add(new OrderResponse("Đang giao hàng", count_shiping > 0 ? count_shiping : 0));
+		list.add(new OrderResponse("Đang chờ xác nhận", count_wait > 0 ? count_wait : 0));
+		list.add(new OrderResponse("Đã huỷ đơn", count_cancel > 0 ? count_cancel : 0));
+		list.add(new OrderResponse("Tỉ lệ huỷ đơn (%)",
+				(int) Math.round(CalculateDiscount.calPercent(count_cancel, result.getTotalElements()))));
+		list.add(new OrderResponse("Tỉ lệ thành công (%)",
+				(int) Math.round(CalculateDiscount.calPercent(count_complete, result.getTotalElements()))));
+		return new ResponseEntity<List<OrderResponse>>(list, HttpStatus.OK);
+	}
 
 	// thống kê doanh thu theo ngày
 	@GetMapping("/revenue")
 //	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<List<OrderResponse>> reportRevenue(@RequestParam(name = "last_date", defaultValue = "1000000000") Integer last_date) {
+	public ResponseEntity<List<OrderResponse>> reportRevenue(
+			@RequestParam(name = "last_date", defaultValue = "1000000000") Integer last_date) {
 		List<OrderResponse> list = new ArrayList<>();
 		Long totalRevenue = orderRepos.totalRevenueFromOrder(last_date);
 		Long totalPriceImport = inventoryDetailRepos.getTotalPriceImport(last_date);
-		if(totalRevenue!= null) {
+		if (totalRevenue != null) {
 			totalRevenue = orderRepos.totalRevenueFromOrder(last_date);
 		} else {
 			totalRevenue = 0L;
 		}
-		if(totalPriceImport!= null) {
+		if (totalPriceImport != null) {
 			totalPriceImport = inventoryDetailRepos.getTotalPriceImport(last_date);
 		} else {
 			totalPriceImport = 0L;
 		}
 		list.add(new OrderResponse("Doanh thu", null, totalRevenue));
 		list.add(new OrderResponse("Tổng nhập", null, totalPriceImport));
-		if(totalRevenue != null && totalPriceImport != null) {
+		if (totalRevenue != null && totalPriceImport != null) {
 			list.add(new OrderResponse("Lợi nhuận", null, totalRevenue - totalPriceImport));
 		} else {
 			list.add(new OrderResponse("Lợi nhuận", null, 0L));
 		}
 		return new ResponseEntity<List<OrderResponse>>(list, HttpStatus.OK);
-	}
-
-	// lấy danh sách sản phẩm ở trong các đơn hàng
-	@GetMapping("/product-in-order")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Page<ReportProduct>> reportProductInHistoryOrder(
-			@RequestParam(name = "product") Long product_id,
-			@RequestParam(name = "page", defaultValue = "0") Integer page,
-			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
-			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) { // thống kê các lần bán hàng của
-																						// sản
-		// phẩm
-		AdvanceSearchDto dto = new AdvanceSearchDto();
-		dto.setPageIndex(page);
-		dto.setPageSize(limit);
-		dto.setLast_date(last_date);
-		Page<ReportProduct> result = reportService.reportProductByHistoryOrder(product_id, dto);
-		return new ResponseEntity<Page<ReportProduct>>(result, HttpStatus.OK);
 	}
 
 	// lấy danh sách đặt hàng của khách theo user id
@@ -267,11 +250,12 @@ public class ReportController {
 			@RequestParam(name = "sku", defaultValue = "") String sku,
 			@RequestParam(name = "category", defaultValue = "") String category,
 			@RequestParam(name = "brand", defaultValue = "") String brand,
+			@RequestParam(name = "supplier", defaultValue = "") String supplier,
 			@RequestParam(name = "display", defaultValue = "2") Integer display) {
-		AdvanceSearchDto dto = new AdvanceSearchDto(page, limit, name, sku, display, brand, category);
+		AdvanceSearchDto dto = new AdvanceSearchDto(page, limit, name, sku, display, brand, supplier, category);
 		Page<ProductListDto> result = productService.getAllProduct(dto);
 		List<OrderResponse> list = new ArrayList<OrderResponse>();
-		Integer count_onsale = 0, count_hide = 0, count_inventory = 0;
+		Integer count_onsale = 0, count_hide = 0, count_inventory = inventoryRepos.getTotalItemOutOfStock();
 		Integer sum_sold = 0;
 		for (ProductListDto item : result.toList()) {
 			sum_sold += item.getSeller_count();
@@ -281,9 +265,6 @@ public class ReportController {
 				count_onsale += 1;
 			} else if (item.getDisplay() == 0) {
 				count_hide += 1;
-			}
-			if (item.getIn_stock() == 0) {
-				count_inventory += 1;
 			}
 		}
 		list.add(new OrderResponse("Đang bán", count_onsale));
@@ -295,8 +276,8 @@ public class ReportController {
 
 	// thống kê sản phẩm theo đơn hàng (sản phẩm bán chạy)
 	@GetMapping("/product")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Page<ReportOrderDto>> reportByProduct(
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<ReportProductOrder>> reportByProduct(
 			@RequestParam(name = "page", defaultValue = "0") Integer page,
 			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
 			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) { // thống kê theo sản phẩm bán
@@ -306,8 +287,26 @@ public class ReportController {
 		dto.setPageIndex(page);
 		dto.setPageSize(limit);
 		dto.setLast_date(last_date);
-		Page<ReportOrderDto> result = reportService.reportProduct(dto);
-		return new ResponseEntity<Page<ReportOrderDto>>(result, HttpStatus.OK);
+		Page<ReportProductOrder> result = reportService.reportProduct(dto);
+		return new ResponseEntity<Page<ReportProductOrder>>(result, HttpStatus.OK);
+	}
+
+	// lấy danh sách sản phẩm ở trong các đơn hàng
+	@GetMapping("/product-in-order")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<ReportProduct>> reportProductInHistoryOrder(
+			@RequestParam(name = "product") Long product_id,
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) { // thống kê các lần bán hàng của
+																						// sản
+		// phẩm
+		AdvanceSearchDto dto = new AdvanceSearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		dto.setLast_date(last_date);
+		Page<ReportProduct> result = reportService.reportProductByHistoryOrder(product_id, dto);
+		return new ResponseEntity<Page<ReportProduct>>(result, HttpStatus.OK);
 	}
 
 	// lấy top danh sách khách hàng mua nhiều
@@ -376,4 +375,98 @@ public class ReportController {
 
 		return new ResponseEntity<Page<ReportComment>>(new PageImpl<>(list), HttpStatus.OK);
 	}
+
+	// thống kê theo danh mục
+	@GetMapping("/category")
+//		@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<ReportCategory>> reportByCategory(
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) {
+		AdvanceSearchDto dto = new AdvanceSearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		dto.setLast_date(last_date);
+		Page<ReportCategory> result = reportService.reportCategory(dto);
+		return new ResponseEntity<Page<ReportCategory>>(result, HttpStatus.OK);
+	}
+
+	// thống kê chi tiết theo danh mục
+	@GetMapping("/category/detail/{category_id}")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<ReportProductOrder>> reportDetailProductByCategory(
+			@PathVariable(name = "category_id") Long category_id,
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) {
+		AdvanceSearchDto dto = new AdvanceSearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		dto.setLast_date(last_date);
+		Page<ReportProductOrder> result = reportService.reportDetailProductByCategory(category_id, dto);
+		return new ResponseEntity<Page<ReportProductOrder>>(result, HttpStatus.OK);
+	}
+
+	// thống kê theo thương thiệu
+	@GetMapping("/brand")
+//		@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<ReportBrand>> reportByBrand(
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) {
+		AdvanceSearchDto dto = new AdvanceSearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		dto.setLast_date(last_date);
+		Page<ReportBrand> result = reportService.reportBrand(dto);
+		return new ResponseEntity<Page<ReportBrand>>(result, HttpStatus.OK);
+	}
+
+	// thống kê chi tiết theo thương hiệu
+	@GetMapping("/brand/detail/{brand_id}")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<ReportProductOrder>> reportDetailProductByBrand(
+			@PathVariable(name = "brand_id") Long brand_id,
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) {
+		AdvanceSearchDto dto = new AdvanceSearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		dto.setLast_date(last_date);
+		Page<ReportProductOrder> result = reportService.reportDetailProductByBrand(brand_id, dto);
+		return new ResponseEntity<Page<ReportProductOrder>>(result, HttpStatus.OK);
+	}
+
+	// thống kê theo nhà cung câps
+	@GetMapping("/supplier")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<ReportSupplier>> reportBySupplier(
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) {
+		AdvanceSearchDto dto = new AdvanceSearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		dto.setLast_date(last_date);
+		Page<ReportSupplier> result = reportService.reportSupplier(dto);
+		return new ResponseEntity<Page<ReportSupplier>>(result, HttpStatus.OK);
+	}
+
+	// thống kê chi tiết theo ncc
+	@GetMapping("/supplier/detail/{supplier_id}")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Page<ReportProductOrder>> reportDetailProductBySupplier(
+			@PathVariable(name = "supplier_id") Long supplier_id,
+			@RequestParam(name = "page", defaultValue = "0") Integer page,
+			@RequestParam(name = "limit", defaultValue = "10") Integer limit,
+			@RequestParam(name = "last_date", defaultValue = "0") Integer last_date) {
+		AdvanceSearchDto dto = new AdvanceSearchDto();
+		dto.setPageIndex(page);
+		dto.setPageSize(limit);
+		dto.setLast_date(last_date);
+		Page<ReportProductOrder> result = reportService.reportDetailProductBySupplier(supplier_id, dto);
+		return new ResponseEntity<Page<ReportProductOrder>>(result, HttpStatus.OK);
+	}
+
 }

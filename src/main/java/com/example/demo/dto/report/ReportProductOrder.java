@@ -1,21 +1,51 @@
 package com.example.demo.dto.report;
 
-public class ReportOrderDto {
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+public class ReportProductOrder {
+
+	@JsonInclude(value = Include.NON_NULL)
 	private Long id; // product id
+	
+	@JsonInclude(value = Include.NON_NULL)
 	private String product_name;
+	
+	@JsonInclude(value = Include.NON_NULL)
 	private String product_sku;
+	
+	@JsonInclude(value = Include.NON_NULL)
 	private String product_category;
+	
+	@JsonInclude(value = Include.NON_NULL)
 	private String product_brand;
+	
+	@JsonInclude(value = Include.NON_NULL)
 	private Long quantity_sold;
+	
+	@JsonInclude(value = Include.NON_NULL)
 	private Long order_id;
+	
+	@JsonInclude(value = Include.NON_NULL)
 	private Long total_price;
 
-	public ReportOrderDto() {
+	public ReportProductOrder() {
 		super();
 	}
 
-	public ReportOrderDto(Long id, String product_name, String product_sku, String product_category,
+	public ReportProductOrder(Long id, String product_name, String product_sku, String product_category,
+			String product_brand, Long quantity_sold, Long total_price) {
+		super();
+		this.id = id;
+		this.product_name = product_name;
+		this.product_sku = product_sku;
+		this.product_category = product_category;
+		this.product_brand = product_brand;
+		this.quantity_sold = quantity_sold;
+		this.total_price = total_price;
+	}
+
+	public ReportProductOrder(Long id, String product_name, String product_sku, String product_category,
 			String product_brand, Long order_id, Long quantity_sold, Long total_price) {
 		super();
 		this.id = id;

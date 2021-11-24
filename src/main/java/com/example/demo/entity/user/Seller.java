@@ -14,24 +14,29 @@ import com.example.demo.entity.BaseEntity;
 import com.example.demo.entity.order.Order;
 
 @Entity
-@Table(name = "tbl_user_shipper")
-public class Shipper extends BaseEntity {
+@Table(name = "tbl_user_seller")
+public class Seller extends BaseEntity {
 
 	@OneToOne
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@OneToMany(mappedBy = "shipper", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
 	private List<Order> orders;
 
 	@Column(name = "cccd")
 	private String cccd;
 
-	@Column(name = "shift")
-	private String shift;
+	@Column(name = "exp") // 0: < 1 năm, 1: 1-2 năm, 2: 2-3 năm, 3: trên 3 năm
+	private Integer exp;
 
-	@Column(name = "salary")
-	private Long salary;
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 
 	public List<Order> getOrders() {
 		return orders;
@@ -49,28 +54,12 @@ public class Shipper extends BaseEntity {
 		this.cccd = cccd;
 	}
 
-	public String getShift() {
-		return shift;
+	public Integer getExp() {
+		return exp;
 	}
 
-	public void setShift(String shift) {
-		this.shift = shift;
-	}
-
-	public Long getSalary() {
-		return salary;
-	}
-
-	public void setSalary(Long salary) {
-		this.salary = salary;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
+	public void setExp(Integer exp) {
+		this.exp = exp;
 	}
 
 }

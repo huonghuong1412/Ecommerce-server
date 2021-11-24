@@ -3,6 +3,6 @@ package com.example.demo.common;
 public enum Erole {
 	
 	ROLE_ADMIN,
-	ROLE_SHIPPER,
+	ROLE_SELLER,
 	ROLE_USER
 }

@@ -6,7 +6,10 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +38,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.dto.GHN.Item;
-import com.example.demo.dto.GHN.OrderCodes;
+import com.example.demo.dto.ship.Item;
+import com.example.demo.dto.ship.OrderCodes;
 import com.example.demo.dto.ship.ShipCancelOrderResponse;
 import com.example.demo.dto.ship.ShipFeeResponse;
 import com.example.demo.dto.ship.ShipInfoOrderResponse;
@@ -77,7 +80,7 @@ public class GHNController {
 			json.put("cod_amount", 0);
 		} else {
 			json.put("payment_type_id", 2);
-			json.put("cod_amount", o.getTotal_price());
+			json.put("cod_amount", o.getTotal_price() - o.getDiscount_price());
 		}
 		json.put("note", "");
 		json.put("required_note", "KHONGCHOXEMHANG");
@@ -231,7 +234,14 @@ public class GHNController {
 		default:
 			break;
 		}
-		String created_date = data.get("order_date").toString();
+		String created_date = "";
+		try {
+			created_date = new SimpleDateFormat("dd/MM/yyyy hh:mm").format(
+					new Date(new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'").parse(data.get("order_date").toString()).getTime()));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		String updated_date = data.get("updated_date").toString();
 		String pick_date = data.get("pickup_time").toString();
 		String deliver_date = data.get("leadtime").toString();

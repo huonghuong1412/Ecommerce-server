@@ -11,7 +11,7 @@ import com.example.demo.entity.inventory.Supplier;
 @Repository
 public interface SupplierRepository extends JpaRepository<Supplier, Long> {
 
-	public Supplier findOneByName(String name);
+	public Supplier findOneByCode(String code);
 
 	@Query("select count(entity.id) from Supplier entity where entity.code =?1 and (entity.id <> ?2 or ?2 is null) ")
 	Long checkCode(String code, Long id);

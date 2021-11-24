@@ -90,16 +90,15 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		Pageable pageable = PageRequest.of(dto.getPageIndex(), dto.getPageSize());
 		Erole erole = Erole.valueOf(role);
-//		System.out.println(erole);
 		Role roleEntity = roleRepos.findOneByName(erole)
 				.orElseThrow(() -> new RuntimeException("Error: Role is not found"));
 		List<User> list = userRepository.findByRolesIn(Arrays.asList(roleEntity), pageable);
 		List<UserDto> dtos = new ArrayList<>();
 		for(User i : list) {
 			UserDto u = new UserDto(i);
-			if(erole.name().toString().equalsIgnoreCase("ROLE_SHIPPER")) {
-				u.setCccd(i.getShipper().getCccd());
-				u.setShift(i.getShipper().getShift());
+			if(erole.name().toString().equalsIgnoreCase("ROLE_SELLER")) {
+				u.setCccd(i.getSeller().getCccd());
+				u.setExp(i.getSeller().getExp());
 			}
 			dtos.add(u);
 		}

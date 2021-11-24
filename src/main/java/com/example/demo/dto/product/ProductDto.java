@@ -83,8 +83,15 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 	private Integer is_inverter;
 	private String type_engine;
 
+	// thiet bi phu kien
+	private String feature;
+	private String accessory_model;
+
 	// brand
 	private String brand;
+
+	// supplier
+	private String supplier;
 
 	// color
 	private List<String> colors;
@@ -113,6 +120,7 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 		this.category = entity.getCategory().getCode();
 		this.subcategory = entity.getSubcategory().getCode();
 		this.brand = entity.getBrand().getCode();
+		this.supplier = entity.getSupplier().getCode();
 
 		images = new ArrayList<>();
 		for (Image image : entity.getImages()) {
@@ -182,6 +190,10 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 			this.wash_tub = entity.getWash().getWash_tub();
 			this.is_inverter = entity.getWash().getIs_inverter();
 			this.type_engine = entity.getWash().getType_engine();
+			break;
+		case 5:
+			this.accessory_model = entity.getAccessory().getAccessory_model();
+			this.feature = entity.getAccessory().getFeatute();
 			break;
 		default:
 			break;
@@ -315,6 +327,14 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 
 	public void setBrand(String brand) {
 		this.brand = brand;
+	}
+
+	public String getSupplier() {
+		return supplier;
+	}
+
+	public void setSupplier(String supplier) {
+		this.supplier = supplier;
 	}
 
 	public String getScreen() {
@@ -699,6 +719,22 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 
 	public void setType_engine(String type_engine) {
 		this.type_engine = type_engine;
+	}
+
+	public String getFeature() {
+		return feature;
+	}
+
+	public void setFeature(String feature) {
+		this.feature = feature;
+	}
+
+	public String getAccessory_model() {
+		return accessory_model;
+	}
+
+	public void setAccessory_model(String accessory_model) {
+		this.accessory_model = accessory_model;
 	}
 
 	public List<String> getColors() {

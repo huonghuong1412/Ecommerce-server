@@ -8,7 +8,10 @@ import com.example.demo.entity.order.Order;
 
 public class OrderHisInfoDto {
 	private String createdDate;
+	private String createdShipDate;
+	private String completeDate;
 	private Long total_price;
+	private Long discount_price;
 	private Integer total_item;
 	private String orderInfo;
 	private String address;
@@ -27,8 +30,7 @@ public class OrderHisInfoDto {
 	private String status_order_name;
 	private Integer status_payment;
 	private String status_payment_name;
-	private String shipper_fullname;
-
+	private String ship_order_code;
 	private String payment_method;
 
 	public OrderHisInfoDto() {
@@ -38,13 +40,22 @@ public class OrderHisInfoDto {
 	public OrderHisInfoDto(Order entity) {
 		// TODO Auto-generated constructor stub
 		try {
-			this.createdDate = new SimpleDateFormat("dd/MM/yyyy").format(
+			this.createdDate = new SimpleDateFormat("dd/MM/yyyy hh:mm").format(
 					new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
+			if (entity.getCreatedShipDate() != null) {
+				this.createdShipDate = new SimpleDateFormat("dd/MM/yyyy hh:mm").format(new Date(
+						new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedShipDate()).getTime()));
+			}
+			if (entity.getCompleteDate() != null) {
+				this.completeDate = new SimpleDateFormat("dd/MM/yyyy hh:mm").format(new Date(
+						new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCompleteDate()).getTime()));
+			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.total_price = entity.getTotal_price();
+		this.discount_price = entity.getDiscount_price();
 		this.ship_fee = entity.getShip_fee();
 		this.ship_type = entity.getShip_type();
 		this.total_item = entity.getTotal_item();
@@ -57,9 +68,6 @@ public class OrderHisInfoDto {
 		this.district_id = entity.getShipment().getDistrict_id();
 		this.status_order = entity.getStatus();
 		this.status_payment = entity.getPayment().getStatus();
-		if (entity.getShipper() != null) {
-			this.shipper_fullname = entity.getShipper().getUser().getUsername();
-		}
 		switch (this.status_order) {
 		case -1:
 			this.status_order_name = "Đã huỷ đơn";
@@ -97,8 +105,7 @@ public class OrderHisInfoDto {
 		}
 
 		this.payment_method = entity.getPayment().getMethod().getName();
-//		this.shipment_name = entity.getShipment().getName();
-//		this.shipment_fee = entity.getShipment().getFee();
+		this.ship_order_code = entity.getShipment().getOrder_code();
 	}
 
 	public String getAddress() {
@@ -123,6 +130,14 @@ public class OrderHisInfoDto {
 
 	public void setTotal_price(Long total_price) {
 		this.total_price = total_price;
+	}
+
+	public Long getDiscount_price() {
+		return discount_price;
+	}
+
+	public void setDiscount_price(Long discount_price) {
+		this.discount_price = discount_price;
 	}
 
 	public Integer getTotal_item() {
@@ -269,12 +284,28 @@ public class OrderHisInfoDto {
 		this.district_id = district_id;
 	}
 
-	public String getShipper_fullname() {
-		return shipper_fullname;
+	public String getShip_order_code() {
+		return ship_order_code;
 	}
 
-	public void setShipper_fullname(String shipper_fullname) {
-		this.shipper_fullname = shipper_fullname;
+	public void setShip_order_code(String ship_order_code) {
+		this.ship_order_code = ship_order_code;
+	}
+
+	public String getCreatedShipDate() {
+		return createdShipDate;
+	}
+
+	public void setCreatedShipDate(String createdShipDate) {
+		this.createdShipDate = createdShipDate;
+	}
+
+	public String getCompleteDate() {
+		return completeDate;
+	}
+
+	public void setCompleteDate(String completeDate) {
+		this.completeDate = completeDate;
 	}
 
 }

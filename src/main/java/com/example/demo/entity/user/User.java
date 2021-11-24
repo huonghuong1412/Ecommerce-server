@@ -54,7 +54,7 @@ public class User extends BaseEntity {
 	private Address address = new Address();
 
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Shipper shipper = new Shipper();
+	private Seller seller = new Seller();
 
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Cart cart = new Cart();
@@ -198,12 +198,12 @@ public class User extends BaseEntity {
 		this.orders = orders;
 	}
 
-	public Shipper getShipper() {
-		return shipper;
+	public Seller getSeller() {
+		return seller;
 	}
 
-	public void setShipper(Shipper shipper) {
-		this.shipper = shipper;
+	public void setSeller(Seller seller) {
+		this.seller = seller;
 	}
 
 }

@@ -17,7 +17,9 @@ import com.example.demo.entity.BaseEntity;
 import com.example.demo.entity.category.Category;
 import com.example.demo.entity.category.SubCategory;
 import com.example.demo.entity.inventory.Inventory;
+import com.example.demo.entity.inventory.Supplier;
 import com.example.demo.entity.order.OrderDetail;
+import com.example.demo.entity.promotion.ProductDiscount;
 import com.example.demo.entity.user.Comment;
 
 @Entity
@@ -77,10 +79,6 @@ public class Product extends BaseEntity {
 	@JoinColumn(name = "category_id") // 1, 2, 3
 	private Category category;
 
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "store_id") // 1, 2, 3
-//	private Store store;
-
 //	----------------	ELECTRIC	--------------------
 
 	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -101,11 +99,25 @@ public class Product extends BaseEntity {
 	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Wash wash;
 
+//	----------------	ACCESSORY	--------------------
+
+	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Accessory accessory;
+
+//  ---------------		Discount	-------------
+
+	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private ProductDiscount discount;;
+
 //	----------------	BRAND	--------------------
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "brand_id") // 1, 2, 3
 	private Brand brand;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "supplier_id") // 1, 2, 3
+	private Supplier supplier;
 
 //	----------------	INVENTORY	--------------------
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -244,14 +256,6 @@ public class Product extends BaseEntity {
 		this.images = images;
 	}
 
-//	public Store getStore() {
-//		return store;
-//	}
-//
-//	public void setStore(Store store) {
-//		this.store = store;
-//	}
-
 	public SubCategory getSubcategory() {
 		return subcategory;
 	}
@@ -316,6 +320,14 @@ public class Product extends BaseEntity {
 		this.wash = wash;
 	}
 
+	public Accessory getAccessory() {
+		return accessory;
+	}
+
+	public void setAccessory(Accessory accessory) {
+		this.accessory = accessory;
+	}
+
 	public List<Inventory> getInventories() {
 		return inventories;
 	}
@@ -332,12 +344,28 @@ public class Product extends BaseEntity {
 		this.brand = brand;
 	}
 
+	public Supplier getSupplier() {
+		return supplier;
+	}
+
+	public void setSupplier(Supplier supplier) {
+		this.supplier = supplier;
+	}
+
 	public List<OrderDetail> getOrderDetails() {
 		return orderDetails;
 	}
 
 	public void setOrderDetails(List<OrderDetail> orderDetails) {
 		this.orderDetails = orderDetails;
+	}
+
+	public ProductDiscount getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(ProductDiscount discount) {
+		this.discount = discount;
 	}
 
 }

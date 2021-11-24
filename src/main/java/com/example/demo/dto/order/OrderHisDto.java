@@ -17,6 +17,7 @@ public class OrderHisDto {
 	private String createdDate;
 	private Long total_price;
 	private Long ship_fee;
+	private Integer ship_type;
 	private Integer total_item;
 	private String orderInfo;
 	private String address;
@@ -39,7 +40,7 @@ public class OrderHisDto {
 
 	public OrderHisDto(Order entity) {
 		this.setId(entity.getId());
-//		this.order_code = entity.getShipment().getOrder_code();
+		this.order_code = entity.getShipment().getOrder_code();
 		try {
 			this.createdDate = new SimpleDateFormat("dd/MM/yyyy hh:mm").format(
 					new Date(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS").parse(entity.getCreatedDate()).getTime()));
@@ -49,11 +50,12 @@ public class OrderHisDto {
 		}
 		this.total_price = entity.getTotal_price();
 		this.ship_fee = entity.getShip_fee();
+		this.ship_type = entity.getShip_type();
 		this.total_item = entity.getTotal_item();
 		this.orderInfo = entity.getOrderInfo();
-		
+
 		Shipment shipment = entity.getShipment();
-		if(shipment != null) {
+		if (shipment != null) {
 			this.address = entity.getShipment().getAddress();
 			this.province = entity.getShipment().getProvince();
 			this.district = entity.getShipment().getDistrict();
@@ -108,7 +110,7 @@ public class OrderHisDto {
 			this.ship_name = "Giao hàng nhanh";
 			break;
 		case 2:
-			this.ship_name = "Shop giao hàng";
+			this.ship_name = "Giao hàng tiết kiệm";
 		default:
 			break;
 		}
@@ -161,6 +163,14 @@ public class OrderHisDto {
 
 	public void setShip_fee(Long ship_fee) {
 		this.ship_fee = ship_fee;
+	}
+
+	public Integer getShip_type() {
+		return ship_type;
+	}
+
+	public void setShip_type(Integer ship_type) {
+		this.ship_type = ship_type;
 	}
 
 	public Integer getTotal_item() {

@@ -28,6 +28,8 @@ import com.example.demo.dto.product.ProductTopSale;
 import com.example.demo.entity.category.Category;
 import com.example.demo.entity.category.SubCategory;
 import com.example.demo.entity.inventory.Inventory;
+import com.example.demo.entity.inventory.Supplier;
+import com.example.demo.entity.product.Accessory;
 import com.example.demo.entity.product.Brand;
 import com.example.demo.entity.product.Camera;
 import com.example.demo.entity.product.Color;
@@ -36,6 +38,8 @@ import com.example.demo.entity.product.Product;
 import com.example.demo.entity.product.Technology;
 import com.example.demo.entity.product.Tivi;
 import com.example.demo.entity.product.Wash;
+import com.example.demo.entity.promotion.ProductDiscount;
+import com.example.demo.repository.AccessoryRepository;
 import com.example.demo.repository.BrandRepository;
 import com.example.demo.repository.CameraRepository;
 import com.example.demo.repository.CategoryRepository;
@@ -43,8 +47,10 @@ import com.example.demo.repository.ColorRepository;
 import com.example.demo.repository.ImageRepository;
 import com.example.demo.repository.InventoryRepository;
 import com.example.demo.repository.OrderDetailRepository;
+import com.example.demo.repository.ProductDiscountRepository;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.SubCategoryRepository;
+import com.example.demo.repository.SupplierRepository;
 import com.example.demo.repository.TechnologyRepository;
 import com.example.demo.repository.TiviRepository;
 import com.example.demo.repository.WashRepository;
@@ -70,6 +76,9 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private BrandRepository brandRepos;
+	
+	@Autowired
+	private SupplierRepository supplierRepos;
 
 	@Autowired
 	private TechnologyRepository techRepos;
@@ -82,6 +91,9 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private WashRepository washRepos;
+	
+	@Autowired
+	private AccessoryRepository accessoryRepos;
 
 	@Autowired
 	private InventoryRepository inventoryRepos;
@@ -91,6 +103,9 @@ public class ProductServiceImpl implements ProductService {
 	
 	@Autowired
 	private ColorRepository colorRepos;
+	
+	@Autowired
+	private ProductDiscountRepository discountRepos;
 
 	@Override
 	public Page<ProductListDto> productList(SearchDto dto) {
@@ -241,6 +256,20 @@ public class ProductServiceImpl implements ProductService {
 		} else {
 			whereClause += "";
 		}
+		
+		if (dto.getSupplier() != null && StringUtils.hasText(dto.getSupplier())) {
+			if (dto.getSupplier().contains(",")) {
+				String[] s = dto.getSupplier().split(",");
+				whereClause += " AND ( entity.supplier.code = '" + s[0] + "' )";
+				for (int i = 1; i < s.length; i++) {
+					whereClause += " OR ( entity.supplier.code = '" + s[i] + "' )";
+				}
+			} else {
+				whereClause += " AND ( entity.supplier.code = :supplier )";
+			}
+		} else {
+			whereClause += "";
+		}
 
 		sql += whereClause + orderBy;
 		sqlCount += whereClause;
@@ -266,6 +295,11 @@ public class ProductServiceImpl implements ProductService {
 		if (dto.getBrand() != null && dto.getBrand().length() > 0 && dto.getBrand().contains(",") == false) {
 			q.setParameter("brand", dto.getBrand());
 			qCount.setParameter("brand", dto.getBrand());
+		}
+		
+		if (dto.getSupplier() != null && dto.getSupplier().length() > 0 && dto.getSupplier().contains(",") == false) {
+			q.setParameter("supplier", dto.getSupplier());
+			qCount.setParameter("supplier", dto.getSupplier());
 		}
 
 		int startPosition = pageIndex * pageSize;
@@ -299,13 +333,15 @@ public class ProductServiceImpl implements ProductService {
 			Camera camera = null;
 			Tivi tivi = null;
 			Wash wash = null;
+			Accessory accessory = null;
 			Image image = null;
 			Inventory inventory = null;
+			ProductDiscount discount = null;
 
 			Category category = categoryRepos.findOneByCode(dto.getCategory());
 			SubCategory subcategory = subcategoryRepos.findOneByCode(dto.getSubcategory());
 			Brand brand = brandRepos.findOneByCode(dto.getBrand());
-
+			Supplier supplier = supplierRepos.findOneByCode(dto.getSupplier());
 			// 1 - n product - image
 			List<String> imageUrls = dto.getImages();
 			List<Image> images = new ArrayList<>();
@@ -332,6 +368,7 @@ public class ProductServiceImpl implements ProductService {
 					image = new Image(imageUrls.get(i));
 					images.add(image);
 				}
+				discount = discountRepos.findOneByProduct(entity);
 				switch (entity.getType()) {
 				case 1:
 					tech = techRepos.findOneByProduct(entity);
@@ -344,6 +381,9 @@ public class ProductServiceImpl implements ProductService {
 					break;
 				case 4:
 					wash = washRepos.findOneByProduct(entity);
+					break;
+				case 5:
+					accessory = accessoryRepos.findOneByProduct(entity);
 					break;
 				default:
 					break;
@@ -358,7 +398,9 @@ public class ProductServiceImpl implements ProductService {
 				camera = new Camera();
 				tivi = new Tivi();
 				wash = new Wash();
-				
+				accessory = new Accessory();
+				discount = new ProductDiscount();
+				discount.setStatus(1);
 				for(Color item : colors) {
 //					inventory = new Inventory(0, 0, entity, item, category.getCode());
 					inventory = new Inventory();
@@ -390,15 +432,13 @@ public class ProductServiceImpl implements ProductService {
 			entity.setSizeWeight(dto.getSizeWeight());
 			entity.setMaterial(dto.getMaterial());
 			entity.setDisplay(1);
-			// price
-
 			entity.setCategory(category);
 			entity.setSubcategory(subcategory);
 			entity.setBrand(brand);
-
+			entity.setSupplier(supplier);
+			entity.setDiscount(discount);
 			switch (dto.getType()) {
 			case 1:
-				// book
 				// electric
 				tech.setScreen(dto.getScreen());
 				tech.setOperatorSystem(dto.getOperatorSystem());
@@ -461,6 +501,11 @@ public class ProductServiceImpl implements ProductService {
 				wash.setType_engine(dto.getType_engine());
 				wash.setProduct(entity);
 				break;
+			case 5:
+				accessory.setAccessory_model(dto.getAccessory_model());
+				accessory.setFeatute(dto.getFeature());
+				accessory.setProduct(entity);
+				break;
 			default:
 				break;
 			}
@@ -472,6 +517,8 @@ public class ProductServiceImpl implements ProductService {
 			}
 			
 			entity = productRepos.save(entity);
+			entity.setDiscount(discount);
+			discount.setProduct(entity);
 			switch (dto.getType()) {
 			case 1:
 				entity.setTechnology(tech);
@@ -489,22 +536,13 @@ public class ProductServiceImpl implements ProductService {
 				entity.setWash(wash);
 				wash = washRepos.save(wash);
 				break;
+			case 5:
+				entity.setAccessory(accessory);
+				accessory = accessoryRepos.save(accessory);
+				break;
 			default:
 				break;
 			}
-
-//			if (inventory != null) {
-//				inventoryRepos.save(inventory);
-//			}
-//			if(inventories != null) {
-//				for(Inventory item : inventories) {
-//					System.out.println(item.getColor().getName());
-//					if(item != null) {
-//						inventoryRepos.save(item);
-//					}
-//				}
-//			}
-
 			if (entity != null) {
 				return new ProductDto(entity);
 			}
@@ -530,7 +568,6 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public ProductDtoNew getProductById(Long id, String color) {
 		Product product = productRepos.getById(id);
-//		List<E> list = product.getInventories();
 		Color c = null;
 		if(color != null &&color.equalsIgnoreCase("") == false) {
 			c = colorRepos.findOneByName(color);
@@ -607,8 +644,6 @@ public class ProductServiceImpl implements ProductService {
 				+ " INNER JOIN Order o ON o.status = 2 and o.id = s.order.id "
 				+ " AND (TIMESTAMPDIFF(DAY, o.createdDate, NOW()) <= 30 )";
 		sql += groupOrderClause;
-		
-//		System.out.println(sql);
 
 		Query q = manager.createQuery(sql, ProductTopSale.class);
 		Query qCount = manager.createQuery(sqlCount);

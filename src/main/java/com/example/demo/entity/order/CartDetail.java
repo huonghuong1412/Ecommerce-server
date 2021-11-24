@@ -28,6 +28,9 @@ public class CartDetail extends BaseEntity {
 	@Column(name = "quantity") // quantity of each product
 	private Integer quantity;
 
+	@Column(name = "selected")
+	private Integer selected;
+
 	public CartDetail() {
 		// TODO Auto-generated constructor stub
 	}
@@ -62,6 +65,14 @@ public class CartDetail extends BaseEntity {
 
 	public void setColor(String color) {
 		this.color = color;
+	}
+
+	public Integer getSelected() {
+		return selected;
+	}
+
+	public void setSelected(Integer selected) {
+		this.selected = selected;
 	}
 
 }
