@@ -52,9 +52,16 @@ public class MomoPayController {
 		json.put("notifyUrl", notifyUrl);
 		json.put("requestType", "captureMoMoWallet");
 
-		String data = "partnerCode=" + partnerCode + "&accessKey=" + accessKey + "&requestId=" + json.get("requestId")
-				+ "&amount=" + amount.toString() + "&orderId=" + json.get("orderId") + "&orderInfo="
-				+ json.get("orderInfo") + "&returnUrl=" + returnUrl + "&notifyUrl=" + notifyUrl + "&extraData=";
+		String data = "partnerCode=" + partnerCode 
+				+ "&accessKey=" + accessKey 
+				+ "&requestId=" + json.get("requestId")
+				+ "&amount=" + amount.toString() 
+				+ "&orderId=" + json.get("orderId") 
+				+ "&orderInfo=" + json.get("orderInfo") 
+				+ "&returnUrl=" + returnUrl 
+				+ "&notifyUrl=" + notifyUrl 
+				+ "&extraData=";
+
 		String hashData = MomoEncoderUtils.signHmacSHA256(data, secretKey);
 		json.put("signature", hashData);
 		CloseableHttpClient client = HttpClients.createDefault();

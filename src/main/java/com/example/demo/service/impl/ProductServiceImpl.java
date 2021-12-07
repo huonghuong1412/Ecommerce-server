@@ -25,6 +25,7 @@ import com.example.demo.dto.product.ProductDto;
 import com.example.demo.dto.product.ProductDtoNew;
 import com.example.demo.dto.product.ProductListDto;
 import com.example.demo.dto.product.ProductTopSale;
+import com.example.demo.dto.product.TagDto;
 import com.example.demo.entity.category.Category;
 import com.example.demo.entity.category.SubCategory;
 import com.example.demo.entity.inventory.Inventory;
@@ -35,6 +36,7 @@ import com.example.demo.entity.product.Camera;
 import com.example.demo.entity.product.Color;
 import com.example.demo.entity.product.Image;
 import com.example.demo.entity.product.Product;
+import com.example.demo.entity.product.Tag;
 import com.example.demo.entity.product.Technology;
 import com.example.demo.entity.product.Tivi;
 import com.example.demo.entity.product.Wash;
@@ -51,6 +53,7 @@ import com.example.demo.repository.ProductDiscountRepository;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.SubCategoryRepository;
 import com.example.demo.repository.SupplierRepository;
+import com.example.demo.repository.TagRepository;
 import com.example.demo.repository.TechnologyRepository;
 import com.example.demo.repository.TiviRepository;
 import com.example.demo.repository.WashRepository;
@@ -106,6 +109,9 @@ public class ProductServiceImpl implements ProductService {
 	
 	@Autowired
 	private ProductDiscountRepository discountRepos;
+	
+	@Autowired
+	private TagRepository tagRepos;
 
 	@Override
 	public Page<ProductListDto> productList(SearchDto dto) {
@@ -337,6 +343,7 @@ public class ProductServiceImpl implements ProductService {
 			Image image = null;
 			Inventory inventory = null;
 			ProductDiscount discount = null;
+			Tag tag = null;
 
 			Category category = categoryRepos.findOneByCode(dto.getCategory());
 			SubCategory subcategory = subcategoryRepos.findOneByCode(dto.getSubcategory());
@@ -352,6 +359,9 @@ public class ProductServiceImpl implements ProductService {
 				Color color = colorRepos.findOneByName(item);
 				colors.add(color);
 			}
+			
+			List<TagDto> tagNames = dto.getTags();
+			List<Tag> tags = new ArrayList<>();
 			
 			List<Inventory> inventories = new ArrayList<>();
 
@@ -431,12 +441,23 @@ public class ProductServiceImpl implements ProductService {
 			entity.setDescription(dto.getDescription());
 			entity.setSizeWeight(dto.getSizeWeight());
 			entity.setMaterial(dto.getMaterial());
+			entity.setFeatures(dto.getFeatures());
 			entity.setDisplay(1);
 			entity.setCategory(category);
 			entity.setSubcategory(subcategory);
 			entity.setBrand(brand);
 			entity.setSupplier(supplier);
 			entity.setDiscount(discount);
+			
+			if (tagNames != null) {
+				for (TagDto item : tagNames) {
+					tag = tagRepos.getOneByCode(item.getCode());
+					if (tag != null) {
+						tags.add(tag);
+					}
+				}
+			}
+			
 			switch (dto.getType()) {
 			case 1:
 				// electric
@@ -511,6 +532,7 @@ public class ProductServiceImpl implements ProductService {
 			}
 
 			entity.setImages(images);
+			entity.setTags(tags);
 			entity.setInventories(inventories);
 			for (int i = 0; i < images.size(); i++) {
 				images.get(i).setProduct(entity);

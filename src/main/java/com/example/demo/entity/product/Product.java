@@ -8,6 +8,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -71,6 +73,9 @@ public class Product extends BaseEntity {
 	@Column(name = "display")
 	private Integer display; // 1 : show, 0: hidden
 
+	@Column(name = "features", columnDefinition = "TEXT")
+	private String features;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "subcategory_id") // 1, 2, 3
 	private SubCategory subcategory;
@@ -78,6 +83,10 @@ public class Product extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id") // 1, 2, 3
 	private Category category;
+
+	@ManyToMany(cascade = CascadeType.PERSIST)
+	@JoinTable(name = "tbl_product_tag", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+	private List<Tag> tags;
 
 //	----------------	ELECTRIC	--------------------
 
@@ -366,6 +375,22 @@ public class Product extends BaseEntity {
 
 	public void setDiscount(ProductDiscount discount) {
 		this.discount = discount;
+	}
+
+	public String getFeatures() {
+		return features;
+	}
+
+	public void setFeatures(String features) {
+		this.features = features;
+	}
+
+	public List<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
 	}
 
 }

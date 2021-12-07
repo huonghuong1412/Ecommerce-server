@@ -6,6 +6,9 @@ import java.util.List;
 import com.example.demo.dto.AbstractDTO;
 import com.example.demo.entity.product.Image;
 import com.example.demo.entity.product.Product;
+import com.example.demo.entity.product.Tag;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class ProductDto extends AbstractDTO<ProductDto> {
 	private Integer type;
@@ -25,6 +28,7 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 	private String subcategory;
 	private String sizeWeight;
 	private String material;
+	private String features;
 
 	// electric
 	private String screen;
@@ -93,6 +97,9 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 	// supplier
 	private String supplier;
 
+	@JsonInclude(value = Include.NON_NULL)
+	private List<TagDto> tags;
+
 	// color
 	private List<String> colors;
 
@@ -121,11 +128,18 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 		this.subcategory = entity.getSubcategory().getCode();
 		this.brand = entity.getBrand().getCode();
 		this.supplier = entity.getSupplier().getCode();
+		this.features = entity.getFeatures();
 
 		images = new ArrayList<>();
 		for (Image image : entity.getImages()) {
 			ImageDto dto = new ImageDto(image);
 			images.add(dto.getUrl());
+		}
+
+		tags = new ArrayList<>();
+		for (Tag tag : entity.getTags()) {
+			TagDto dto = new TagDto(tag);
+			tags.add(dto);
 		}
 
 		switch (this.type) {
@@ -391,6 +405,14 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 
 	public void setMaterial(String material) {
 		this.material = material;
+	}
+
+	public String getFeatures() {
+		return features;
+	}
+
+	public void setFeatures(String features) {
+		this.features = features;
 	}
 
 	public String getReleaseTime() {
@@ -743,6 +765,14 @@ public class ProductDto extends AbstractDTO<ProductDto> {
 
 	public void setColors(List<String> colors) {
 		this.colors = colors;
+	}
+
+	public List<TagDto> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<TagDto> tags) {
+		this.tags = tags;
 	}
 
 }

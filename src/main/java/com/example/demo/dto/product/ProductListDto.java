@@ -2,7 +2,9 @@ package com.example.demo.dto.product;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.example.demo.common.CalculateDiscount;
 import com.example.demo.dto.AbstractDTO;
@@ -13,6 +15,7 @@ import com.example.demo.entity.category.SubCategory;
 import com.example.demo.entity.inventory.Inventory;
 import com.example.demo.entity.product.Brand;
 import com.example.demo.entity.product.Product;
+import com.example.demo.entity.product.Tag;
 import com.example.demo.entity.promotion.ProductDiscount;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -38,6 +41,11 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 	@JsonInclude(value = Include.NON_NULL)
 	private Integer display;
 
+	@JsonInclude(value = Include.NON_EMPTY)
+	private List<TagDto> tags;
+
+	private String features;
+
 	public ProductListDto() {
 		// TODO Auto-generated constructor stub
 	}
@@ -53,11 +61,12 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 		}
 		this.name = entity.getName();
 		this.slug = entity.getSlug();
+		this.features = entity.getFeatures();
 		this.price = entity.getPrice();
 		this.list_price = entity.getList_price();
 		ProductDiscount discount = entity.getDiscount();
 		if (discount.getStatus() == 1) {
-			if(discount.getType() != null && discount.getValue() != null) {
+			if (discount.getType() != null && discount.getValue() != null) {
 				if (discount.getType() == 1) {
 					this.price = entity.getPrice() * (100 - discount.getValue()) / 100;
 				} else {
@@ -97,6 +106,11 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 		this.brand = new BrandDtoNew();
 		Brand brandEntity = entity.getBrand();
 		this.brand = new BrandDtoNew(brandEntity);
+		tags = new ArrayList<>();
+		for (Tag tag : entity.getTags()) {
+			TagDto dto = new TagDto(tag);
+			tags.add(dto);
+		}
 		this.display = entity.getDisplay();
 	}
 
@@ -122,6 +136,14 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 
 	public void setSlug(String slug) {
 		this.slug = slug;
+	}
+
+	public String getFeatures() {
+		return features;
+	}
+
+	public void setFeatures(String features) {
+		this.features = features;
 	}
 
 	public Long getPrice() {
@@ -202,6 +224,14 @@ public class ProductListDto extends AbstractDTO<ProductListDto> {
 
 	public void setIn_stock(Integer in_stock) {
 		this.in_stock = in_stock;
+	}
+
+	public List<TagDto> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<TagDto> tags) {
+		this.tags = tags;
 	}
 
 }

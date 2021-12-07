@@ -16,6 +16,7 @@ import com.example.demo.entity.product.Brand;
 import com.example.demo.entity.product.Camera;
 import com.example.demo.entity.product.Image;
 import com.example.demo.entity.product.Product;
+import com.example.demo.entity.product.Tag;
 import com.example.demo.entity.product.Technology;
 import com.example.demo.entity.product.Tivi;
 import com.example.demo.entity.product.Wash;
@@ -52,6 +53,9 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 	@JsonInclude(value = Include.NON_NULL)
 	private String mainImage;
 
+	@JsonInclude(value = Include.NON_NULL)
+	private String features;
+
 	private Integer weight;
 	private Integer length;
 	private Integer width;
@@ -68,6 +72,9 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 
 	@JsonInclude(value = Include.NON_EMPTY)
 	private List<String> images;
+
+	@JsonInclude(value = Include.NON_EMPTY)
+	private List<String> tags;
 
 	@JsonInclude(value = Include.NON_NULL)
 	private CategoryDtoNew category;
@@ -119,9 +126,10 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 		this.description = entity.getDescription();
 		this.price = entity.getPrice();
 		this.list_price = entity.getList_price();
+		this.features = entity.getFeatures();
 		ProductDiscount discount = entity.getDiscount();
 		if (discount.getStatus() == 1) {
-			if(discount.getType() != null && discount.getValue() != null) {
+			if (discount.getType() != null && discount.getValue() != null) {
 				if (discount.getType() == 1) {
 					this.price = entity.getPrice() * (100 - discount.getValue()) / 100;
 				} else {
@@ -168,6 +176,12 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 			images.add(dto.getUrl());
 		}
 		images.add(0, this.mainImage);
+
+		tags = new ArrayList<>();
+		for (Tag tag : entity.getTags()) {
+			String item = tag.getCode();
+			tags.add(item);
+		}
 
 		this.product_specs = new ArrayList<>();
 		if (entity.getSizeWeight() != null) {
@@ -441,6 +455,14 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 		this.mainImage = mainImage;
 	}
 
+	public String getFeatures() {
+		return features;
+	}
+
+	public void setFeatures(String features) {
+		this.features = features;
+	}
+
 	public Integer getWeight() {
 		return weight;
 	}
@@ -596,6 +618,14 @@ public class ProductDtoNew extends AbstractDTO<ProductDtoNew> {
 
 	public void setInventories(List<InventoryProductDto> inventories) {
 		this.inventories = inventories;
+	}
+
+	public List<String> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<String> tags) {
+		this.tags = tags;
 	}
 
 }
